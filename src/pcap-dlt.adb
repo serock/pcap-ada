@@ -29,17 +29,46 @@
 --  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 --  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
-with Ada.Characters.Handling;
+with Interfaces.C;
+with Interfaces.C.Strings;
 
-package Pcap.Dlt is
+use Interfaces.C;
+use Interfaces.C.Strings;
 
-   type Dlt_Type is new Natural;
+package body Pcap.Dlt is
 
-   function Description (Dlt : Dlt_Type) return String;
+   function Description (Dlt : Dlt_Type) return String is
+      Description : Interfaces.C.Strings.chars_ptr;
+   begin
+      Description := pcap_datalink_val_to_description (dlt => Interfaces.C.int (Dlt));
+      if Description = Interfaces.C.Strings.Null_Ptr then
+         raise Constraint_Error with "invalid datalink";
+      end if;
+      return Value (Item => Description);
+   end Description;
 
-   function Dlt (Name : String) return Dlt_Type
-   with Pre => Name'Length < 4 or else Ada.Characters.Handling.To_Upper (Item => Name (Name'First .. Name'First + 3)) /= "DLT_";
+   function Dlt (Name : String) return Dlt_Type is
+      C_Name  : aliased Interfaces.C.char_array := Interfaces.C.To_C (Item => "DLT_" & Name);
+      C_Value : Interfaces.C.int;
+      Dlt     : Dlt_Type;
+   begin
+      C_Value := pcap_datalink_name_to_val (Interfaces.C.Strings.To_Chars_Ptr (Item => C_Name'Unchecked_Access));
+      if C_Value = -1 then
+         raise Constraint_Error with "invalid datalink name";
+      else
+         Dlt := Dlt_Type (C_Value);
+      end if;
+      return Dlt;
+   end Dlt;
 
-   function Name (Dlt : Dlt_Type) return String;
+   function Name (Dlt : Dlt_Type) return String is
+      Name : Interfaces.C.Strings.chars_ptr;
+   begin
+      Name := pcap_datalink_val_to_name (dlt => Interfaces.C.int (Dlt));
+      if Name = Interfaces.C.Strings.Null_Ptr then
+         raise Constraint_Error with "invalid datalink";
+      end if;
+      return Value (Item => Name);
+   end Name;
 
 end Pcap.Dlt;

@@ -57,6 +57,16 @@ private
         Convention => C,
         External_Name => "pcap_datalink_name_to_val";
 
+   function pcap_datalink_val_to_name (dlt : Interfaces.C.int) return Interfaces.C.Strings.chars_ptr
+   with Import => True,
+        Convention => C,
+        External_Name => "pcap_datalink_val_to_name";
+
+   function pcap_datalink_val_to_description (dlt : Interfaces.C.int) return Interfaces.C.Strings.chars_ptr
+   with Import => True,
+        Convention => C,
+        External_Name => "pcap_datalink_val_to_description";
+
    function pcap_lib_version return Interfaces.C.Strings.chars_ptr
    with Import        => True,
         Convention    => C,
