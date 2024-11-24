@@ -45,7 +45,7 @@ package Pcap.Dlt.Constants is
    DLT_ATM_RFC1483                : constant Dlt_Type := 11;
 #if PCAP_OS_TYPE = "openbsd"
    DLT_LOOP                       : constant Dlt_Type := 12;
-else
+#else
    DLT_RAW                        : constant Dlt_Type := 12;
 #end if;
 #if PCAP_OS_TYPE = "freebsd"
