@@ -34,42 +34,90 @@ with Pcap.Dlt;
 
 package Pcap.Lib is
 
-   type Packet_Capture_Type is limited new Ada.Finalization.Limited_Controlled with private;
+   type Status_Type is new Integer;
+
+   PCAP_SUCCESS_WITHOUT_WARNINGS   : constant Status_Type;
+
+   PCAP_ERROR                      : constant Status_Type;
+   PCAP_ERROR_BREAK                : constant Status_Type;
+   PCAP_ERROR_NOT_ACTIVATED        : constant Status_Type;
+   PCAP_ERROR_ACTIVATED            : constant Status_Type;
+   PCAP_ERROR_NO_SUCH_DEVICE       : constant Status_Type;
+   PCAP_ERROR_RFMON_NOTSUP         : constant Status_Type;
+   PCAP_ERROR_NOT_RFMON            : constant Status_Type;
+   PCAP_ERROR_PERM_DENIED          : constant Status_Type;
+   PCAP_ERROR_IFACE_NOT_UP         : constant Status_Type;
+   PCAP_ERROR_CANTSET_TSTAMP_TYPE  : constant Status_Type;
+   PCAP_ERROR_PROMISC_PERM_DENIED  : constant Status_Type;
+
+   PCAP_WARNING                    : constant Status_Type;
+   PCAP_WARNING_PROMISC_NOTSUP     : constant Status_Type;
+   PCAP_WARNING_TSTAMP_TYPE_NOTSUP : constant Status_Type;
 
    type Snapshot_Length_Type is new Positive;
 
    type Timestamp_Precision_Type is (Micro, Nano);
 
-   function Is_Open (Self : Packet_Capture_Type) return Boolean;
+   type Abstract_Packet_Capture_Type is abstract limited new Ada.Finalization.Limited_Controlled with private;
+
+   procedure Close (Self : in out Abstract_Packet_Capture_Type)
+     with Pre => Self.Is_Open;
+
+   function Is_Open (Self : Abstract_Packet_Capture_Type) return Boolean;
+
+   function Geterr (Self : Abstract_Packet_Capture_Type) return String
+     with Pre => Self.Is_Open;
+
+   procedure Perror (Self   : Abstract_Packet_Capture_Type;
+                     Prefix : String)
+     with Pre => Self.Is_Open;
+
+   type Packet_Capture_Type is limited new Abstract_Packet_Capture_Type with private;
 
    procedure Open_Dead (Self            : in out Packet_Capture_Type;
                         Datalink        :        Pcap.Dlt.Dlt_Type;
-                        Snapshot_Length :        Snapshot_Length_Type)
-   with Pre  => not Self.Is_Open,
-        Post => Self.Is_Open;
-
-   procedure Open_Dead (Self            : in out Packet_Capture_Type;
-                        Datalink        :        Pcap.Dlt.Dlt_Type;
-                        Snapshot_Length :        Snapshot_Length_Type;
-                        Precision       :        Timestamp_Precision_Type)
-   with Pre  => not Self.Is_Open,
-        Post => Self.Is_Open;
+                        Snapshot_Length :        Snapshot_Length_Type     := 65535;
+                        Precision       :        Timestamp_Precision_Type := Micro)
+     with Pre => not Self.Is_Open;
 
    function Pcap_Ada_Version return String;
 
    function Pcap_Version return String;
 
+   function Status_To_String (Status : Status_Type) return String;
+
+   function Strerror (Error : Integer) return String;
+
 private
 
-   type Packet_Capture_Type is limited new Ada.Finalization.Limited_Controlled with
+   PCAP_SUCCESS_WITHOUT_WARNINGS   : constant Status_Type := 0;
+
+   PCAP_ERROR                      : constant Status_Type := -1;
+   PCAP_ERROR_BREAK                : constant Status_Type := -2;
+   PCAP_ERROR_NOT_ACTIVATED        : constant Status_Type := -3;
+   PCAP_ERROR_ACTIVATED            : constant Status_Type := -4;
+   PCAP_ERROR_NO_SUCH_DEVICE       : constant Status_Type := -5;
+   PCAP_ERROR_RFMON_NOTSUP         : constant Status_Type := -6;
+   PCAP_ERROR_NOT_RFMON            : constant Status_Type := -7;
+   PCAP_ERROR_PERM_DENIED          : constant Status_Type := -8;
+   PCAP_ERROR_IFACE_NOT_UP         : constant Status_Type := -9;
+   PCAP_ERROR_CANTSET_TSTAMP_TYPE  : constant Status_Type := -10;
+   PCAP_ERROR_PROMISC_PERM_DENIED  : constant Status_Type := -11;
+
+   PCAP_WARNING                    : constant Status_Type := 1;
+   PCAP_WARNING_PROMISC_NOTSUP     : constant Status_Type := 2;
+   PCAP_WARNING_TSTAMP_TYPE_NOTSUP : constant Status_Type := 3;
+
+   type Abstract_Packet_Capture_Type is abstract limited new Ada.Finalization.Limited_Controlled with
       record
-         Active : Boolean;
          Handle : pcap_t_ptr;
       end record;
 
-   overriding procedure Finalize (Self : in out Packet_Capture_Type);
+   overriding procedure Finalize (Self : in out Abstract_Packet_Capture_Type);
 
-   function Is_Open (Self : Packet_Capture_Type) return Boolean is (Self.Handle /= null);
+   function Is_Open (Self : Abstract_Packet_Capture_Type) return Boolean is (Self.Handle /= null);
+
+   type Packet_Capture_Type is limited new Abstract_Packet_Capture_Type with null record;
 
    function Pcap_Ada_Version return String is ($PCAP_ADA_VERSION);
 

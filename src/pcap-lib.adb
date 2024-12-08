@@ -31,28 +31,52 @@
 -----------------------------------------------------------------------------
 package body Pcap.Lib is
 
-   overriding procedure Finalize (Self : in out Packet_Capture_Type) is
+   function Status_To_String (Status : Status_Type) return String is
+      Str : Interfaces.C.Strings.chars_ptr;
+   begin
+      Str := pcap_statustostr (error => Interfaces.C.int (Status));
+      return Interfaces.C.Strings.Value (Item => Str);
+   end Status_To_String;
+
+   function Strerror (Error : Integer) return String is
+      Str : Interfaces.C.Strings.chars_ptr;
+   begin
+      Str := pcap_strerror (error => Interfaces.C.int (Error));
+      return Interfaces.C.Strings.Value (Item => Str);
+   end Strerror;
+
+   procedure Close (Self : in out Abstract_Packet_Capture_Type) is
    begin
       if Self.Handle /= null then
          pcap_close (p => Self.Handle);
          Self.Handle := null;
       end if;
+   end Close;
+
+   overriding procedure Finalize (Self : in out Abstract_Packet_Capture_Type) is
+   begin
+      Self.Close;
    end Finalize;
 
-   procedure Open_Dead (Self            : in out Packet_Capture_Type;
-                        Datalink        :        Pcap.Dlt.Dlt_Type;
-                        Snapshot_Length :        Snapshot_Length_Type) is
+   function Geterr (Self : Abstract_Packet_Capture_Type) return String is
+      Str : Interfaces.C.Strings.chars_ptr;
    begin
-      if Self.Handle = null then
-         Self.Handle := pcap_open_dead (linktype => Interfaces.C.int (Datalink),
-                                        snaplen  => Interfaces.C.int (Snapshot_Length));
-      end if;
-   end Open_Dead;
+      Str := pcap_geterr (p => Self.Handle);
+      return Interfaces.C.Strings.Value (Item => Str);
+   end Geterr;
+
+   procedure Perror (Self   : Abstract_Packet_Capture_Type;
+                     Prefix : String) is
+      C_Prefix : aliased Interfaces.C.char_array := Interfaces.C.To_C (Item => Prefix);
+   begin
+      pcap_perror (p      => Self.Handle,
+                   prefix => Interfaces.C.Strings.To_Chars_Ptr (Item => C_Prefix'Unchecked_Access));
+   end Perror;
 
    procedure Open_Dead (Self            : in out Packet_Capture_Type;
                         Datalink        :        Pcap.Dlt.Dlt_Type;
-                        Snapshot_Length :        Snapshot_Length_Type;
-                        Precision       :        Timestamp_Precision_Type) is
+                        Snapshot_Length :        Snapshot_Length_Type     := 65535;
+                        Precision       :        Timestamp_Precision_Type := Micro) is
    begin
       if Self.Handle = null then
          Self.Handle := pcap_open_dead_with_tstamp_precision (linktype  => Interfaces.C.int (Datalink),

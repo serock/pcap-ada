@@ -44,21 +44,18 @@ package body Pcap.Dlt is
       if Description = Interfaces.C.Strings.Null_Ptr then
          raise Constraint_Error with "invalid datalink";
       end if;
-      return Value (Item => Description);
+      return Interfaces.C.Strings.Value (Item => Description);
    end Description;
 
    function Dlt (Name : String) return Dlt_Type is
-      C_Name  : aliased Interfaces.C.char_array := Interfaces.C.To_C (Item => "DLT_" & Name);
+      C_Name  : aliased Interfaces.C.char_array := Interfaces.C.To_C (Item => Name);
       C_Value : Interfaces.C.int;
-      Dlt     : Dlt_Type;
    begin
       C_Value := pcap_datalink_name_to_val (Interfaces.C.Strings.To_Chars_Ptr (Item => C_Name'Unchecked_Access));
       if C_Value = -1 then
          raise Constraint_Error with "invalid datalink name";
-      else
-         Dlt := Dlt_Type (C_Value);
       end if;
-      return Dlt;
+      return Dlt_Type (C_Value);
    end Dlt;
 
    function Name (Dlt : Dlt_Type) return String is
@@ -68,7 +65,7 @@ package body Pcap.Dlt is
       if Name = Interfaces.C.Strings.Null_Ptr then
          raise Constraint_Error with "invalid datalink";
       end if;
-      return Value (Item => Name);
+      return Interfaces.C.Strings.Value (Item => Name);
    end Name;
 
 end Pcap.Dlt;

@@ -29,34 +29,6 @@
 --  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 --  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
-with Pcap.Error_Buffer;
+with Ada.Strings.Bounded;
 
-package Pcap.Lib.Live is
-
-   type Snapshot_Length_Type is new Positive;
-
-   type Timeout_Milliseconds_Type is new Positive;
-
-   type Live_Packet_Capture_Type is limited new Abstract_Packet_Capture_Type with private;
-
-   function Activate (Self : Live_Packet_Capture_Type) return Status_Type
-     with Pre => Self.Is_Open;
-
-   procedure Create (Self         : in out Live_Packet_Capture_Type;
-                     Source       :        String;
-                     Error_Buffer :    out Pcap.Error_Buffer.Bounded_String)
-     with Pre => not Self.Is_Open;
-
-   procedure Open (Self             : in out Live_Packet_Capture_Type;
-                   Device           :        String;
-                   Snapshot_Length  :        Snapshot_Length_Type := 65535;
-                   Promiscuous_Mode :        Boolean              := False;
-                   Read_Timeout     :        Timeout_Milliseconds_Type;
-                   Error_Buffer     :    out Pcap.Error_Buffer.Bounded_String)
-     with Pre => not Self.Is_Open;
-
-private
-
-   type Live_Packet_Capture_Type is limited new Abstract_Packet_Capture_Type with null record;
-
-end Pcap.Lib.Live;
+package Pcap.Error_Buffer is new Ada.Strings.Bounded.Generic_Bounded_Length (Max => PCAP_ERRBUF_SIZE);

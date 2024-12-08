@@ -29,23 +29,62 @@
 --  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 --  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
+with Interfaces.C;
 with Pcap.Exceptions;
+
+use Interfaces.C;
 
 package body Pcap.Lib.Live is
 
-   procedure Create (Self   : in out Live_Packet_Capture_Type;
-                     Source :        String) is
+   function Activate (Self : Live_Packet_Capture_Type) return Status_Type is
+      Return_Value : Interfaces.C.int;
+   begin
+      Return_Value := pcap_activate (p => Self.Handle);
+      return Status_Type (Return_Value);
+   end Activate;
+
+   procedure Create (Self         : in out Live_Packet_Capture_Type;
+                     Source       :        String;
+                     Error_Buffer :    out Pcap.Error_Buffer.Bounded_String) is
       C_Source : aliased Interfaces.C.char_array := Interfaces.C.To_C (Item => Source);
       Errbuf   : aliased Interfaces.C.char_array := (0 .. PCAP_ERRBUF_SIZE => Interfaces.C.nul);
    begin
-      if Self.Handle /= null then
-         return;
-      end if;
-      Self.Handle := pcap_create (source => Interfaces.C.Strings.To_Chars_Ptr (Item => C_Source'Unchecked_Access),
-                                  errbuf => Interfaces.C.Strings.To_Chars_Ptr (Item => Errbuf'Unchecked_Access));
+      Error_Buffer := Pcap.Error_Buffer.Null_Bounded_String;
       if Self.Handle = null then
-         raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => Errbuf);
+         Self.Handle := pcap_create (source => Interfaces.C.Strings.To_Chars_Ptr (Item => C_Source'Unchecked_Access),
+                                     errbuf => Interfaces.C.Strings.To_Chars_Ptr (Item => Errbuf'Unchecked_Access));
+         if Errbuf (0) /= Interfaces.C.nul then
+            Error_Buffer := Pcap.Error_Buffer.To_Bounded_String (Source => Interfaces.C.To_Ada (Item => Errbuf));
+         end if;
+         if Self.Handle = null then
+            raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => Errbuf);
+         end if;
       end if;
    end Create;
+
+   procedure Open (Self             : in out Live_Packet_Capture_Type;
+                   Device           :        String;
+                   Snapshot_Length  :        Snapshot_Length_Type := 65535;
+                   Promiscuous_Mode :        Boolean              := False;
+                   Read_Timeout     :        Timeout_Milliseconds_Type;
+                   Error_Buffer     :    out Pcap.Error_Buffer.Bounded_String) is
+      C_Device : aliased Interfaces.C.char_array := Interfaces.C.To_C (Item => Device);
+      Errbuf   : aliased Interfaces.C.char_array := (0 .. PCAP_ERRBUF_SIZE => Interfaces.C.nul);
+   begin
+      Error_Buffer := Pcap.Error_Buffer.Null_Bounded_String;
+      if Self.Handle = null then
+         Self.Handle := pcap_open_live (device  => Interfaces.C.Strings.To_Chars_Ptr (Item => C_Device'Unchecked_Access),
+                                        snaplen => Interfaces.C.int (Snapshot_Length),
+                                        promisc => Interfaces.C.int (Boolean'Pos (Promiscuous_Mode)),
+                                        to_ms   => Interfaces.C.int (Read_Timeout),
+                                        errbuf  => Interfaces.C.Strings.To_Chars_Ptr (Item => Errbuf'Unchecked_Access));
+         if Errbuf (0) /= Interfaces.C.nul then
+            Error_Buffer := Pcap.Error_Buffer.To_Bounded_String (Source => Interfaces.C.To_Ada (Item => Errbuf));
+         end if;
+         if Self.Handle = null then
+            raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => Errbuf);
+         end if;
+      end if;
+   end Open;
 
 end Pcap.Lib.Live;

@@ -29,16 +29,13 @@
 --  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 --  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
-with Ada.Characters.Handling;
-
 package Pcap.Dlt is
 
    type Dlt_Type is new Natural;
 
    function Description (Dlt : Dlt_Type) return String;
 
-   function Dlt (Name : String) return Dlt_Type
-   with Pre => Name'Length < 4 or else Ada.Characters.Handling.To_Upper (Item => Name (Name'First .. Name'First + 3)) /= "DLT_";
+   function Dlt (Name : String) return Dlt_Type;
 
    function Name (Dlt : Dlt_Type) return String;
 

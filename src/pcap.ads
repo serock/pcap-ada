@@ -33,13 +33,18 @@ private with Interfaces.C.Strings;
 
 package Pcap is
 
-private
-
    PCAP_ERRBUF_SIZE : constant := 256;
+
+private
 
    type pcap_t is null record;
 
    type pcap_t_ptr is access pcap_t;
+
+   function pcap_activate (p : pcap_t_ptr) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_activate";
 
    function pcap_create (source : Interfaces.C.Strings.chars_ptr;
                          errbuf : Interfaces.C.Strings.chars_ptr) return pcap_t_ptr
@@ -53,19 +58,24 @@ private
         External_Name => "pcap_close";
 
    function pcap_datalink_name_to_val (name : Interfaces.C.Strings.chars_ptr) return Interfaces.C.int
-   with Import => True,
-        Convention => C,
+   with Import        => True,
+        Convention    => C,
         External_Name => "pcap_datalink_name_to_val";
 
    function pcap_datalink_val_to_name (dlt : Interfaces.C.int) return Interfaces.C.Strings.chars_ptr
-   with Import => True,
-        Convention => C,
+   with Import        => True,
+        Convention    => C,
         External_Name => "pcap_datalink_val_to_name";
 
    function pcap_datalink_val_to_description (dlt : Interfaces.C.int) return Interfaces.C.Strings.chars_ptr
-   with Import => True,
-        Convention => C,
+   with Import        => True,
+        Convention    => C,
         External_Name => "pcap_datalink_val_to_description";
+
+   function pcap_geterr (p : pcap_t_ptr) return Interfaces.C.Strings.chars_ptr
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_geterr";
 
    function pcap_lib_version return Interfaces.C.Strings.chars_ptr
    with Import        => True,
@@ -84,5 +94,30 @@ private
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_open_dead_with_tstamp_precision";
+
+   function pcap_open_live (device  : Interfaces.C.Strings.chars_ptr;
+                            snaplen : Interfaces.C.int;
+                            promisc : Interfaces.C.int;
+                            to_ms   : Interfaces.C.int;
+                            errbuf  : Interfaces.C.Strings.chars_ptr) return pcap_t_ptr
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_open_live";
+
+   procedure pcap_perror (p      : pcap_t_ptr;
+                          prefix : Interfaces.C.Strings.chars_ptr)
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_perror";
+
+   function pcap_statustostr (error : Interfaces.C.int) return Interfaces.C.Strings.chars_ptr
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_statustostr";
+
+   function pcap_strerror (error : Interfaces.C.int) return Interfaces.C.Strings.chars_ptr
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_strerror";
 
 end Pcap;
