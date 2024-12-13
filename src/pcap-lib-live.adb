@@ -87,4 +87,67 @@ package body Pcap.Lib.Live is
       end if;
    end Open;
 
+   function Set_Buffer_Size (Self        : Live_Packet_Capture_Type;
+                             Buffer_Size : Buffer_Size_Type) return Status_Type is
+      Return_Value : Interfaces.C.int;
+   begin
+      Return_Value := pcap_set_buffer_size (p           => Self.Handle,
+                                            buffer_size => Interfaces.C.int (Buffer_Size));
+      return Status_Type (Return_Value);
+   end Set_Buffer_Size;
+
+   function Set_Immediate_Mode (Self           : Live_Packet_Capture_Type;
+                                Immediate_Mode : Boolean := True) return Status_Type is
+      Return_Value : Interfaces.C.int;
+   begin
+      Return_Value := pcap_set_immediate_mode (p              => Self.Handle,
+                                               immediate_mode => Boolean'Pos (Immediate_Mode));
+      return Status_Type (Return_Value);
+   end Set_Immediate_Mode;
+
+   function Set_Monitor_Mode (Self         : Live_Packet_Capture_Type;
+                              Monitor_Mode : Boolean := True) return Status_Type is
+      Return_Value : Interfaces.C.int;
+   begin
+      Return_Value := pcap_set_rfmon (p     => Self.Handle,
+                                      rfmon => Boolean'Pos (Monitor_Mode));
+      return Status_Type (Return_Value);
+   end Set_Monitor_Mode;
+
+   function Set_Promiscuous_Mode (Self             : Live_Packet_Capture_Type;
+                                  Promiscuous_Mode : Boolean := True) return Status_Type is
+      Return_Value : Interfaces.C.int;
+   begin
+      Return_Value := pcap_set_promisc (p       => Self.Handle,
+                                        promisc => Boolean'Pos (Promiscuous_Mode));
+      return Status_Type (Return_Value);
+   end Set_Promiscuous_Mode;
+
+   function Set_Snapshot_Length (Self            : Live_Packet_Capture_Type;
+                                 Snapshot_Length : Snapshot_Length_Type := 65535) return Status_Type is
+      Return_Value : Interfaces.C.int;
+   begin
+      Return_Value := pcap_set_snaplen (p       => Self.Handle,
+                                        snaplen => Interfaces.C.int (Snapshot_Length));
+      return Status_Type (Return_Value);
+   end Set_Snapshot_Length;
+
+   function Set_Timeout (Self    : Live_Packet_Capture_Type;
+                         Timeout : Timeout_Milliseconds_Type) return Status_Type is
+      Return_Value : Interfaces.C.int;
+   begin
+      Return_Value := pcap_set_timeout (p     => Self.Handle,
+                                        to_ms => Interfaces.C.int (Timeout));
+      return Status_Type (Return_Value);
+   end Set_Timeout;
+
+   function Set_Timestamp_Precision (Self                : Live_Packet_Capture_Type;
+                                     Timestamp_Precision : Timestamp_Precision_Type) return Status_Type is
+      Return_Value : Interfaces.C.int;
+   begin
+      Return_Value := pcap_set_tstamp_precision (p                => Self.Handle,
+                                                 tstamp_precision => Timestamp_Precision_Type'Pos (Timestamp_Precision));
+      return Status_Type (Return_Value);
+   end Set_Timestamp_Precision;
+
 end Pcap.Lib.Live;

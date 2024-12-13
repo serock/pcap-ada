@@ -110,6 +110,54 @@ private
         Convention    => C,
         External_Name => "pcap_perror";
 
+   function pcap_set_buffer_size (p           : pcap_t_ptr;
+                                  buffer_size : Interfaces.C.int) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_set_buffer_size";
+
+   function pcap_set_immediate_mode (p              : pcap_t_ptr;
+                                     immediate_mode : Interfaces.C.int) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_set_immediate_mode";
+
+   function pcap_set_promisc (p       : pcap_t_ptr;
+                              promisc : Interfaces.C.int) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_set_promisc";
+
+   function pcap_set_rfmon (p     : pcap_t_ptr;
+                            rfmon : Interfaces.C.int) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_set_rfmon";
+
+   function pcap_set_snaplen (p       : pcap_t_ptr;
+                              snaplen : Interfaces.C.int) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_set_snaplen";
+
+   function pcap_set_timeout (p     : pcap_t_ptr;
+                              to_ms : Interfaces.C.int) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_set_timeout";
+
+   function pcap_set_tstamp_precision (p                : pcap_t_ptr;
+                                       tstamp_precision : Interfaces.C.int) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_set_tstamp_precision";
+
+   function pcap_set_tstamp_type (p           : pcap_t_ptr;
+                                  tstamp_type : Interfaces.C.int) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_set_tstamp_type";
+
    function pcap_statustostr (error : Interfaces.C.int) return Interfaces.C.Strings.chars_ptr
    with Import        => True,
         Convention    => C,
