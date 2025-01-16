@@ -76,12 +76,12 @@ package body Pcap.Lib is
    procedure Open_Dead (Self            : in out Packet_Capture_Type;
                         Datalink        :        Pcap.Dlt.Dlt_Type;
                         Snapshot_Length :        Snapshot_Length_Type     := 65535;
-                        Precision       :        Timestamp_Precision_Type := Micro) is
+                        Precision       :        Timestamp_Precision_Type := PCAP_TSTAMP_PRECISION_MICRO) is
    begin
       if Self.Handle = null then
          Self.Handle := pcap_open_dead_with_tstamp_precision (linktype  => Interfaces.C.int (Datalink),
                                                               snaplen   => Interfaces.C.int (Snapshot_Length),
-                                                              precision => Interfaces.C.unsigned (Timestamp_Precision_Type'Pos (Precision)));
+                                                              precision => Interfaces.C.unsigned (Precision));
       end if;
    end Open_Dead;
 

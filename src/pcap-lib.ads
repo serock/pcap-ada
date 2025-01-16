@@ -56,7 +56,10 @@ package Pcap.Lib is
 
    type Snapshot_Length_Type is new Positive;
 
-   type Timestamp_Precision_Type is (Micro, Nano);
+   type Timestamp_Precision_Type is new Natural;
+
+   PCAP_TSTAMP_PRECISION_MICRO : constant Timestamp_Precision_Type;
+   PCAP_TSTAMP_PRECISION_NANO  : constant Timestamp_Precision_Type;
 
    type Abstract_Packet_Capture_Type is abstract limited new Ada.Finalization.Limited_Controlled with private;
 
@@ -77,7 +80,7 @@ package Pcap.Lib is
    procedure Open_Dead (Self            : in out Packet_Capture_Type;
                         Datalink        :        Pcap.Dlt.Dlt_Type;
                         Snapshot_Length :        Snapshot_Length_Type     := 65535;
-                        Precision       :        Timestamp_Precision_Type := Micro)
+                        Precision       :        Timestamp_Precision_Type := PCAP_TSTAMP_PRECISION_MICRO)
      with Pre => not Self.Is_Open;
 
    function Pcap_Ada_Version return String;
@@ -107,6 +110,9 @@ private
    PCAP_WARNING                    : constant Status_Type := 1;
    PCAP_WARNING_PROMISC_NOTSUP     : constant Status_Type := 2;
    PCAP_WARNING_TSTAMP_TYPE_NOTSUP : constant Status_Type := 3;
+
+   PCAP_TSTAMP_PRECISION_MICRO : constant Timestamp_Precision_Type := 0;
+   PCAP_TSTAMP_PRECISION_NANO  : constant Timestamp_Precision_Type := 1;
 
    type Abstract_Packet_Capture_Type is abstract limited new Ada.Finalization.Limited_Controlled with
       record
