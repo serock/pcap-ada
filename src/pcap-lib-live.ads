@@ -41,8 +41,12 @@ package Pcap.Lib.Live is
 
    type Live_Packet_Capture_Type is limited new Abstract_Packet_Capture_Type with private;
 
-   function Activate (Self : Live_Packet_Capture_Type) return Status_Type
-     with Pre => Self.Is_Open;
+   function Is_Activated (Self : Live_Packet_Capture_Type) return Boolean;
+
+   function Is_Not_Activated (Self : Live_Packet_Capture_Type) return Boolean;
+
+   procedure Activate (Self : in out Live_Packet_Capture_Type)
+     with Pre => Self.Is_Open and then not Self.Is_Activated;
 
    procedure Create (Self         : in out Live_Packet_Capture_Type;
                      Source       :        String;
@@ -57,36 +61,43 @@ package Pcap.Lib.Live is
                    Error_Buffer     :    out Pcap.Error_Buffer.Bounded_String)
      with Pre => not Self.Is_Open;
 
-   function Set_Buffer_Size (Self        : Live_Packet_Capture_Type;
-                             Buffer_Size : Buffer_Size_Type) return Status_Type
-     with Pre => Self.Is_Open;
+   procedure Set_Buffer_Size (Self        : in out Live_Packet_Capture_Type;
+                              Buffer_Size :        Buffer_Size_Type)
+     with Pre => Self.Is_Open and then Self.Is_Not_Activated;
 
-   function Set_Immediate_Mode (Self           : Live_Packet_Capture_Type;
-                                Immediate_Mode : Boolean := True) return Status_Type
-     with Pre => Self.Is_Open;
+   procedure Set_Immediate_Mode (Self           : in out Live_Packet_Capture_Type;
+                                 Immediate_Mode :        Boolean := True)
+     with Pre => Self.Is_Open and then Self.Is_Not_Activated;
 
-   function Set_Monitor_Mode (Self         : Live_Packet_Capture_Type;
-                              Monitor_Mode : Boolean := True) return Status_Type
-     with Pre => Self.Is_Open;
+   procedure Set_Monitor_Mode (Self         : in out Live_Packet_Capture_Type;
+                               Monitor_Mode :        Boolean := True)
+     with Pre => Self.Is_Open and then Self.Is_Not_Activated;
 
-   function Set_Promiscuous_Mode (Self             : Live_Packet_Capture_Type;
-                                  Promiscuous_Mode : Boolean := True) return Status_Type
-     with Pre => Self.Is_Open;
+   procedure Set_Promiscuous_Mode (Self             : in out Live_Packet_Capture_Type;
+                                   Promiscuous_Mode :        Boolean := True)
+     with Pre => Self.Is_Open and then Self.Is_Not_Activated;
 
-   function Set_Snapshot_Length (Self            : Live_Packet_Capture_Type;
-                                 Snapshot_Length : Snapshot_Length_Type := 65535) return Status_Type
-     with Pre => Self.Is_Open;
+   procedure Set_Snapshot_Length (Self            : in out Live_Packet_Capture_Type;
+                                  Snapshot_Length :        Snapshot_Length_Type := 65535)
+     with Pre => Self.Is_Open and then Self.Is_Not_Activated;
 
-   function Set_Timeout (Self    : Live_Packet_Capture_Type;
-                         Timeout : Timeout_Milliseconds_Type) return Status_Type
-     with Pre => Self.Is_Open;
+   procedure Set_Timeout (Self    : in out Live_Packet_Capture_Type;
+                          Timeout :        Timeout_Milliseconds_Type)
+     with Pre => Self.Is_Open and then Self.Is_Not_Activated;
 
-   function Set_Timestamp_Precision (Self                : Live_Packet_Capture_Type;
-                                     Timestamp_Precision : Timestamp_Precision_Type) return Status_Type
-     with Pre => Self.Is_Open;
+   procedure Set_Timestamp_Precision (Self                : in out Live_Packet_Capture_Type;
+                                      Timestamp_Precision :        Timestamp_Precision_Type)
+     with Pre => Self.Is_Open and then Self.Is_Not_Activated;
 
 private
 
-   type Live_Packet_Capture_Type is limited new Abstract_Packet_Capture_Type with null record;
+   type Live_Packet_Capture_Type is limited new Abstract_Packet_Capture_Type with
+      record
+         Activated : Boolean := False;
+      end record;
+
+   function Is_Activated (Self : Live_Packet_Capture_Type) return Boolean is (Self.Activated);
+
+   function Is_Not_Activated (Self : Live_Packet_Capture_Type) return Boolean is (not Self.Activated);
 
 end Pcap.Lib.Live;

@@ -71,8 +71,15 @@ package Pcap.Lib is
    function Geterr (Self : Abstract_Packet_Capture_Type) return String
      with Pre => Self.Is_Open;
 
+   function Has_Error_Status (Self : Abstract_Packet_Capture_Type) return Boolean;
+
+   function Has_Warning_Status (Self : Abstract_Packet_Capture_Type) return Boolean;
+
    procedure Perror (Self   : Abstract_Packet_Capture_Type;
                      Prefix : String)
+     with Pre => Self.Is_Open;
+
+   function Status_To_String (Self : Abstract_Packet_Capture_Type) return String
      with Pre => Self.Is_Open;
 
    type Packet_Capture_Type is limited new Abstract_Packet_Capture_Type with private;
@@ -117,6 +124,7 @@ private
    type Abstract_Packet_Capture_Type is abstract limited new Ada.Finalization.Limited_Controlled with
       record
          Handle : pcap_t_ptr;
+         Status : Status_Type := 0;
       end record;
 
    overriding procedure Finalize (Self : in out Abstract_Packet_Capture_Type);

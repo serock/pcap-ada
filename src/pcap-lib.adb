@@ -65,6 +65,16 @@ package body Pcap.Lib is
       return Interfaces.C.Strings.Value (Item => Str);
    end Geterr;
 
+   function Has_Error_Status (Self : Abstract_Packet_Capture_Type) return Boolean is
+   begin
+      return Self.Status < 0;
+   end Has_Error_Status;
+
+   function Has_Warning_Status (Self : Abstract_Packet_Capture_Type) return Boolean is
+   begin
+      return Self.Status > 0;
+   end Has_Warning_Status;
+
    procedure Perror (Self   : Abstract_Packet_Capture_Type;
                      Prefix : String) is
       C_Prefix : aliased Interfaces.C.char_array := Interfaces.C.To_C (Item => Prefix);
@@ -72,6 +82,11 @@ package body Pcap.Lib is
       pcap_perror (p      => Self.Handle,
                    prefix => Interfaces.C.Strings.To_Chars_Ptr (Item => C_Prefix'Unchecked_Access));
    end Perror;
+
+   function Status_To_String (Self : Abstract_Packet_Capture_Type) return String is
+   begin
+      return Status_To_String (Status => Self.Status);
+   end Status_To_String;
 
    procedure Open_Dead (Self            : in out Packet_Capture_Type;
                         Datalink        :        Pcap.Dlt.Dlt_Type;
