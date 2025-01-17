@@ -1,6 +1,6 @@
 --  SPDX-License-Identifier: BSD-3-Clause
 -----------------------------------------------------------------------------
---  Copyright (c) 2024 John Serock
+--  Copyright (c) 2024-2025 John Serock
 --
 --  Redistribution and use in source and binary forms, with or without
 --  modification, are permitted provided that the following conditions are
