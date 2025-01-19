@@ -35,11 +35,13 @@ package Pcap.Lib.Live is
 
    type Buffer_Size_Type is new Positive;
 
+   type Datalinks_Type is array (Integer range <>) of Datalink_Type;
+
    type Snapshot_Length_Type is new Positive;
 
    type Timeout_Milliseconds_Type is new Positive;
 
-   type Live_Packet_Capture_Type is limited new Abstract_Packet_Capture_Type with private;
+   type Live_Packet_Capture_Type is limited new Abstract_Base_Packet_Capture_Type with private;
 
    function Is_Activated (Self : Live_Packet_Capture_Type) return Boolean;
 
@@ -61,9 +63,16 @@ package Pcap.Lib.Live is
                    Error_Buffer     :    out Pcap.Error_Buffer.Bounded_String)
      with Pre => not Self.Is_Open;
 
+   procedure List_Datalinks (Self      : in out Live_Packet_Capture_Type;
+                             Datalinks :    out Datalinks_Type);
+
    procedure Set_Buffer_Size (Self        : in out Live_Packet_Capture_Type;
                               Buffer_Size :        Buffer_Size_Type)
      with Pre => Self.Is_Open and then Self.Is_Not_Activated;
+
+   procedure Set_Datalink (Self     : in out Live_Packet_Capture_Type;
+                           Datalink :        Datalink_Type)
+     with Pre => Self.Is_Open and then Self.Is_Activated;
 
    procedure Set_Immediate_Mode (Self           : in out Live_Packet_Capture_Type;
                                  Immediate_Mode :        Boolean := True)
@@ -91,7 +100,7 @@ package Pcap.Lib.Live is
 
 private
 
-   type Live_Packet_Capture_Type is limited new Abstract_Packet_Capture_Type with
+   type Live_Packet_Capture_Type is limited new Abstract_Base_Packet_Capture_Type with
       record
          Activated : Boolean := False;
       end record;

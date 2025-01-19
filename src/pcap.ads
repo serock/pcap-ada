@@ -30,6 +30,7 @@
 --  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 private with Interfaces.C.Strings;
+private with System;
 
 package Pcap is
 
@@ -57,6 +58,11 @@ private
         Convention    => C,
         External_Name => "pcap_close";
 
+   function pcap_datalink (p : pcap_t_ptr) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_datalink";
+
    function pcap_datalink_name_to_val (name : Interfaces.C.Strings.chars_ptr) return Interfaces.C.int
    with Import        => True,
         Convention    => C,
@@ -72,6 +78,11 @@ private
         Convention    => C,
         External_Name => "pcap_datalink_val_to_description";
 
+   procedure pcap_free_datalinks (dlt_list : System.Address)
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_free_datalinks";
+
    function pcap_geterr (p : pcap_t_ptr) return Interfaces.C.Strings.chars_ptr
    with Import        => True,
         Convention    => C,
@@ -81,6 +92,12 @@ private
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_lib_version";
+
+   function pcap_list_datalinks (p       :     pcap_t_ptr;
+                                 dlt_buf : out System.Address) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_list_datalinks";
 
    function pcap_open_dead (linktype : Interfaces.C.int;
                             snaplen  : Interfaces.C.int) return pcap_t_ptr
@@ -115,6 +132,12 @@ private
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_set_buffer_size";
+
+   function pcap_set_datalink (p   : pcap_t_ptr;
+                               dlt : Interfaces.C.int) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_set_datalink";
 
    function pcap_set_immediate_mode (p              : pcap_t_ptr;
                                      immediate_mode : Interfaces.C.int) return Interfaces.C.int

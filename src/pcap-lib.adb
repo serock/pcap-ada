@@ -29,14 +29,9 @@
 --  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 --  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
-package body Pcap.Lib is
+with Pcap.Exceptions;
 
-   function Status_To_String (Status : Status_Type) return String is
-      Str : Interfaces.C.Strings.chars_ptr;
-   begin
-      Str := pcap_statustostr (error => Interfaces.C.int (Status));
-      return Interfaces.C.Strings.Value (Item => Str);
-   end Status_To_String;
+package body Pcap.Lib is
 
    function Strerror (Error : Integer) return String is
       Str : Interfaces.C.Strings.chars_ptr;
@@ -44,6 +39,47 @@ package body Pcap.Lib is
       Str := pcap_strerror (error => Interfaces.C.int (Error));
       return Interfaces.C.Strings.Value (Item => Str);
    end Strerror;
+
+   function Datalink_Name_To_Value (Name : String) return Datalink_Type is
+      C_Name  : aliased Interfaces.C.char_array := Interfaces.C.To_C (Item => Name);
+      C_Value : Interfaces.C.int;
+      use type Interfaces.C.int;
+   begin
+      C_Value := pcap_datalink_name_to_val (Interfaces.C.Strings.To_Chars_Ptr (Item => C_Name'Unchecked_Access));
+      if C_Value = -1 then
+         raise Constraint_Error with "invalid datalink name";
+      end if;
+      return Datalink_Type (C_Value);
+   end Datalink_Name_To_Value;
+
+   function Datalink_Value_To_Description (Value : Datalink_Type) return String is
+      Description : Interfaces.C.Strings.chars_ptr;
+      use type Interfaces.C.Strings.chars_ptr;
+   begin
+      Description := pcap_datalink_val_to_description (dlt => Interfaces.C.int (Value));
+      if Description = Interfaces.C.Strings.Null_Ptr then
+         raise Constraint_Error with "invalid datalink";
+      end if;
+      return Interfaces.C.Strings.Value (Item => Description);
+   end Datalink_Value_To_Description;
+
+   function Datalink_Value_To_Name (Value : Datalink_Type) return String is
+      Name : Interfaces.C.Strings.chars_ptr;
+      use type Interfaces.C.Strings.chars_ptr;
+   begin
+      Name := pcap_datalink_val_to_name (dlt => Interfaces.C.int (Value));
+      if Name = Interfaces.C.Strings.Null_Ptr then
+         raise Constraint_Error with "invalid datalink";
+      end if;
+      return Interfaces.C.Strings.Value (Item => Name);
+   end Datalink_Value_To_Name;
+
+   function Status_To_String (Status : Status_Type) return String is
+      Str : Interfaces.C.Strings.chars_ptr;
+   begin
+      Str := pcap_statustostr (error => Interfaces.C.int (Status));
+      return Interfaces.C.Strings.Value (Item => Str);
+   end Status_To_String;
 
    procedure Close (Self : in out Abstract_Packet_Capture_Type) is
    begin
@@ -89,7 +125,7 @@ package body Pcap.Lib is
    end Status_To_String;
 
    procedure Open_Dead (Self            : in out Packet_Capture_Type;
-                        Datalink        :        Pcap.Dlt.Dlt_Type;
+                        Datalink        :        Datalink_Type;
                         Snapshot_Length :        Snapshot_Length_Type     := 65535;
                         Precision       :        Timestamp_Precision_Type := PCAP_TSTAMP_PRECISION_MICRO) is
    begin
@@ -99,5 +135,17 @@ package body Pcap.Lib is
                                                               precision => Interfaces.C.unsigned (Precision));
       end if;
    end Open_Dead;
+
+   function Datalink (Self : in out Abstract_Base_Packet_Capture_Type) return Datalink_Type is
+      Return_Value : Interfaces.C.int;
+      use type Interfaces.C.int;
+   begin
+      Return_Value := pcap_datalink (p => Self.Handle);
+      Self.Status := (if Return_Value < 0 then Status_Type (Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
+      if Self.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with Self.Status_To_String;
+      end if;
+      return Datalink_Type (Return_Value);
+   end Datalink;
 
 end Pcap.Lib;

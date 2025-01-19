@@ -4,7 +4,7 @@ An Ada binding for libpcap
 `pcap-ada` is in the early stages of development.
 The initial release will implement the [libpcap 1.8.x API](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap.3pcap.html).
 
-## 1.8.x API Progress - 21 of 71 (30%) implemented
+## 1.8.x API Progress - 25 of 71 (35%) implemented
 
 - [x] [pcap_activate](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_activate.3pcap.html)
 - [ ] [pcap_breakloop](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_breakloop.3pcap.html)
@@ -12,7 +12,7 @@ The initial release will implement the [libpcap 1.8.x API](https://www.tcpdump.o
 - [x] [pcap_close](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_close.3pcap.html)
 - [ ] [pcap_compile](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_compile.3pcap.html)
 - [x] [pcap_create](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_create.3pcap.html)
-- [ ] [pcap_datalink](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_datalink.3pcap.html)
+- [x] [pcap_datalink](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_datalink.3pcap.html)
 - [x] [pcap_datalink_name_to_val](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_datalink_name_to_val.3pcap.html)
 - [x] [pcap_datalink_val_to_description](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_datalink_val_to_name.3pcap.html)
 - [x] [pcap_datalink_val_to_name](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_datalink_val_to_name.3pcap.html)
@@ -32,7 +32,7 @@ The initial release will implement the [libpcap 1.8.x API](https://www.tcpdump.o
 - [ ] [pcap_fopen_offline_with_tstamp_precision](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_open_offline.3pcap.html)
 - [ ] [pcap_freealldevs](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_findalldevs.3pcap.html)
 - [ ] [pcap_freecode](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_freecode.3pcap.html)
-- [ ] [pcap_free_datalinks](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_list_datalinks.3pcap.html)
+- [x] [pcap_free_datalinks](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_list_datalinks.3pcap.html)
 - [ ] [pcap_free_tstamp_types](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_list_tstamp_types.3pcap.html)
 - [ ] [pcap_get_selectable_fd](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_get_selectable_fd.3pcap.html)
 - [ ] [pcap_get_tstamp_precision](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_get_tstamp_precision.3pcap.html)
@@ -41,7 +41,7 @@ The initial release will implement the [libpcap 1.8.x API](https://www.tcpdump.o
 - [ ] [pcap_inject](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_inject.3pcap.html)
 - [ ] [pcap_is_swapped](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_is_swapped.3pcap.html)
 - [x] [pcap_lib_version](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_lib_version.3pcap.html)
-- [ ] [pcap_list_datalinks](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_list_datalinks.3pcap.html)
+- [x] [pcap_list_datalinks](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_list_datalinks.3pcap.html)
 - [ ] [pcap_list_tstamp_types](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_list_tstamp_types.3pcap.html)
 - [ ] [pcap_lookupdev](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_lookupdev.3pcap.html)
 - [ ] [pcap_lookupnet](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_lookupnet.3pcap.html)
@@ -59,7 +59,7 @@ The initial release will implement the [libpcap 1.8.x API](https://www.tcpdump.o
 - [x] [pcap_perror](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_geterr.3pcap.html)
 - [ ] [pcap_sendpacket](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_inject.3pcap.html)
 - [x] [pcap_set_buffer_size](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_set_buffer_size.3pcap.html)
-- [ ] [pcap_set_datalink](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_set_datalink.3pcap.html)
+- [x] [pcap_set_datalink](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_set_datalink.3pcap.html)
 - [x] [pcap_set_immediate_mode](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_set_immediate_mode.3pcap.html)
 - [x] [pcap_set_promisc](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_set_promisc.3pcap.html)
 - [x] [pcap_set_rfmon](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_set_rfmon.3pcap.html)

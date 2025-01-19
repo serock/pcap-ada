@@ -92,6 +92,30 @@ package body Pcap.Lib.Live is
       end if;
    end Open;
 
+   procedure List_Datalinks (Self      : in out Live_Packet_Capture_Type;
+                             Datalinks :    out Datalinks_Type) is
+      Dlt_Buffer   : System.Address;
+      Return_Value : Interfaces.C.int;
+   begin
+      Return_Value := pcap_list_datalinks (p       => Self.Handle,
+                                           dlt_buf => Dlt_Buffer);
+      Self.Status := (if Return_Value < 0 then Status_Type (Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
+      if Self.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with (if Self.Status = PCAP_ERROR then Self.Geterr else Self.Status_To_String);
+      end if;
+      declare
+         Number_Of_Datalinks : constant Integer := Integer (Return_Value);
+         C_Datalinks         : array (Integer range 0 .. Number_Of_Datalinks - 1) of Interfaces.C.int with Address => Dlt_Buffer;
+         Datalinks_Copy      : Datalinks_Type (0 .. Number_Of_Datalinks - 1);
+      begin
+         for I in 0 .. Number_Of_Datalinks - 1 loop
+            Datalinks_Copy (I) := Datalink_Type (C_Datalinks (I));
+         end loop;
+         Datalinks := Datalinks_Copy;
+      end;
+      pcap_free_datalinks (dlt_list => Dlt_Buffer);
+   end List_Datalinks;
+
    procedure Set_Buffer_Size (Self        : in out Live_Packet_Capture_Type;
                               Buffer_Size :        Buffer_Size_Type) is
       Return_Value : Interfaces.C.int;
@@ -103,6 +127,18 @@ package body Pcap.Lib.Live is
          raise Pcap.Exceptions.Pcap_Error with Self.Status_To_String;
       end if;
    end Set_Buffer_Size;
+
+   procedure Set_Datalink (Self     : in out Live_Packet_Capture_Type;
+                           Datalink :        Datalink_Type) is
+      Return_Value : Interfaces.C.int;
+   begin
+      Return_Value := pcap_set_datalink (p   => Self.Handle,
+                                         dlt => Interfaces.C.int (Datalink));
+      Self.Status := Status_Type (Return_Value);
+      if Self.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with Self.Geterr;
+      end if;
+   end Set_Datalink;
 
    procedure Set_Immediate_Mode (Self           : in out Live_Packet_Capture_Type;
                                  Immediate_Mode :        Boolean := True) is
