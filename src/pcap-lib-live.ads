@@ -63,6 +63,9 @@ package Pcap.Lib.Live is
                    Error_Buffer     :    out Pcap.Error_Buffer.Bounded_String)
      with Pre => not Self.Is_Open;
 
+   overriding function Datalink (Self : in out Live_Packet_Capture_Type) return Datalink_Type
+     with Pre => Self.Is_Open and then Self.Is_Activated;
+
    procedure List_Datalinks (Self      : in out Live_Packet_Capture_Type;
                              Datalinks :    out Datalinks_Type);
 

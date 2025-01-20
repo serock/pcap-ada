@@ -92,6 +92,11 @@ package body Pcap.Lib.Live is
       end if;
    end Open;
 
+   overriding function Datalink (Self : in out Live_Packet_Capture_Type) return Datalink_Type is
+   begin
+      return Abstract_Base_Packet_Capture_Type (Self).Datalink;
+   end Datalink;
+
    procedure List_Datalinks (Self      : in out Live_Packet_Capture_Type;
                              Datalinks :    out Datalinks_Type) is
       Dlt_Buffer   : System.Address;
