@@ -210,7 +210,7 @@ package body Pcap.Lib.Live is
       Return_Value : Interfaces.C.int;
    begin
       Return_Value := pcap_set_tstamp_precision (p                => Self.Handle,
-                                                 tstamp_precision => Timestamp_Precision_Type'Pos (Timestamp_Precision));
+                                                 tstamp_precision => Interfaces.C.int (Timestamp_Precision));
       Self.Status := Status_Type (Return_Value);
       if Self.Has_Error_Status then
          raise Pcap.Exceptions.Pcap_Error with Self.Status_To_String;
