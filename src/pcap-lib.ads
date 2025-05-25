@@ -76,6 +76,15 @@ package Pcap.Lib is
    PCAP_TSTAMP_PRECISION_MICRO : constant Timestamp_Precision_Type;
    PCAP_TSTAMP_PRECISION_NANO  : constant Timestamp_Precision_Type;
 
+   type Timestamp_Type_Type is new Natural;
+
+   PCAP_TSTAMP_HOST                 : constant Timestamp_Type_Type;
+   PCAP_TSTAMP_HOST_LOWPREC         : constant Timestamp_Type_Type;
+   PCAP_TSTAMP_HOST_HIPREC          : constant Timestamp_Type_Type;
+   PCAP_TSTAMP_ADAPTER              : constant Timestamp_Type_Type;
+   PCAP_TSTAMP_ADAPTER_UNSYNCED     : constant Timestamp_Type_Type;
+   PCAP_TSTAMP_HOST_HIPREC_UNSYNCED : constant Timestamp_Type_Type;
+
    type Abstract_Packet_Capture_Type is abstract limited new Ada.Finalization.Limited_Controlled with private;
 
    procedure Close (Self : in out Abstract_Packet_Capture_Type)
@@ -109,6 +118,12 @@ package Pcap.Lib is
 
    function Datalink (Self : in out Abstract_Base_Packet_Capture_Type) return Datalink_Type;
 
+   function Timestamp_Type_Name_To_Value (Name : String) return Timestamp_Type_Type;
+
+   function Timestamp_Type_Value_To_Description (Value : Timestamp_Type_Type) return String;
+
+   function Timestamp_Type_Value_To_Name (Value : Timestamp_Type_Type) return String;
+
 private
 
    function Pcap_Ada_Version return String is ($PCAP_ADA_VERSION);
@@ -135,6 +150,13 @@ private
 
    PCAP_TSTAMP_PRECISION_MICRO : constant Timestamp_Precision_Type := 0;
    PCAP_TSTAMP_PRECISION_NANO  : constant Timestamp_Precision_Type := 1;
+
+   PCAP_TSTAMP_HOST                 : constant Timestamp_Type_Type := 0;
+   PCAP_TSTAMP_HOST_LOWPREC         : constant Timestamp_Type_Type := 1;
+   PCAP_TSTAMP_HOST_HIPREC          : constant Timestamp_Type_Type := 2;
+   PCAP_TSTAMP_ADAPTER              : constant Timestamp_Type_Type := 3;
+   PCAP_TSTAMP_ADAPTER_UNSYNCED     : constant Timestamp_Type_Type := 4;
+   PCAP_TSTAMP_HOST_HIPREC_UNSYNCED : constant Timestamp_Type_Type := 5;
 
    type Abstract_Packet_Capture_Type is abstract limited new Ada.Finalization.Limited_Controlled with
       record

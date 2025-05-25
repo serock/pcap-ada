@@ -4,7 +4,7 @@ An Ada binding for libpcap
 `pcap-ada` is in the early stages of development.
 The initial release will implement the [libpcap 1.8.x API](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap.3pcap.html).
 
-## 1.8.x API Progress - 25 of 71 (35%) implemented
+## 1.8.x API Progress - 28 of 71 (39%) implemented
 
 - [x] [pcap_activate](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_activate.3pcap.html)
 - [ ] [pcap_breakloop](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_breakloop.3pcap.html)
@@ -74,6 +74,6 @@ The initial release will implement the [libpcap 1.8.x API](https://www.tcpdump.o
 - [ ] [pcap_stats](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_stats.3pcap.html)
 - [x] [pcap_statustostr](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_statustostr.3pcap.html)
 - [x] [pcap_strerror](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_strerror.3pcap.html)
-- [ ] [pcap_tstamp_type_name_to_val](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_tstamp_type_name_to_val.3pcap.html)
-- [ ] [pcap_tstamp_type_val_to_description](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_tstamp_type_val_to_name.3pcap.html)
-- [ ] [pcap_tstamp_type_val_to_name](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_tstamp_type_val_to_name.3pcap.html)
+- [x] [pcap_tstamp_type_name_to_val](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_tstamp_type_name_to_val.3pcap.html)
+- [x] [pcap_tstamp_type_val_to_description](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_tstamp_type_val_to_name.3pcap.html)
+- [x] [pcap_tstamp_type_val_to_name](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_tstamp_type_val_to_name.3pcap.html)

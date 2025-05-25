@@ -148,4 +148,42 @@ package body Pcap.Lib is
       return Datalink_Type (Return_Value);
    end Datalink;
 
+   function Timestamp_Type_Name_To_Value (Name : String) return Timestamp_Type_Type is
+      C_Name  : aliased Interfaces.C.char_array := Interfaces.C.To_C (Item => Name);
+      C_Value : Interfaces.C.int;
+      use type Interfaces.C.int;
+   begin
+      C_Value := pcap_tstamp_type_name_to_val (name => Interfaces.C.Strings.To_Chars_Ptr (Item => C_Name'Unchecked_Access));
+      if C_Value < 0 then
+         raise Pcap.Exceptions.Pcap_Error with Status_To_String (Status => Status_Type (C_Value));
+      end if;
+      return Timestamp_Type_Type (C_Value);
+   end Timestamp_Type_Name_To_Value;
+
+   function Timestamp_Type_Value_To_Description (Value : Timestamp_Type_Type) return String is
+      C_Description : Interfaces.C.Strings.chars_ptr;
+      C_Value       : constant Interfaces.C.int := Interfaces.C.int (Value);
+      use type Interfaces.C.Strings.chars_ptr;
+   begin
+      C_Description := pcap_tstamp_type_val_to_description (tstamp_type => C_Value);
+      if C_Description = Interfaces.C.Strings.Null_Ptr then
+         return "";
+      else
+         return Interfaces.C.Strings.Value (Item => C_Description);
+      end if;
+   end Timestamp_Type_Value_To_Description;
+
+   function Timestamp_Type_Value_To_Name (Value : Timestamp_Type_Type) return String is
+      C_Name  : Interfaces.C.Strings.chars_ptr;
+      C_Value : constant Interfaces.C.int := Interfaces.C.int (Value);
+      use type Interfaces.C.Strings.chars_ptr;
+   begin
+      C_Name := pcap_tstamp_type_val_to_name (tstamp_type => C_Value);
+      if C_Name = Interfaces.C.Strings.Null_Ptr then
+         return "";
+      else
+         return Interfaces.C.Strings.Value (Item => C_Name);
+      end if;
+   end Timestamp_Type_Value_To_Name;
+
 end Pcap.Lib;

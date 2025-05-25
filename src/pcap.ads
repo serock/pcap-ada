@@ -191,4 +191,19 @@ private
         Convention    => C,
         External_Name => "pcap_strerror";
 
+   function pcap_tstamp_type_name_to_val (name : Interfaces.C.Strings.chars_ptr) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_tstamp_type_name_to_val";
+
+   function pcap_tstamp_type_val_to_name (tstamp_type : Interfaces.C.int) return Interfaces.C.Strings.chars_ptr
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_tstamp_type_val_to_name";
+
+   function pcap_tstamp_type_val_to_description (tstamp_type : Interfaces.C.int) return Interfaces.C.Strings.chars_ptr
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_tstamp_type_val_to_description";
+
 end Pcap;
