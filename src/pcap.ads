@@ -42,6 +42,12 @@ private
 
    type pcap_t_ptr is access pcap_t;
 
+   type pcap_direction_t is
+     (PCAP_D_INOUT,
+      PCAP_D_IN,
+      PCAP_D_OUT)
+   with Convention => C;
+
    function pcap_activate (p : pcap_t_ptr) return Interfaces.C.int
    with Import        => True,
         Convention    => C,
@@ -82,6 +88,11 @@ private
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_free_datalinks";
+
+   function pcap_get_tstamp_precision (p : pcap_t_ptr) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_get_tstamp_precision";
 
    function pcap_geterr (p : pcap_t_ptr) return Interfaces.C.Strings.chars_ptr
    with Import        => True,
@@ -180,6 +191,11 @@ private
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_set_tstamp_type";
+
+   function pcap_setdirection (p : pcap_t_ptr; d : pcap_direction_t) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_setdirection";
 
    function pcap_statustostr (error : Interfaces.C.int) return Interfaces.C.Strings.chars_ptr
    with Import        => True,

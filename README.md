@@ -4,7 +4,7 @@ An Ada binding for libpcap
 `pcap-ada` is in the early stages of development.
 The initial release will implement the [libpcap 1.8.x API](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap.3pcap.html).
 
-## 1.8.x API Progress - 28 of 71 (39%) implemented
+## 1.8.x API Progress - 31 of 71 (44%) implemented
 
 - [x] [pcap_activate](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_activate.3pcap.html)
 - [ ] [pcap_breakloop](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_breakloop.3pcap.html)
@@ -35,7 +35,7 @@ The initial release will implement the [libpcap 1.8.x API](https://www.tcpdump.o
 - [x] [pcap_free_datalinks](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_list_datalinks.3pcap.html)
 - [ ] [pcap_free_tstamp_types](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_list_tstamp_types.3pcap.html)
 - [ ] [pcap_get_selectable_fd](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_get_selectable_fd.3pcap.html)
-- [ ] [pcap_get_tstamp_precision](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_get_tstamp_precision.3pcap.html)
+- [x] [pcap_get_tstamp_precision](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_get_tstamp_precision.3pcap.html)
 - [x] [pcap_geterr](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_geterr.3pcap.html)
 - [ ] [pcap_getnonblock](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_setnonblock.3pcap.html)
 - [ ] [pcap_inject](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_inject.3pcap.html)
@@ -66,8 +66,8 @@ The initial release will implement the [libpcap 1.8.x API](https://www.tcpdump.o
 - [x] [pcap_set_snaplen](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_set_snaplen.3pcap.html)
 - [x] [pcap_set_timeout](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_set_timeout.3pcap.html)
 - [x] [pcap_set_tstamp_precision](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_set_tstamp_precision.3pcap.html)
-- [ ] [pcap_set_tstamp_type](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_set_tstamp_type.3pcap.html)
-- [ ] [pcap_setdirection](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_setdirection.3pcap.html)
+- [x] [pcap_set_tstamp_type](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_set_tstamp_type.3pcap.html)
+- [x] [pcap_setdirection](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_setdirection.3pcap.html)
 - [ ] [pcap_setfilter](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_setfilter.3pcap.html)
 - [ ] [pcap_setnonblock](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_setnonblock.3pcap.html)
 - [ ] [pcap_snapshot](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_snapshot.3pcap.html)

@@ -37,6 +37,8 @@ package Pcap.Lib.Live is
 
    type Datalinks_Type is array (Integer range <>) of Datalink_Type;
 
+   type Direction_Type is (DIRECTION_IN_OUT, DIRECTION_IN, DIRECTION_OUT);
+
    type Snapshot_Length_Type is new Positive;
 
    type Timeout_Milliseconds_Type is new Positive;
@@ -77,6 +79,10 @@ package Pcap.Lib.Live is
                            Datalink :        Datalink_Type)
      with Pre => Self.Is_Open and then Self.Is_Activated;
 
+   procedure Set_Direction (Self      : in out Live_Packet_Capture_Type;
+                            Direction :        Direction_Type)
+     with Pre => Self.Is_Open and then Self.Is_Activated;
+
    procedure Set_Immediate_Mode (Self           : in out Live_Packet_Capture_Type;
                                  Immediate_Mode :        Boolean := True)
      with Pre => Self.Is_Open and then Self.Is_Not_Activated;
@@ -99,6 +105,10 @@ package Pcap.Lib.Live is
 
    procedure Set_Timestamp_Precision (Self                : in out Live_Packet_Capture_Type;
                                       Timestamp_Precision :        Timestamp_Precision_Type)
+     with Pre => Self.Is_Open and then Self.Is_Not_Activated;
+
+   procedure Set_Timestamp_Type (Self           : in out Live_Packet_Capture_Type;
+                                 Timestamp_Type :        Timestamp_Type_Type)
      with Pre => Self.Is_Open and then Self.Is_Not_Activated;
 
 private

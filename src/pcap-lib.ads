@@ -90,6 +90,9 @@ package Pcap.Lib is
    procedure Close (Self : in out Abstract_Packet_Capture_Type)
      with Pre => Self.Is_Open;
 
+   function Get_Timestamp_Precision (Self : Abstract_Packet_Capture_Type) return Timestamp_Precision_Type
+     with Pre => Self.Is_Open;
+
    function Geterr (Self : Abstract_Packet_Capture_Type) return String
      with Pre => Self.Is_Open;
 

@@ -94,11 +94,19 @@ package body Pcap.Lib is
       Self.Close;
    end Finalize;
 
-   function Geterr (Self : Abstract_Packet_Capture_Type) return String is
-      Str : Interfaces.C.Strings.chars_ptr;
+
+   function Get_Timestamp_Precision (Self : Abstract_Packet_Capture_Type) return Timestamp_Precision_Type is
+      C_Precision : Interfaces.C.int;
    begin
-      Str := pcap_geterr (p => Self.Handle);
-      return Interfaces.C.Strings.Value (Item => Str);
+      C_Precision := pcap_get_tstamp_precision (p => Self.Handle);
+      return Timestamp_Precision_Type (C_Precision);
+   end Get_Timestamp_Precision;
+
+   function Geterr (Self : Abstract_Packet_Capture_Type) return String is
+      C_Err_Str : Interfaces.C.Strings.chars_ptr;
+   begin
+      C_Err_Str := pcap_geterr (p => Self.Handle);
+      return Interfaces.C.Strings.Value (Item => C_Err_Str);
    end Geterr;
 
    function Has_Error_Status (Self : Abstract_Packet_Capture_Type) return Boolean is

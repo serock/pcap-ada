@@ -145,6 +145,18 @@ package body Pcap.Lib.Live is
       end if;
    end Set_Datalink;
 
+   procedure Set_Direction (Self      : in out Live_Packet_Capture_Type;
+                            Direction :        Direction_Type) is
+      Return_Value : Interfaces.C.int;
+   begin
+      Return_Value := pcap_setdirection (p => Self.Handle,
+                                         d => pcap_direction_t'Val (Direction_Type'Pos (Direction)));
+      Self.Status := Status_Type (Return_Value);
+      if Self.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with Self.Geterr;
+      end if;
+   end Set_Direction;
+
    procedure Set_Immediate_Mode (Self           : in out Live_Packet_Capture_Type;
                                  Immediate_Mode :        Boolean := True) is
       Return_Value : Interfaces.C.int;
@@ -216,5 +228,17 @@ package body Pcap.Lib.Live is
          raise Pcap.Exceptions.Pcap_Error with Self.Status_To_String;
       end if;
    end Set_Timestamp_Precision;
+
+   procedure Set_Timestamp_Type (Self           : in out Live_Packet_Capture_Type;
+                                 Timestamp_Type :        Timestamp_Type_Type) is
+      Return_Value : Interfaces.C.int;
+   begin
+      Return_Value := pcap_set_tstamp_type (p           => Self.Handle,
+                                            tstamp_type => Interfaces.C.int (Timestamp_Type));
+      Self.Status := Status_Type (Return_Value);
+      if Self.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with Self.Status_To_String;
+      end if;
+   end Set_Timestamp_Type;
 
 end Pcap.Lib.Live;
