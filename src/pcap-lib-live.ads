@@ -53,8 +53,7 @@ package Pcap.Lib.Live is
      with Pre => Self.Is_Open and then not Self.Is_Activated;
 
    procedure Create (Self         : in out Live_Packet_Capture_Type;
-                     Source       :        String;
-                     Error_Buffer :    out Pcap.Error_Buffer.Bounded_String)
+                     Source       :        String)
      with Pre => not Self.Is_Open;
 
    procedure Open (Self             : in out Live_Packet_Capture_Type;
@@ -66,6 +65,9 @@ package Pcap.Lib.Live is
      with Pre => not Self.Is_Open;
 
    overriding function Datalink (Self : in out Live_Packet_Capture_Type) return Datalink_Type
+     with Pre => Self.Is_Open and then Self.Is_Activated;
+
+   function Get_Nonblock (Self : in out Live_Packet_Capture_Type) return Boolean
      with Pre => Self.Is_Open and then Self.Is_Activated;
 
    procedure List_Datalinks (Self      : in out Live_Packet_Capture_Type;
@@ -90,6 +92,10 @@ package Pcap.Lib.Live is
    procedure Set_Monitor_Mode (Self         : in out Live_Packet_Capture_Type;
                                Monitor_Mode :        Boolean := True)
      with Pre => Self.Is_Open and then Self.Is_Not_Activated;
+
+   procedure Set_Nonblock (Self     : in out Live_Packet_Capture_Type;
+                           Nonblock :        Boolean := True)
+     with Pre => Self.Is_Open and then Self.Is_Activated;
 
    procedure Set_Promiscuous_Mode (Self             : in out Live_Packet_Capture_Type;
                                    Promiscuous_Mode :        Boolean := True)

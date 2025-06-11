@@ -99,6 +99,12 @@ private
         Convention    => C,
         External_Name => "pcap_geterr";
 
+   function pcap_getnonblock (p      : pcap_t_ptr;
+                              errbuf : Interfaces.C.Strings.chars_ptr) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_getnonblock";
+
    function pcap_lib_version return Interfaces.C.Strings.chars_ptr
    with Import        => True,
         Convention    => C,
@@ -196,6 +202,13 @@ private
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_setdirection";
+
+   function pcap_setnonblock (p        : pcap_t_ptr;
+                              nonblock : Interfaces.C.int;
+                              errbuf   : Interfaces.C.Strings.chars_ptr) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_setnonblock";
 
    function pcap_statustostr (error : Interfaces.C.int) return Interfaces.C.Strings.chars_ptr
    with Import        => True,
