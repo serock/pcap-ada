@@ -49,7 +49,6 @@ package body Pcap.Lib.Live is
                      Source       :        String) is
       C_Error_Buffer : aliased Interfaces.C.char_array := (0 .. PCAP_ERRBUF_SIZE => Interfaces.C.nul);
       C_Source       : aliased Interfaces.C.char_array := Interfaces.C.To_C (Item => Source);
-      use type Interfaces.C.char;
    begin
       if Self.Handle = null then
          Self.Handle := pcap_create (source => Interfaces.C.Strings.To_Chars_Ptr (Item => C_Source'Unchecked_Access),
@@ -86,6 +85,18 @@ package body Pcap.Lib.Live is
          Self.Activated := True;
       end if;
    end Open;
+
+   function Can_Set_Monitor_Mode (Self : in out Live_Packet_Capture_Type) return Boolean is
+      C_Return_Value : Interfaces.C.int;
+      use type Interfaces.C.int;
+   begin
+      C_Return_Value := pcap_can_set_rfmon (p => Self.Handle);
+      Self.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
+      if Self.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with (if Self.Status = PCAP_ERROR then Self.Get_Error_Text else Self.Status_To_String);
+      end if;
+      return C_Return_Value = 1;
+   end Can_Set_Monitor_Mode;
 
    overriding function Datalink (Self : in out Live_Packet_Capture_Type) return Datalink_Type is
    begin
@@ -130,6 +141,33 @@ package body Pcap.Lib.Live is
       end;
       pcap_free_datalinks (dlt_list => C_Dlt_Buffer);
    end List_Datalinks;
+
+   procedure List_Timestamp_Types (Self            : in out Live_Packet_Capture_Type;
+                                   Timestamp_Types :    out Timestamp_Types_Type) is
+      C_Return_Value : Interfaces.C.int;
+      C_Tstamp_Types : System.Address;
+      use type Interfaces.C.int;
+   begin
+      C_Return_Value := pcap_list_tstamp_types (p            => Self.Handle,
+                                                tstamp_types => C_Tstamp_Types);
+      Self.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
+      if Self.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with (if Self.Status = PCAP_ERROR then Self.Get_Error_Text else Self.Status_To_String);
+      end if;
+      declare
+         Number_Of_Timestamp_Types : constant Integer := Integer (C_Return_Value);
+         C_Timestamp_Types         : array (Integer range 0 .. Number_Of_Timestamp_Types - 1) of Interfaces.C.int with Address => C_Tstamp_Types;
+         Timestamp_Types_Copy      : Timestamp_Types_Type (0 .. Number_Of_Timestamp_Types - 1);
+      begin
+         for I in 0 .. Number_Of_Timestamp_Types - 1 loop
+            Timestamp_Types_Copy (I) := Timestamp_Type_Type (C_Timestamp_Types (I));
+         end loop;
+         Timestamp_Types := Timestamp_Types_Copy;
+         if Number_Of_Timestamp_Types > 0 then
+            pcap_free_tstamp_types (tstamp_types => C_Tstamp_Types);
+         end if;
+      end;
+   end List_Timestamp_Types;
 
    procedure Set_Buffer_Size (Self        : in out Live_Packet_Capture_Type;
                               Buffer_Size :        Buffer_Size_Type) is
@@ -195,7 +233,6 @@ package body Pcap.Lib.Live is
                            Nonblock :        Boolean := True) is
       C_Error_Buffer : aliased Interfaces.C.char_array := (0 .. PCAP_ERRBUF_SIZE => Interfaces.C.nul);
       C_Return_Value : Interfaces.C.int;
-      use type Interfaces.C.int;
    begin
       C_Return_Value := pcap_setnonblock (p        => Self.Handle,
                                           nonblock => (if Nonblock then 1 else 0),
@@ -265,5 +302,23 @@ package body Pcap.Lib.Live is
          raise Pcap.Exceptions.Pcap_Error with Self.Status_To_String;
       end if;
    end Set_Timestamp_Type;
+
+   function Stats (Self  : in out Live_Packet_Capture_Type) return Packet_Statistics_Type is
+      C_Return_Value : Interfaces.C.int;
+      C_Stats        : Pcap.pcap_stat;
+      Statistics     : Packet_Statistics_Type;
+      use type Interfaces.C.int;
+   begin
+      C_Return_Value := pcap_stats (p  => Self.Handle,
+                                    ps => C_Stats);
+      Self.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
+      if Self.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with (if Self.Status = PCAP_ERROR then Self.Get_Error_Text else Self.Status_To_String);
+      end if;
+      Statistics.Received := Natural (C_Stats.ps_recv);
+      Statistics.Dropped := Natural (C_Stats.ps_drop);
+      Statistics.Dropped_By_Network_Interface := Natural (C_Stats.ps_ifdrop);
+      return Statistics;
+   end Stats;
 
 end Pcap.Lib.Live;

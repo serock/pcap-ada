@@ -43,7 +43,16 @@ package Pcap.Lib.Live is
 
    type Timeout_Milliseconds_Type is new Positive;
 
+   type Timestamp_Types_Type is array (Integer range <>) of Timestamp_Type_Type;
+
    type Live_Packet_Capture_Type is limited new Abstract_Base_Packet_Capture_Type with private;
+
+   type Packet_Statistics_Type is
+      record
+         Received                     : Natural;
+         Dropped                      : Natural;
+         Dropped_By_Network_Interface : Natural;
+      end record;
 
    function Is_Activated (Self : Live_Packet_Capture_Type) return Boolean;
 
@@ -64,6 +73,9 @@ package Pcap.Lib.Live is
                    Error_Buffer     :    out Pcap.Error_Buffer.Bounded_String)
      with Pre => not Self.Is_Open;
 
+   function Can_Set_Monitor_Mode (Self : in out Live_Packet_Capture_Type) return Boolean
+     with Pre => Self.Is_Open and then Self.Is_Not_Activated;
+
    overriding function Datalink (Self : in out Live_Packet_Capture_Type) return Datalink_Type
      with Pre => Self.Is_Open and then Self.Is_Activated;
 
@@ -72,6 +84,9 @@ package Pcap.Lib.Live is
 
    procedure List_Datalinks (Self      : in out Live_Packet_Capture_Type;
                              Datalinks :    out Datalinks_Type);
+
+   procedure List_Timestamp_Types (Self            : in out Live_Packet_Capture_Type;
+                                   Timestamp_Types :    out Timestamp_Types_Type);
 
    procedure Set_Buffer_Size (Self        : in out Live_Packet_Capture_Type;
                               Buffer_Size :        Buffer_Size_Type)
@@ -116,6 +131,9 @@ package Pcap.Lib.Live is
    procedure Set_Timestamp_Type (Self           : in out Live_Packet_Capture_Type;
                                  Timestamp_Type :        Timestamp_Type_Type)
      with Pre => Self.Is_Open and then Self.Is_Not_Activated;
+
+   function Stats (Self  : in out Live_Packet_Capture_Type) return Packet_Statistics_Type
+     with Pre => Self.Is_Open and then Self.Is_Activated;
 
 private
 

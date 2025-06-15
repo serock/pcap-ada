@@ -48,10 +48,28 @@ private
       PCAP_D_OUT)
    with Convention => C;
 
+   type pcap_stat is
+      record
+         ps_recv   : aliased Interfaces.C.unsigned;
+         ps_drop   : aliased Interfaces.C.unsigned;
+         ps_ifdrop : aliased Interfaces.C.unsigned;
+      end record
+   with Convention => C;
+
    function pcap_activate (p : pcap_t_ptr) return Interfaces.C.int
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_activate";
+
+   procedure pcap_breakloop (p : pcap_t_ptr)
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_breakloop";
+
+   function pcap_can_set_rfmon (p : pcap_t_ptr) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_can_set_rfmon";
 
    function pcap_create (source : Interfaces.C.Strings.chars_ptr;
                          errbuf : Interfaces.C.Strings.chars_ptr) return pcap_t_ptr
@@ -89,6 +107,11 @@ private
         Convention    => C,
         External_Name => "pcap_free_datalinks";
 
+   procedure pcap_free_tstamp_types (tstamp_types : System.Address)
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_free_tstamp_types";
+
    function pcap_get_tstamp_precision (p : pcap_t_ptr) return Interfaces.C.int
    with Import        => True,
         Convention    => C,
@@ -115,6 +138,12 @@ private
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_list_datalinks";
+
+   function pcap_list_tstamp_types (p            :     pcap_t_ptr;
+                                    tstamp_types : out System.Address) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_list_tstamp_types";
 
    function pcap_open_dead (linktype : Interfaces.C.int;
                             snaplen  : Interfaces.C.int) return pcap_t_ptr
@@ -209,6 +238,12 @@ private
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_setnonblock";
+
+   function pcap_stats (p  :     pcap_t_ptr;
+                        ps : out pcap_stat) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_stats";
 
    function pcap_statustostr (error : Interfaces.C.int) return Interfaces.C.Strings.chars_ptr
    with Import        => True,

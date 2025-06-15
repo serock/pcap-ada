@@ -87,6 +87,8 @@ package Pcap.Lib is
 
    type Abstract_Packet_Capture_Type is abstract limited new Ada.Finalization.Limited_Controlled with private;
 
+   procedure Break_Loop (Self : Abstract_Packet_Capture_Type);
+
    procedure Close (Self : in out Abstract_Packet_Capture_Type)
      with Pre => Self.Is_Open;
 

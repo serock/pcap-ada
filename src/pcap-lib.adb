@@ -41,11 +41,12 @@ package body Pcap.Lib is
    end Strerror;
 
    function Datalink_Name_To_Value (Name : String) return Datalink_Type is
-      C_Name  : aliased Interfaces.C.char_array := Interfaces.C.To_C (Item => Name);
+      C_Name  : Interfaces.C.Strings.chars_ptr := Interfaces.C.Strings.New_String (Str => Name);
       C_Value : Interfaces.C.int;
       use type Interfaces.C.int;
    begin
-      C_Value := pcap_datalink_name_to_val (Interfaces.C.Strings.To_Chars_Ptr (Item => C_Name'Unchecked_Access));
+      C_Value := pcap_datalink_name_to_val (name => C_Name);
+      Interfaces.C.Strings.Free (Item => C_Name);
       if C_Value < 0 then
          raise Pcap.Exceptions.Pcap_Error with "invalid datalink name";
       end if;
@@ -80,6 +81,11 @@ package body Pcap.Lib is
       C_String := pcap_statustostr (error => Interfaces.C.int (Status));
       return Interfaces.C.Strings.Value (Item => C_String);
    end Status_To_String;
+
+   procedure Break_Loop (Self : Abstract_Packet_Capture_Type) is
+   begin
+      pcap_breakloop (p => Self.Handle);
+   end Break_Loop;
 
    procedure Close (Self : in out Abstract_Packet_Capture_Type) is
    begin
@@ -157,11 +163,12 @@ package body Pcap.Lib is
    end Datalink;
 
    function Timestamp_Type_Name_To_Value (Name : String) return Timestamp_Type_Type is
-      C_Name  : aliased Interfaces.C.char_array := Interfaces.C.To_C (Item => Name);
+      C_Name  : Interfaces.C.Strings.chars_ptr := Interfaces.C.Strings.New_String (Str => Name);
       C_Value : Interfaces.C.int;
       use type Interfaces.C.int;
    begin
-      C_Value := pcap_tstamp_type_name_to_val (name => Interfaces.C.Strings.To_Chars_Ptr (Item => C_Name'Unchecked_Access));
+      C_Value := pcap_tstamp_type_name_to_val (name => C_Name);
+      Interfaces.C.Strings.Free (Item => C_Name);
       if C_Value < 0 then
          raise Pcap.Exceptions.Pcap_Error with Status_To_String (Status => Status_Type (C_Value));
       end if;
