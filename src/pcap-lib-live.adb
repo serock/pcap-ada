@@ -47,14 +47,16 @@ package body Pcap.Lib.Live is
 
    procedure Create (Self         : in out Live_Packet_Capture_Type;
                      Source       :        String) is
-      C_Error_Buffer : aliased Interfaces.C.char_array := (0 .. PCAP_ERRBUF_SIZE => Interfaces.C.nul);
-      C_Source       : aliased Interfaces.C.char_array := Interfaces.C.To_C (Item => Source);
+      C_Error_Buffer : constant Interfaces.C.Strings.char_array_access := new Pcap.Lib.C_Error_Buffer_Type'(others => Interfaces.C.nul);
+      C_Source       : Interfaces.C.Strings.chars_ptr;
    begin
       if Self.Handle = null then
-         Self.Handle := pcap_create (source => Interfaces.C.Strings.To_Chars_Ptr (Item => C_Source'Unchecked_Access),
-                                     errbuf => Interfaces.C.Strings.To_Chars_Ptr (Item => C_Error_Buffer'Unchecked_Access));
+         C_Source := Interfaces.C.Strings.New_String (Str => Source);
+         Self.Handle := pcap_create (source => C_Source,
+                                     errbuf => Interfaces.C.Strings.To_Chars_Ptr (Item => C_Error_Buffer));
+         Interfaces.C.Strings.Free (Item => C_Source);
          if Self.Handle = null then
-            raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => C_Error_Buffer);
+            raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => C_Error_Buffer.all);
          end if;
       end if;
    end Create;
@@ -65,22 +67,24 @@ package body Pcap.Lib.Live is
                    Promiscuous_Mode :        Boolean              := False;
                    Read_Timeout     :        Timeout_Milliseconds_Type;
                    Error_Buffer     :    out Pcap.Error_Buffer.Bounded_String) is
-      C_Device       : aliased Interfaces.C.char_array := Interfaces.C.To_C (Item => Device);
-      C_Error_Buffer : aliased Interfaces.C.char_array := (0 .. PCAP_ERRBUF_SIZE => Interfaces.C.nul);
+      C_Device       : Interfaces.C.Strings.chars_ptr;
+      C_Error_Buffer : constant Interfaces.C.Strings.char_array_access := new Pcap.Lib.C_Error_Buffer_Type'(others => Interfaces.C.nul);
       use type Interfaces.C.char;
    begin
       Error_Buffer := Pcap.Error_Buffer.Null_Bounded_String;
       if Self.Handle = null then
-         Self.Handle := pcap_open_live (device  => Interfaces.C.Strings.To_Chars_Ptr (Item => C_Device'Unchecked_Access),
+         C_Device := Interfaces.C.Strings.New_String (Str => Device);
+         Self.Handle := pcap_open_live (device  => C_Device,
                                         snaplen => Interfaces.C.int (Snapshot_Length),
                                         promisc => Interfaces.C.int (Boolean'Pos (Promiscuous_Mode)),
                                         to_ms   => Interfaces.C.int (Read_Timeout),
-                                        errbuf  => Interfaces.C.Strings.To_Chars_Ptr (Item => C_Error_Buffer'Unchecked_Access));
+                                        errbuf  => Interfaces.C.Strings.To_Chars_Ptr (Item => C_Error_Buffer));
+         Interfaces.C.Strings.Free (Item => C_Device);
          if C_Error_Buffer (0) /= Interfaces.C.nul then
-            Error_Buffer := Pcap.Error_Buffer.To_Bounded_String (Source => Interfaces.C.To_Ada (Item => C_Error_Buffer));
+            Error_Buffer := Pcap.Error_Buffer.To_Bounded_String (Source => Interfaces.C.To_Ada (Item => C_Error_Buffer.all));
          end if;
          if Self.Handle = null then
-            raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => C_Error_Buffer);
+            raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => C_Error_Buffer.all);
          end if;
          Self.Activated := True;
       end if;
@@ -104,15 +108,15 @@ package body Pcap.Lib.Live is
    end Datalink;
 
    function Get_Nonblock (Self : in out Live_Packet_Capture_Type) return Boolean is
-      C_Error_Buffer : aliased Interfaces.C.char_array := (0 .. PCAP_ERRBUF_SIZE => Interfaces.C.nul);
+      C_Error_Buffer : constant Interfaces.C.Strings.char_array_access := new Pcap.Lib.C_Error_Buffer_Type'(others => Interfaces.C.nul);
       C_Return_Value : Interfaces.C.int;
       use type Interfaces.C.int;
    begin
       C_Return_Value := pcap_getnonblock (p      => Self.Handle,
-                                          errbuf => Interfaces.C.Strings.To_Chars_Ptr (Item => C_Error_Buffer'Unchecked_Access));
+                                          errbuf => Interfaces.C.Strings.To_Chars_Ptr (Item => C_Error_Buffer));
       Self.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
       if Self.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => C_Error_Buffer);
+         raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => C_Error_Buffer.all);
       end if;
       return C_Return_Value /= 0;
    end Get_Nonblock;
@@ -231,15 +235,15 @@ package body Pcap.Lib.Live is
 
    procedure Set_Nonblock (Self     : in out Live_Packet_Capture_Type;
                            Nonblock :        Boolean := True) is
-      C_Error_Buffer : aliased Interfaces.C.char_array := (0 .. PCAP_ERRBUF_SIZE => Interfaces.C.nul);
+      C_Error_Buffer : constant Interfaces.C.Strings.char_array_access := new Pcap.Lib.C_Error_Buffer_Type'(others => Interfaces.C.nul);
       C_Return_Value : Interfaces.C.int;
    begin
       C_Return_Value := pcap_setnonblock (p        => Self.Handle,
                                           nonblock => (if Nonblock then 1 else 0),
-                                          errbuf   => Interfaces.C.Strings.To_Chars_Ptr (Item => C_Error_Buffer'Unchecked_Access));
+                                          errbuf   => Interfaces.C.Strings.To_Chars_Ptr (Item => C_Error_Buffer));
       Self.Status := Status_Type (C_Return_Value);
       if Self.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => C_Error_Buffer);
+         raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => C_Error_Buffer.all);
       end if;
    end Set_Nonblock;
 

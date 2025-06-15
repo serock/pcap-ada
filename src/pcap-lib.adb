@@ -127,10 +127,11 @@ package body Pcap.Lib is
 
    procedure Perror (Self   : Abstract_Packet_Capture_Type;
                      Prefix : String) is
-      C_Prefix : aliased Interfaces.C.char_array := Interfaces.C.To_C (Item => Prefix);
+      C_Prefix : Interfaces.C.Strings.chars_ptr := Interfaces.C.Strings.New_String (Str => Prefix);
    begin
       pcap_perror (p      => Self.Handle,
-                   prefix => Interfaces.C.Strings.To_Chars_Ptr (Item => C_Prefix'Unchecked_Access));
+                   prefix => C_Prefix);
+      Interfaces.C.Strings.Free (Item => C_Prefix);
    end Perror;
 
    function Status_To_String (Self : Abstract_Packet_Capture_Type) return String is

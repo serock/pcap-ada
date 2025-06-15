@@ -177,4 +177,6 @@ private
 
    type Abstract_Base_Packet_Capture_Type is abstract limited new Abstract_Packet_Capture_Type with null record;
 
+   subtype C_Error_Buffer_Type is Interfaces.C.char_array (0 .. PCAP_ERRBUF_SIZE);
+
 end Pcap.Lib;
