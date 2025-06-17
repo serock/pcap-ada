@@ -1,0 +1,40 @@
+with "config/pcap_ada_config.gpr";
+project Pcap_Ada is
+
+   for Library_Name use "pcap_ada";
+   for Library_Version use Project'Library_Name & ".so." & Pcap_Ada_Config.Crate_Version;
+
+   for Source_Dirs use ("src/");
+   for Object_Dir use "obj/" & Pcap_Ada_Config.Build_Profile;
+   for Create_Missing_Dirs use "True";
+   for Library_Dir use "lib";
+
+   type Library_Type_Type is ("dynamic", "static", "static-pic");
+   Library_Type : Library_Type_Type :=
+     external ("PCAP_ADA_LIBRARY_TYPE", external ("LIBRARY_TYPE", "dynamic"));
+   for Library_Kind use Library_Type;
+
+   package Builder is
+      for Default_Switches ("Ada") use ("-x");
+   end Builder;
+
+   package Compiler is
+      for Default_Switches ("Ada") use Pcap_Ada_Config.Ada_Compiler_Switches;
+      Pcap_Ada_Version := """" & external("PCAP_ADA_VERSION", Pcap_Ada_Config.Crate_Version) & """";
+      Pcap_Os_Type     := """" & external("PCAP_OS_TYPE", Pcap_Ada_Config.Alire_Host_Os) & """";
+      for Switches ("Ada") use Compiler'Default_Switches ("Ada") & (
+         "-gnateDPCAP_ADA_VERSION=" & Pcap_Ada_Version,
+         "-gnateDPCAP_OS_TYPE=" & Pcap_Os_Type,
+         "-gnatep=preprocessor-data.txt"
+      );
+   end Compiler;
+
+   package Binder is
+      for Switches ("Ada") use ("-Es"); --  Symbolic traceback
+   end Binder;
+
+   package Install is
+      for Artifacts (".") use ("share");
+   end Install;
+
+end Pcap_Ada;

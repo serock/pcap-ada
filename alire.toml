@@ -1,0 +1,21 @@
+name = "pcap_ada"
+description = "An Ada binding for pcap"
+version = "1.8.1-dev.0"
+
+authors = ["John Serock"]
+maintainers = ["John Serock <john.serock@gmail.com>"]
+maintainers-logins = ["serock"]
+licenses = "BSD-3-Clause"
+website = "https://github.com/serock/pcap-ada"
+tags = ["pcap", "binding"]
+
+[available."case(os)"]
+"linux" = true
+"..." = false
+
+[[depends-on]]
+libpcap = "^1.8.1"
+
+[configuration]
+generate_ada = false
+generate_c = false
