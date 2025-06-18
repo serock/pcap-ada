@@ -1,4 +1,8 @@
-/obj/
-/lib/
 /alire/
 /config/
+/lib/
+/obj/
+/tests/alire/
+/tests/bin/
+/tests/config/
+/tests/obj/

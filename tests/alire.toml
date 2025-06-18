@@ -1,0 +1,24 @@
+name = "tests"
+description = "Tests for pcap binding"
+version = "1.8.1-dev"
+
+authors = ["John Serock"]
+maintainers = ["John Serock <john.serock@gmail.com>"]
+maintainers-logins = ["serock"]
+
+executables = ["main"]
+
+[available."case(os)"]
+"linux" = true
+"..." = false
+
+[[depends-on]]
+pcap_ada = "*"
+aunit = "^25.0.0"
+
+[[pins]]
+pcap_ada = { path = ".." }
+
+[configuration]
+generate_ada = false
+generate_c = false
