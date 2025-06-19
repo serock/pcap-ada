@@ -11,6 +11,7 @@ tags = ["pcap", "binding"]
 
 [available."case(os)"]
 "linux" = true
+"windows" = true
 "..." = false
 
 [[depends-on]]
