@@ -35,6 +35,8 @@ package Pcap.Lib is
 
    function Pcap_Ada_Version return String;
 
+   function Pcap_Api_Version return String;
+
    function Pcap_Version return String;
 
    function Strerror (Error : Integer) return String;
@@ -132,6 +134,8 @@ package Pcap.Lib is
 private
 
    function Pcap_Ada_Version return String is ($PCAP_ADA_VERSION);
+
+   function Pcap_Api_Version return String is ("1.8.1");
 
    function Pcap_Version return String is (Interfaces.C.Strings.Value (Item => pcap_lib_version));
 

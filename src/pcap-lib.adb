@@ -100,7 +100,6 @@ package body Pcap.Lib is
       Self.Close;
    end Finalize;
 
-
    function Get_Timestamp_Precision (Self : Abstract_Packet_Capture_Type) return Timestamp_Precision_Type is
       C_Precision : Interfaces.C.int;
    begin

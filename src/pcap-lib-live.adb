@@ -29,6 +29,7 @@
 --  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 --  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
+with Ada.Unchecked_Deallocation;
 with Interfaces.C;
 with Pcap.Exceptions;
 
@@ -47,10 +48,13 @@ package body Pcap.Lib.Live is
 
    procedure Create (Self         : in out Live_Packet_Capture_Type;
                      Source       :        String) is
-      C_Error_Buffer : constant Interfaces.C.Strings.char_array_access := new Pcap.Lib.C_Error_Buffer_Type'(others => Interfaces.C.nul);
+      C_Error_Buffer : Interfaces.C.Strings.char_array_access;
       C_Source       : Interfaces.C.Strings.chars_ptr;
+      procedure Free is new Ada.Unchecked_Deallocation (Object => Interfaces.C.char_array,
+                                                        Name   => Interfaces.C.Strings.char_array_access);
    begin
       if Self.Handle = null then
+         C_Error_Buffer := new Pcap.Lib.C_Error_Buffer_Type'(others => Interfaces.C.nul);
          C_Source := Interfaces.C.Strings.New_String (Str => Source);
          Self.Handle := pcap_create (source => C_Source,
                                      errbuf => Interfaces.C.Strings.To_Chars_Ptr (Item => C_Error_Buffer));
@@ -58,7 +62,12 @@ package body Pcap.Lib.Live is
          if Self.Handle = null then
             raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => C_Error_Buffer.all);
          end if;
+         Free (X => C_Error_Buffer);
       end if;
+   exception
+      when others =>
+         Free (X => C_Error_Buffer);
+         raise;
    end Create;
 
    procedure Open (Self             : in out Live_Packet_Capture_Type;
@@ -68,11 +77,14 @@ package body Pcap.Lib.Live is
                    Read_Timeout     :        Timeout_Milliseconds_Type;
                    Error_Buffer     :    out Pcap.Error_Buffer.Bounded_String) is
       C_Device       : Interfaces.C.Strings.chars_ptr;
-      C_Error_Buffer : constant Interfaces.C.Strings.char_array_access := new Pcap.Lib.C_Error_Buffer_Type'(others => Interfaces.C.nul);
+      C_Error_Buffer : Interfaces.C.Strings.char_array_access;
+      procedure Free is new Ada.Unchecked_Deallocation (Object => Interfaces.C.char_array,
+                                                        Name   => Interfaces.C.Strings.char_array_access);
       use type Interfaces.C.char;
    begin
       Error_Buffer := Pcap.Error_Buffer.Null_Bounded_String;
       if Self.Handle = null then
+         C_Error_Buffer := new Pcap.Lib.C_Error_Buffer_Type'(others => Interfaces.C.nul);
          C_Device := Interfaces.C.Strings.New_String (Str => Device);
          Self.Handle := pcap_open_live (device  => C_Device,
                                         snaplen => Interfaces.C.int (Snapshot_Length),
@@ -86,8 +98,13 @@ package body Pcap.Lib.Live is
          if Self.Handle = null then
             raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => C_Error_Buffer.all);
          end if;
+         Free (X => C_Error_Buffer);
          Self.Activated := True;
       end if;
+   exception
+      when others =>
+         Free (X => C_Error_Buffer);
+         raise;
    end Open;
 
    function Can_Set_Monitor_Mode (Self : in out Live_Packet_Capture_Type) return Boolean is
@@ -108,17 +125,25 @@ package body Pcap.Lib.Live is
    end Datalink;
 
    function Get_Nonblock (Self : in out Live_Packet_Capture_Type) return Boolean is
-      C_Error_Buffer : constant Interfaces.C.Strings.char_array_access := new Pcap.Lib.C_Error_Buffer_Type'(others => Interfaces.C.nul);
+      C_Error_Buffer : Interfaces.C.Strings.char_array_access;
       C_Return_Value : Interfaces.C.int;
+      procedure Free is new Ada.Unchecked_Deallocation (Object => Interfaces.C.char_array,
+                                                        Name   => Interfaces.C.Strings.char_array_access);
       use type Interfaces.C.int;
    begin
+      C_Error_Buffer := new Pcap.Lib.C_Error_Buffer_Type'(others => Interfaces.C.nul);
       C_Return_Value := pcap_getnonblock (p      => Self.Handle,
                                           errbuf => Interfaces.C.Strings.To_Chars_Ptr (Item => C_Error_Buffer));
       Self.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
       if Self.Has_Error_Status then
          raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => C_Error_Buffer.all);
       end if;
+      Free (X => C_Error_Buffer);
       return C_Return_Value /= 0;
+   exception
+      when others =>
+         Free (X => C_Error_Buffer);
+         raise;
    end Get_Nonblock;
 
    procedure List_Datalinks (Self      : in out Live_Packet_Capture_Type;
@@ -235,9 +260,12 @@ package body Pcap.Lib.Live is
 
    procedure Set_Nonblock (Self     : in out Live_Packet_Capture_Type;
                            Nonblock :        Boolean := True) is
-      C_Error_Buffer : constant Interfaces.C.Strings.char_array_access := new Pcap.Lib.C_Error_Buffer_Type'(others => Interfaces.C.nul);
+      C_Error_Buffer : Interfaces.C.Strings.char_array_access;
       C_Return_Value : Interfaces.C.int;
+      procedure Free is new Ada.Unchecked_Deallocation (Object => Interfaces.C.char_array,
+                                                        Name   => Interfaces.C.Strings.char_array_access);
    begin
+      C_Error_Buffer := new Pcap.Lib.C_Error_Buffer_Type'(others => Interfaces.C.nul);
       C_Return_Value := pcap_setnonblock (p        => Self.Handle,
                                           nonblock => (if Nonblock then 1 else 0),
                                           errbuf   => Interfaces.C.Strings.To_Chars_Ptr (Item => C_Error_Buffer));
@@ -245,6 +273,11 @@ package body Pcap.Lib.Live is
       if Self.Has_Error_Status then
          raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => C_Error_Buffer.all);
       end if;
+      Free (X => C_Error_Buffer);
+   exception
+      when others =>
+         Free (X => C_Error_Buffer);
+         raise;
    end Set_Nonblock;
 
    procedure Set_Promiscuous_Mode (Self             : in out Live_Packet_Capture_Type;
