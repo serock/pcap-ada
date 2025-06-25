@@ -48,6 +48,8 @@ private
       PCAP_D_OUT)
    with Convention => C;
 
+   subtype pcap_errbuf_t is Interfaces.C.char_array (0 .. PCAP_ERRBUF_SIZE);
+
    type pcap_stat is
       record
          ps_recv   : aliased Interfaces.C.unsigned;
@@ -71,8 +73,8 @@ private
         Convention    => C,
         External_Name => "pcap_can_set_rfmon";
 
-   function pcap_create (source : Interfaces.C.Strings.chars_ptr;
-                         errbuf : Interfaces.C.Strings.chars_ptr) return pcap_t_ptr
+   function pcap_create (source :     Interfaces.C.char_array;
+                         errbuf : out pcap_errbuf_t) return pcap_t_ptr
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_create";
@@ -87,7 +89,7 @@ private
         Convention    => C,
         External_Name => "pcap_datalink";
 
-   function pcap_datalink_name_to_val (name : Interfaces.C.Strings.chars_ptr) return Interfaces.C.int
+   function pcap_datalink_name_to_val (name : Interfaces.C.char_array) return Interfaces.C.int
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_datalink_name_to_val";
@@ -122,11 +124,18 @@ private
         Convention    => C,
         External_Name => "pcap_geterr";
 
-   function pcap_getnonblock (p      : pcap_t_ptr;
-                              errbuf : Interfaces.C.Strings.chars_ptr) return Interfaces.C.int
+   function pcap_getnonblock (p      :     pcap_t_ptr;
+                              errbuf : out pcap_errbuf_t) return Interfaces.C.int
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_getnonblock";
+
+   function pcap_inject (p    : pcap_t_ptr;
+                         buf  : System.Address;
+                         size : Interfaces.C.size_t) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_inject";
 
    function pcap_lib_version return Interfaces.C.Strings.chars_ptr
    with Import        => True,
@@ -158,11 +167,11 @@ private
         Convention    => C,
         External_Name => "pcap_open_dead_with_tstamp_precision";
 
-   function pcap_open_live (device  : Interfaces.C.Strings.chars_ptr;
-                            snaplen : Interfaces.C.int;
-                            promisc : Interfaces.C.int;
-                            to_ms   : Interfaces.C.int;
-                            errbuf  : Interfaces.C.Strings.chars_ptr) return pcap_t_ptr
+   function pcap_open_live (device  :     Interfaces.C.char_array;
+                            snaplen :     Interfaces.C.int;
+                            promisc :     Interfaces.C.int;
+                            to_ms   :     Interfaces.C.int;
+                            errbuf  : out pcap_errbuf_t) return pcap_t_ptr
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_open_live";
@@ -172,6 +181,13 @@ private
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_perror";
+
+   function pcap_sendpacket (p    : pcap_t_ptr;
+                             buf  : System.Address;
+                             size : Interfaces.C.int) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_sendpacket";
 
    function pcap_set_buffer_size (p           : pcap_t_ptr;
                                   buffer_size : Interfaces.C.int) return Interfaces.C.int
@@ -232,9 +248,9 @@ private
         Convention    => C,
         External_Name => "pcap_setdirection";
 
-   function pcap_setnonblock (p        : pcap_t_ptr;
-                              nonblock : Interfaces.C.int;
-                              errbuf   : Interfaces.C.Strings.chars_ptr) return Interfaces.C.int
+   function pcap_setnonblock (p        :     pcap_t_ptr;
+                              nonblock :     Interfaces.C.int;
+                              errbuf   : out pcap_errbuf_t) return Interfaces.C.int
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_setnonblock";
@@ -255,7 +271,7 @@ private
         Convention    => C,
         External_Name => "pcap_strerror";
 
-   function pcap_tstamp_type_name_to_val (name : Interfaces.C.Strings.chars_ptr) return Interfaces.C.int
+   function pcap_tstamp_type_name_to_val (name : Interfaces.C.char_array) return Interfaces.C.int
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_tstamp_type_name_to_val";

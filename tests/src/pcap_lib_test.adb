@@ -31,6 +31,7 @@
 -----------------------------------------------------------------------------
 with AUnit.Assertions;
 with Pcap.Lib;
+with Pcap.Exceptions;
 
 package body Pcap_Lib_Test is
 
@@ -52,6 +53,10 @@ package body Pcap_Lib_Test is
       AUnit.Test_Cases.Registration.Register_Routine (Test    => Test,
                                                       Routine => Test_Libpcap_Version'Access,
                                                       Name    => "Test libpcap version");
+
+      AUnit.Test_Cases.Registration.Register_Routine (Test    => Test,
+                                                      Routine => Test_Datalink_Name_To_Value'Access,
+                                                      Name    => "Test datalink name to value");
    end Register_Tests;
 
    procedure Test_Pcap_Ada_Version (Test : in out AUnit.Test_Cases.Test_Case'Class) is
@@ -74,5 +79,26 @@ package body Pcap_Lib_Test is
       AUnit.Assertions.Assert (Condition => Version'Length > 16 and then Version (1 .. 15) = "libpcap version",
                                Message   => "Version does not start with 'libpcap version'");
    end Test_Libpcap_Version;
+
+   procedure Test_Datalink_Name_To_Value (Test : in out AUnit.Test_Cases.Test_Case'Class) is
+   begin
+      AUnit.Assertions.Assert (Actual   => Pcap.Lib.Datalink_Name_To_Value (Name => "EN10MB")'Image,
+                               Expected => " 1",
+                               Message  => "Wrong datalink value");
+
+      AUnit.Assertions.Assert (Actual   => Pcap.Lib.Datalink_Name_To_Value (Name => "RDS")'Image,
+                               Expected => " 265",
+                               Message  => "Wrong datalink value");
+
+      declare
+         Value : Pcap.Lib.Datalink_Type;
+      begin
+         Value := Pcap.Lib.Datalink_Name_To_Value (Name => "DLT_EN10MB");
+         AUnit.Assertions.Assert (Condition => False,
+                                  Message   => "Expected exception Pcap_Error");
+      exception
+         when Pcap.Exceptions.Pcap_Error => null;
+      end;
+   end Test_Datalink_Name_To_Value;
 
 end Pcap_Lib_Test;

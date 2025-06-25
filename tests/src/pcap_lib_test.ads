@@ -46,4 +46,6 @@ package Pcap_Lib_Test is
 
    procedure Test_Libpcap_Version (Test : in out AUnit.Test_Cases.Test_Case'Class);
 
+   procedure Test_Datalink_Name_To_Value (Test : in out AUnit.Test_Cases.Test_Case'Class);
+
 end Pcap_Lib_Test;

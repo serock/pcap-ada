@@ -41,14 +41,13 @@ package body Pcap.Lib is
    end Strerror;
 
    function Datalink_Name_To_Value (Name : String) return Datalink_Type is
-      C_Name  : Interfaces.C.Strings.chars_ptr := Interfaces.C.Strings.New_String (Str => Name);
+      C_Name  : constant Interfaces.C.char_array := Interfaces.C.To_C (Item => Name);
       C_Value : Interfaces.C.int;
       use type Interfaces.C.int;
    begin
       C_Value := pcap_datalink_name_to_val (name => C_Name);
-      Interfaces.C.Strings.Free (Item => C_Name);
       if C_Value < 0 then
-         raise Pcap.Exceptions.Pcap_Error with "invalid datalink name";
+         raise Pcap.Exceptions.Pcap_Error with "invalid datalink name """ & Name & """";
       end if;
       return Datalink_Type (C_Value);
    end Datalink_Name_To_Value;
@@ -163,12 +162,11 @@ package body Pcap.Lib is
    end Datalink;
 
    function Timestamp_Type_Name_To_Value (Name : String) return Timestamp_Type_Type is
-      C_Name  : Interfaces.C.Strings.chars_ptr := Interfaces.C.Strings.New_String (Str => Name);
+      C_Name  : constant Interfaces.C.char_array := Interfaces.C.To_C (Item => Name);
       C_Value : Interfaces.C.int;
       use type Interfaces.C.int;
    begin
       C_Value := pcap_tstamp_type_name_to_val (name => C_Name);
-      Interfaces.C.Strings.Free (Item => C_Name);
       if C_Value < 0 then
          raise Pcap.Exceptions.Pcap_Error with Status_To_String (Status => Status_Type (C_Value));
       end if;
