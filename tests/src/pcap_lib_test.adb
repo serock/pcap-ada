@@ -46,6 +46,10 @@ package body Pcap_Lib_Test is
                                                       Name    => "Test Pcap Ada version");
 
       AUnit.Test_Cases.Registration.Register_Routine (Test    => Test,
+                                                      Routine => Test_Pcap_Api_Version'Access,
+                                                      Name    => "Test Pcap Api version");
+
+      AUnit.Test_Cases.Registration.Register_Routine (Test    => Test,
                                                       Routine => Test_Libpcap_Version'Access,
                                                       Name    => "Test libpcap version");
    end Register_Tests;
@@ -53,9 +57,16 @@ package body Pcap_Lib_Test is
    procedure Test_Pcap_Ada_Version (Test : in out AUnit.Test_Cases.Test_Case'Class) is
    begin
       AUnit.Assertions.Assert (Actual   => Pcap.Lib.Pcap_Ada_Version,
-                               Expected => "1.8.1-dev.0",
+                               Expected => "1.0.0-dev",
                                Message  => "Wrong Pcap Ada version");
    end Test_Pcap_Ada_Version;
+
+   procedure Test_Pcap_Api_Version (Test : in out AUnit.Test_Cases.Test_Case'Class) is
+   begin
+      AUnit.Assertions.Assert (Actual   => Pcap.Lib.Pcap_Api_Version,
+                               Expected => "1.8.1",
+                               Message  => "Wrong Pcap Api version");
+   end Test_Pcap_Api_Version;
 
    procedure Test_Libpcap_Version (Test : in out AUnit.Test_Cases.Test_Case'Class) is
       Version : constant String := Pcap.Lib.Pcap_Version;
