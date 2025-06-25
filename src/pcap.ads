@@ -177,7 +177,7 @@ private
         External_Name => "pcap_open_live";
 
    procedure pcap_perror (p      : pcap_t_ptr;
-                          prefix : Interfaces.C.Strings.chars_ptr)
+                          prefix : Interfaces.C.char_array)
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_perror";
