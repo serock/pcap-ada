@@ -31,6 +31,7 @@
 -----------------------------------------------------------------------------
 with AUnit.Assertions;
 with Pcap;
+with Pcap.Datalink_Constants;
 with Pcap.Exceptions;
 
 package body Pcap_Test is
@@ -83,11 +84,11 @@ package body Pcap_Test is
    procedure Test_Datalink_Name_To_Value (Test : in out AUnit.Test_Cases.Test_Case'Class) is
    begin
       AUnit.Assertions.Assert (Actual   => Pcap.Datalink_Name_To_Value (Name => "EN10MB")'Image,
-                               Expected => " 1",
+                               Expected => Pcap.Datalink_Constants.DLT_EN10MB'Image,
                                Message  => "Wrong datalink value");
 
       AUnit.Assertions.Assert (Actual   => Pcap.Datalink_Name_To_Value (Name => "RDS")'Image,
-                               Expected => " 265",
+                               Expected => Pcap.Datalink_Constants.DLT_RDS'Image,
                                Message  => "Wrong datalink value");
 
       declare
