@@ -31,7 +31,7 @@
 -----------------------------------------------------------------------------
 with Pcap.Error_Buffer;
 
-package Pcap.Lib.Live is
+package Pcap.Live is
 
    type Buffer_Size_Type is new Positive;
 
@@ -146,4 +146,4 @@ private
 
    function Is_Not_Activated (Self : Live_Packet_Capture_Type) return Boolean is (not Self.Activated);
 
-end Pcap.Lib.Live;
+end Pcap.Live;

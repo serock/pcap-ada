@@ -31,7 +31,7 @@
 -----------------------------------------------------------------------------
 with Pcap.Exceptions;
 
-package body Pcap.Lib is
+package body Pcap is
 
    function Strerror (Error : Integer) return String is
       C_String : Interfaces.C.Strings.chars_ptr;
@@ -198,4 +198,4 @@ package body Pcap.Lib is
       end if;
    end Timestamp_Type_Value_To_Name;
 
-end Pcap.Lib;
+end Pcap;

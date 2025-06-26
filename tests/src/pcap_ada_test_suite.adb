@@ -29,12 +29,12 @@
 --  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 --  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
-with Pcap_Lib_Test;
+with Pcap_Test;
 
 package body Pcap_Ada_Test_Suite is
 
    Suite_1     : aliased AUnit.Test_Suites.Test_Suite;
-   Test_Case_1 : aliased Pcap_Lib_Test.Test_Case_Type;
+   Test_Case_1 : aliased Pcap_Test.Test_Case_Type;
 
    function Suite return AUnit.Test_Suites.Access_Test_Suite is
    begin

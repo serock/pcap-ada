@@ -30,14 +30,14 @@
 --  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 with AUnit.Assertions;
-with Pcap.Lib;
+with Pcap;
 with Pcap.Exceptions;
 
-package body Pcap_Lib_Test is
+package body Pcap_Test is
 
    overriding function Name (Test : Test_Case_Type) return AUnit.Message_String is
    begin
-      return AUnit.Format ("Pcap.Lib Tests");
+      return AUnit.Format ("Pcap Tests");
    end Name;
 
    overriding procedure Register_Tests (Test : in out Test_Case_Type) is
@@ -61,20 +61,20 @@ package body Pcap_Lib_Test is
 
    procedure Test_Pcap_Ada_Version (Test : in out AUnit.Test_Cases.Test_Case'Class) is
    begin
-      AUnit.Assertions.Assert (Actual   => Pcap.Lib.Pcap_Ada_Version,
+      AUnit.Assertions.Assert (Actual   => Pcap.Pcap_Ada_Version,
                                Expected => "1.0.0-dev",
                                Message  => "Wrong Pcap Ada version");
    end Test_Pcap_Ada_Version;
 
    procedure Test_Pcap_Api_Version (Test : in out AUnit.Test_Cases.Test_Case'Class) is
    begin
-      AUnit.Assertions.Assert (Actual   => Pcap.Lib.Pcap_Api_Version,
+      AUnit.Assertions.Assert (Actual   => Pcap.Pcap_Api_Version,
                                Expected => "1.8.1",
                                Message  => "Wrong Pcap Api version");
    end Test_Pcap_Api_Version;
 
    procedure Test_Libpcap_Version (Test : in out AUnit.Test_Cases.Test_Case'Class) is
-      Version : constant String := Pcap.Lib.Pcap_Version;
+      Version : constant String := Pcap.Pcap_Version;
    begin
       AUnit.Assertions.Assert (Condition => Version'Length > 16 and then Version (1 .. 15) = "libpcap version",
                                Message   => "Version does not start with 'libpcap version'");
@@ -82,18 +82,18 @@ package body Pcap_Lib_Test is
 
    procedure Test_Datalink_Name_To_Value (Test : in out AUnit.Test_Cases.Test_Case'Class) is
    begin
-      AUnit.Assertions.Assert (Actual   => Pcap.Lib.Datalink_Name_To_Value (Name => "EN10MB")'Image,
+      AUnit.Assertions.Assert (Actual   => Pcap.Datalink_Name_To_Value (Name => "EN10MB")'Image,
                                Expected => " 1",
                                Message  => "Wrong datalink value");
 
-      AUnit.Assertions.Assert (Actual   => Pcap.Lib.Datalink_Name_To_Value (Name => "RDS")'Image,
+      AUnit.Assertions.Assert (Actual   => Pcap.Datalink_Name_To_Value (Name => "RDS")'Image,
                                Expected => " 265",
                                Message  => "Wrong datalink value");
 
       declare
-         Value : Pcap.Lib.Datalink_Type;
+         Value : Pcap.Datalink_Type;
       begin
-         Value := Pcap.Lib.Datalink_Name_To_Value (Name => "DLT_EN10MB");
+         Value := Pcap.Datalink_Name_To_Value (Name => "DLT_EN10MB");
          AUnit.Assertions.Assert (Condition => False,
                                   Message   => "Expected exception Pcap_Error");
       exception
@@ -101,4 +101,4 @@ package body Pcap_Lib_Test is
       end;
    end Test_Datalink_Name_To_Value;
 
-end Pcap_Lib_Test;
+end Pcap_Test;

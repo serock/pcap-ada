@@ -29,7 +29,7 @@
 --  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 --  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
-package Pcap.Lib.Datalink_Constants is
+package Pcap.Datalink_Constants is
 
    DLT_NULL                       : constant Datalink_Type := 0;
    DLT_EN10MB                     : constant Datalink_Type := 1;
@@ -243,4 +243,4 @@ package Pcap.Lib.Datalink_Constants is
    DLT_ISO_14443                  : constant Datalink_Type := 264;
    DLT_RDS                        : constant Datalink_Type := 265;
 
-end Pcap.Lib.Datalink_Constants;
+end Pcap.Datalink_Constants;

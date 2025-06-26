@@ -32,7 +32,7 @@
 with AUnit;
 with AUnit.Test_Cases;
 
-package Pcap_Lib_Test is
+package Pcap_Test is
 
    type Test_Case_Type is new AUnit.Test_Cases.Test_Case with null record;
 
@@ -48,4 +48,4 @@ package Pcap_Lib_Test is
 
    procedure Test_Datalink_Name_To_Value (Test : in out AUnit.Test_Cases.Test_Case'Class);
 
-end Pcap_Lib_Test;
+end Pcap_Test;

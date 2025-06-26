@@ -32,7 +32,7 @@
 with Interfaces.C;
 with Pcap.Exceptions;
 
-package body Pcap.Lib.Live is
+package body Pcap.Live is
 
    procedure Activate (Self : in out Live_Packet_Capture_Type) is
       C_Return_Value : Interfaces.C.int;
@@ -323,4 +323,4 @@ package body Pcap.Lib.Live is
       return Statistics;
    end Stats;
 
-end Pcap.Lib.Live;
+end Pcap.Live;
