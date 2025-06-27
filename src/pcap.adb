@@ -33,13 +33,6 @@ with Pcap.Exceptions;
 
 package body Pcap is
 
-   function Strerror (Error : Integer) return String is
-      C_String : Interfaces.C.Strings.chars_ptr;
-   begin
-      C_String := pcap_strerror (error => Interfaces.C.int (Error));
-      return Interfaces.C.Strings.Value (Item => C_String);
-   end Strerror;
-
    function Datalink_Name_To_Value (Name : String) return Datalink_Type is
       C_Name  : constant Interfaces.C.char_array := Interfaces.C.To_C (Item => Name);
       C_Value : Interfaces.C.int;
@@ -81,6 +74,51 @@ package body Pcap is
       return Interfaces.C.Strings.Value (Item => C_String);
    end Status_To_String;
 
+   function Strerror (Error : Integer) return String is
+      C_String : Interfaces.C.Strings.chars_ptr;
+   begin
+      C_String := pcap_strerror (error => Interfaces.C.int (Error));
+      return Interfaces.C.Strings.Value (Item => C_String);
+   end Strerror;
+
+   function Timestamp_Type_Name_To_Value (Name : String) return Timestamp_Type_Type is
+      C_Name  : constant Interfaces.C.char_array := Interfaces.C.To_C (Item => Name);
+      C_Value : Interfaces.C.int;
+      use type Interfaces.C.int;
+   begin
+      C_Value := pcap_tstamp_type_name_to_val (name => C_Name);
+      if C_Value < 0 then
+         raise Pcap.Exceptions.Pcap_Error with Status_To_String (Status => Status_Type (C_Value));
+      end if;
+      return Timestamp_Type_Type (C_Value);
+   end Timestamp_Type_Name_To_Value;
+
+   function Timestamp_Type_Value_To_Description (Value : Timestamp_Type_Type) return String is
+      C_Description : Interfaces.C.Strings.chars_ptr;
+      C_Value       : constant Interfaces.C.int := Interfaces.C.int (Value);
+      use type Interfaces.C.Strings.chars_ptr;
+   begin
+      C_Description := pcap_tstamp_type_val_to_description (tstamp_type => C_Value);
+      if C_Description = Interfaces.C.Strings.Null_Ptr then
+         return "";
+      else
+         return Interfaces.C.Strings.Value (Item => C_Description);
+      end if;
+   end Timestamp_Type_Value_To_Description;
+
+   function Timestamp_Type_Value_To_Name (Value : Timestamp_Type_Type) return String is
+      C_Name  : Interfaces.C.Strings.chars_ptr;
+      C_Value : constant Interfaces.C.int := Interfaces.C.int (Value);
+      use type Interfaces.C.Strings.chars_ptr;
+   begin
+      C_Name := pcap_tstamp_type_val_to_name (tstamp_type => C_Value);
+      if C_Name = Interfaces.C.Strings.Null_Ptr then
+         return "";
+      else
+         return Interfaces.C.Strings.Value (Item => C_Name);
+      end if;
+   end Timestamp_Type_Value_To_Name;
+
    procedure Break_Loop (Self : Abstract_Packet_Capture_Type) is
    begin
       pcap_breakloop (p => Self.Handle);
@@ -93,6 +131,18 @@ package body Pcap is
          Self.Handle := null;
       end if;
    end Close;
+
+   function Datalink (Self : in out Abstract_Packet_Capture_Type) return Datalink_Type is
+      C_Return_Value : Interfaces.C.int;
+      use type Interfaces.C.int;
+   begin
+      C_Return_Value := pcap_datalink (p => Self.Handle);
+      Self.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
+      if Self.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with Self.Status_To_String;
+      end if;
+      return Datalink_Type (C_Return_Value);
+   end Datalink;
 
    overriding procedure Finalize (Self : in out Abstract_Packet_Capture_Type) is
    begin
@@ -136,7 +186,13 @@ package body Pcap is
       return Status_To_String (Status => Self.Status);
    end Status_To_String;
 
-   procedure Open_Dead (Self            : in out Packet_Capture_Type;
+   overriding function Datalink (Self : in out Dead_Packet_Capture_Type) return Datalink_Type is
+   begin
+      raise Pcap.Exceptions.Pcap_Error with "Not implemented";
+      return Datalink_Type'First;
+   end Datalink;
+
+   procedure Open_Dead (Self            : in out Dead_Packet_Capture_Type;
                         Datalink        :        Datalink_Type;
                         Snapshot_Length :        Snapshot_Length_Type     := 65535;
                         Precision       :        Timestamp_Precision_Type := PCAP_TSTAMP_PRECISION_MICRO) is
@@ -147,55 +203,5 @@ package body Pcap is
                                                               precision => Interfaces.C.unsigned (Precision));
       end if;
    end Open_Dead;
-
-   function Datalink (Self : in out Abstract_Base_Packet_Capture_Type) return Datalink_Type is
-      C_Return_Value : Interfaces.C.int;
-      use type Interfaces.C.int;
-   begin
-      C_Return_Value := pcap_datalink (p => Self.Handle);
-      Self.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
-      if Self.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with Self.Status_To_String;
-      end if;
-      return Datalink_Type (C_Return_Value);
-   end Datalink;
-
-   function Timestamp_Type_Name_To_Value (Name : String) return Timestamp_Type_Type is
-      C_Name  : constant Interfaces.C.char_array := Interfaces.C.To_C (Item => Name);
-      C_Value : Interfaces.C.int;
-      use type Interfaces.C.int;
-   begin
-      C_Value := pcap_tstamp_type_name_to_val (name => C_Name);
-      if C_Value < 0 then
-         raise Pcap.Exceptions.Pcap_Error with Status_To_String (Status => Status_Type (C_Value));
-      end if;
-      return Timestamp_Type_Type (C_Value);
-   end Timestamp_Type_Name_To_Value;
-
-   function Timestamp_Type_Value_To_Description (Value : Timestamp_Type_Type) return String is
-      C_Description : Interfaces.C.Strings.chars_ptr;
-      C_Value       : constant Interfaces.C.int := Interfaces.C.int (Value);
-      use type Interfaces.C.Strings.chars_ptr;
-   begin
-      C_Description := pcap_tstamp_type_val_to_description (tstamp_type => C_Value);
-      if C_Description = Interfaces.C.Strings.Null_Ptr then
-         return "";
-      else
-         return Interfaces.C.Strings.Value (Item => C_Description);
-      end if;
-   end Timestamp_Type_Value_To_Description;
-
-   function Timestamp_Type_Value_To_Name (Value : Timestamp_Type_Type) return String is
-      C_Name  : Interfaces.C.Strings.chars_ptr;
-      C_Value : constant Interfaces.C.int := Interfaces.C.int (Value);
-      use type Interfaces.C.Strings.chars_ptr;
-   begin
-      C_Name := pcap_tstamp_type_val_to_name (tstamp_type => C_Value);
-      if C_Name = Interfaces.C.Strings.Null_Ptr then
-         return "";
-      else
-         return Interfaces.C.Strings.Value (Item => C_Name);
-      end if;
-   end Timestamp_Type_Value_To_Name;
 
 end Pcap;

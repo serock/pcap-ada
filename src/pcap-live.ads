@@ -29,23 +29,11 @@
 --  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 --  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
-with Pcap.Error_Buffer;
-
 package Pcap.Live is
-
-   type Buffer_Size_Type is new Positive;
 
    type Datalinks_Type is array (Integer range <>) of Datalink_Type;
 
    type Direction_Type is (DIRECTION_IN_OUT, DIRECTION_IN, DIRECTION_OUT);
-
-   type Snapshot_Length_Type is new Positive;
-
-   type Timeout_Milliseconds_Type is new Positive;
-
-   type Timestamp_Types_Type is array (Integer range <>) of Timestamp_Type_Type;
-
-   type Live_Packet_Capture_Type is limited new Abstract_Base_Packet_Capture_Type with private;
 
    type Packet_Statistics_Type is
       record
@@ -53,6 +41,12 @@ package Pcap.Live is
          Dropped                      : Natural;
          Dropped_By_Network_Interface : Natural;
       end record;
+
+   subtype Timeout_Milliseconds_Type is Positive;
+
+   type Timestamp_Types_Type is array (Integer range <>) of Timestamp_Type_Type;
+
+   type Live_Packet_Capture_Type is limited new Abstract_Packet_Capture_Type with private;
 
    function Is_Activated (Self : Live_Packet_Capture_Type) return Boolean;
 
@@ -65,12 +59,13 @@ package Pcap.Live is
                      Source       :        String)
      with Pre => not Self.Is_Open;
 
-   procedure Open (Self             : in out Live_Packet_Capture_Type;
-                   Device           :        String;
-                   Snapshot_Length  :        Snapshot_Length_Type := 65535;
-                   Promiscuous_Mode :        Boolean              := False;
-                   Read_Timeout     :        Timeout_Milliseconds_Type;
-                   Error_Buffer     :    out Pcap.Error_Buffer.Bounded_String)
+   procedure Open (Self                : in out Live_Packet_Capture_Type;
+                   Device              :        String;
+                   Snapshot_Length     :        Snapshot_Length_Type := 65535;
+                   Promiscuous_Mode    :        Boolean              := False;
+                   Read_Timeout        :        Timeout_Milliseconds_Type;
+                   Warning_Text        :    out Pcap.Warning_Text_Type;
+                   Warning_Text_Length :    out Pcap.Warning_Text_Length_Type)
      with Pre => not Self.Is_Open;
 
    function Can_Set_Monitor_Mode (Self : in out Live_Packet_Capture_Type) return Boolean
@@ -137,7 +132,7 @@ package Pcap.Live is
 
 private
 
-   type Live_Packet_Capture_Type is limited new Abstract_Base_Packet_Capture_Type with
+   type Live_Packet_Capture_Type is limited new Abstract_Packet_Capture_Type with
       record
          Activated : Boolean := False;
       end record;

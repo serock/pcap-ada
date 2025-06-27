@@ -60,17 +60,17 @@ package body Pcap.Live is
       end if;
    end Create;
 
-   procedure Open (Self             : in out Live_Packet_Capture_Type;
-                   Device           :        String;
-                   Snapshot_Length  :        Snapshot_Length_Type := 65535;
-                   Promiscuous_Mode :        Boolean              := False;
-                   Read_Timeout     :        Timeout_Milliseconds_Type;
-                   Error_Buffer     :    out Pcap.Error_Buffer.Bounded_String) is
+   procedure Open (Self                : in out Live_Packet_Capture_Type;
+                   Device              :        String;
+                   Snapshot_Length     :        Snapshot_Length_Type := 65535;
+                   Promiscuous_Mode    :        Boolean              := False;
+                   Read_Timeout        :        Timeout_Milliseconds_Type;
+                   Warning_Text        :    out Pcap.Warning_Text_Type;
+                   Warning_Text_Length :    out Pcap.Warning_Text_Length_Type) is
       C_Device       : constant Interfaces.C.char_array := Interfaces.C.To_C (Item => Device);
       C_Error_Buffer : Pcap.pcap_errbuf_t;
       use type Interfaces.C.char;
    begin
-      Error_Buffer := Pcap.Error_Buffer.Null_Bounded_String;
       if Self.Handle = null then
          C_Error_Buffer := (others => Interfaces.C.nul);
          Self.Handle := pcap_open_live (device  => C_Device,
@@ -79,7 +79,12 @@ package body Pcap.Live is
                                         to_ms   => Interfaces.C.int (Read_Timeout),
                                         errbuf  => C_Error_Buffer);
          if C_Error_Buffer (0) /= Interfaces.C.nul then
-            Error_Buffer := Pcap.Error_Buffer.To_Bounded_String (Source => Interfaces.C.To_Ada (Item => C_Error_Buffer));
+            declare
+               Text : constant String := Interfaces.C.To_Ada (Item => C_Error_Buffer);
+            begin
+               Warning_Text_Length := Text'Length;
+               Warning_Text (1 .. Warning_Text_Length) := Text;
+            end;
          end if;
          if Self.Handle = null then
             raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => C_Error_Buffer);
@@ -102,7 +107,7 @@ package body Pcap.Live is
 
    overriding function Datalink (Self : in out Live_Packet_Capture_Type) return Datalink_Type is
    begin
-      return Abstract_Base_Packet_Capture_Type (Self).Datalink;
+      return Abstract_Packet_Capture_Type (Self).Datalink;
    end Datalink;
 
    function Get_Nonblock (Self : in out Live_Packet_Capture_Type) return Boolean is
