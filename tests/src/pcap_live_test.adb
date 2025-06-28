@@ -29,23 +29,47 @@
 --  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 --  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
-with Pcap_Dead_Test;
-with Pcap_Live_Test;
-with Pcap_Test;
+with AUnit.Assertions;
+with Pcap;
+with Pcap.Datalink_Constants;
 
-package body Pcap_Ada_Test_Suite is
+package body Pcap_Live_Test is
 
-   Suite_1        : aliased AUnit.Test_Suites.Test_Suite;
-   Test_Case_Pcap : aliased Pcap_Test.Test_Case_Type;
-   Test_Case_Dead : aliased Pcap_Dead_Test.Test_Case_Type;
-   Test_Case_Live : aliased Pcap_Live_Test.Test_Case_Type;
+   Packet_Capture : Pcap.Packet_Capture_Type;
 
-   function Suite return AUnit.Test_Suites.Access_Test_Suite is
+   overriding function Name (Test : Test_Case_Type) return AUnit.Message_String is
    begin
-      AUnit.Test_Suites.Add_Test (Suite_1'Access, Test_Case_Pcap'Access);
-      AUnit.Test_Suites.Add_Test (Suite_1'Access, Test_Case_Dead'Access);
-      AUnit.Test_Suites.Add_Test (Suite_1'Access, Test_Case_Live'Access);
-      return Suite_1'Access;
-   end Suite;
+      return AUnit.Format ("Pcap Live Packet Capture Tests");
+   end Name;
 
-end Pcap_Ada_Test_Suite;
+   overriding procedure Register_Tests (Test : in out Test_Case_Type) is
+   begin
+      AUnit.Test_Cases.Registration.Register_Routine (Test    => Test,
+                                                      Routine => Test_Datalink'Access,
+                                                      Name    => "Test datalink");
+
+   end Register_Tests;
+
+   overriding procedure Set_Up (Test : in out Test_Case_Type) is
+      Warning        : Pcap.Warning_Text_Type;
+      Warning_Length : Pcap.Warning_Text_Length_Type;
+   begin
+      Packet_Capture.Open_Live (Device              => "eth0",
+                                Read_Timeout        => 2000,
+                                Warning_Text        => Warning,
+                                Warning_Text_Length => Warning_Length);
+   end Set_Up;
+
+   overriding procedure Tear_Down (Test : in out Test_Case_Type) is
+   begin
+      Packet_Capture.Close;
+   end Tear_Down;
+
+   procedure Test_Datalink (Test : in out AUnit.Test_Cases.Test_Case'Class) is
+   begin
+      AUnit.Assertions.Assert (Actual   => Pcap.Datalink_Value_To_Name (Value => Packet_Capture.Datalink),
+                               Expected => Pcap.Datalink_Value_To_Name (Value => Pcap.Datalink_Constants.DLT_EN10MB),
+                               Message  => "Wrong datalink");
+   end Test_Datalink;
+
+end Pcap_Live_Test;
