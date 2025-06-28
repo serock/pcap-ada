@@ -121,96 +121,7 @@ package body Pcap is
 
    ----------------------------------------------------------------------------
 
-   procedure Break_Loop (Self : Abstract_Packet_Capture_Type) is
-   begin
-      pcap_breakloop (p => Self.Handle);
-   end Break_Loop;
-
-   procedure Close (Self : in out Abstract_Packet_Capture_Type) is
-   begin
-      if Self.Handle /= null then
-         pcap_close (p => Self.Handle);
-         Self.Handle := null;
-      end if;
-   end Close;
-
-   function Datalink (Self : in out Abstract_Packet_Capture_Type) return Datalink_Type is
-      C_Return_Value : Interfaces.C.int;
-      use type Interfaces.C.int;
-   begin
-      C_Return_Value := pcap_datalink (p => Self.Handle);
-      Self.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
-      if Self.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with Self.Status_To_String;
-      end if;
-      return Datalink_Type (C_Return_Value);
-   end Datalink;
-
-   overriding procedure Finalize (Self : in out Abstract_Packet_Capture_Type) is
-   begin
-      Self.Close;
-   end Finalize;
-
-   function Get_Timestamp_Precision (Self : Abstract_Packet_Capture_Type) return Timestamp_Precision_Type is
-      C_Precision : Interfaces.C.int;
-   begin
-      C_Precision := pcap_get_tstamp_precision (p => Self.Handle);
-      return Timestamp_Precision_Type (C_Precision);
-   end Get_Timestamp_Precision;
-
-   function Get_Error_Text (Self : Abstract_Packet_Capture_Type) return String is
-      C_Error_Text : Interfaces.C.Strings.chars_ptr;
-   begin
-      C_Error_Text := pcap_geterr (p => Self.Handle);
-      return Interfaces.C.Strings.Value (Item => C_Error_Text);
-   end Get_Error_Text;
-
-   function Has_Error_Status (Self : Abstract_Packet_Capture_Type) return Boolean is
-   begin
-      return Self.Status < 0;
-   end Has_Error_Status;
-
-   function Has_Warning_Status (Self : Abstract_Packet_Capture_Type) return Boolean is
-   begin
-      return Self.Status > 0;
-   end Has_Warning_Status;
-
-   procedure Perror (Self   : Abstract_Packet_Capture_Type;
-                     Prefix : String) is
-      C_Prefix : constant Interfaces.C.char_array := Interfaces.C.To_C (Item => Prefix);
-   begin
-      pcap_perror (p      => Self.Handle,
-                   prefix => C_Prefix);
-   end Perror;
-
-   function Status_To_String (Self : Abstract_Packet_Capture_Type) return String is
-   begin
-      return Status_To_String (Status => Self.Status);
-   end Status_To_String;
-
-   ----------------------------------------------------------------------------
-
-   overriding function Datalink (Self : in out Dead_Packet_Capture_Type) return Datalink_Type is
-   begin
-      raise Pcap.Exceptions.Pcap_Error with "Not implemented";
-      return Datalink_Type'First;
-   end Datalink;
-
-   procedure Open_Dead (Self            : in out Dead_Packet_Capture_Type;
-                        Datalink        :        Datalink_Type;
-                        Snapshot_Length :        Snapshot_Length_Type     := 65535;
-                        Precision       :        Timestamp_Precision_Type := PCAP_TSTAMP_PRECISION_MICRO) is
-   begin
-      if Self.Handle = null then
-         Self.Handle := pcap_open_dead_with_tstamp_precision (linktype  => Interfaces.C.int (Datalink),
-                                                              snaplen   => Interfaces.C.int (Snapshot_Length),
-                                                              precision => Interfaces.C.unsigned (Precision));
-      end if;
-   end Open_Dead;
-
-   -----------------------------------------------------------------------------
-
-   procedure Activate (Self : in out Live_Packet_Capture_Type) is
+   procedure Activate (Self : in out Packet_Capture_Type) is
       C_Return_Value : Interfaces.C.int;
    begin
       C_Return_Value := pcap_activate (p => Self.Handle);
@@ -221,7 +132,32 @@ package body Pcap is
       Self.Activated := True;
    end Activate;
 
-   procedure Create (Self         : in out Live_Packet_Capture_Type;
+   procedure Break_Loop (Self : Packet_Capture_Type) is
+   begin
+      pcap_breakloop (p => Self.Handle);
+   end Break_Loop;
+
+   function Can_Set_Monitor_Mode (Self : in out Packet_Capture_Type) return Boolean is
+      C_Return_Value : Interfaces.C.int;
+      use type Interfaces.C.int;
+   begin
+      C_Return_Value := pcap_can_set_rfmon (p => Self.Handle);
+      Self.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
+      if Self.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with (if Self.Status = PCAP_ERROR then Self.Get_Error_Text else Self.Status_To_String);
+      end if;
+      return C_Return_Value = 1;
+   end Can_Set_Monitor_Mode;
+
+   procedure Close (Self : in out Packet_Capture_Type) is
+   begin
+      if Self.Handle /= null then
+         pcap_close (p => Self.Handle);
+         Self.Handle := null;
+      end if;
+   end Close;
+
+   procedure Create (Self         : in out Packet_Capture_Type;
                      Source       :        String) is
       C_Error_Buffer : Pcap.pcap_errbuf_t;
       C_Source       : constant Interfaces.C.char_array := Interfaces.C.To_C (Item => Source);
@@ -236,57 +172,24 @@ package body Pcap is
       end if;
    end Create;
 
-   procedure Open (Self                : in out Live_Packet_Capture_Type;
-                   Device              :        String;
-                   Snapshot_Length     :        Snapshot_Length_Type := 65535;
-                   Promiscuous_Mode    :        Boolean              := False;
-                   Read_Timeout        :        Timeout_Milliseconds_Type;
-                   Warning_Text        :    out Pcap.Warning_Text_Type;
-                   Warning_Text_Length :    out Pcap.Warning_Text_Length_Type) is
-      C_Device       : constant Interfaces.C.char_array := Interfaces.C.To_C (Item => Device);
-      C_Error_Buffer : Pcap.pcap_errbuf_t;
-      use type Interfaces.C.char;
-   begin
-      if Self.Handle = null then
-         C_Error_Buffer := (others => Interfaces.C.nul);
-         Self.Handle := pcap_open_live (device  => C_Device,
-                                        snaplen => Interfaces.C.int (Snapshot_Length),
-                                        promisc => Interfaces.C.int (Boolean'Pos (Promiscuous_Mode)),
-                                        to_ms   => Interfaces.C.int (Read_Timeout),
-                                        errbuf  => C_Error_Buffer);
-         if C_Error_Buffer (0) /= Interfaces.C.nul then
-            declare
-               Text : constant String := Interfaces.C.To_Ada (Item => C_Error_Buffer);
-            begin
-               Warning_Text_Length := Text'Length;
-               Warning_Text (1 .. Warning_Text_Length) := Text;
-            end;
-         end if;
-         if Self.Handle = null then
-            raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => C_Error_Buffer);
-         end if;
-         Self.Activated := True;
-      end if;
-   end Open;
-
-   function Can_Set_Monitor_Mode (Self : in out Live_Packet_Capture_Type) return Boolean is
+   function Datalink (Self : in out Packet_Capture_Type) return Datalink_Type is
       C_Return_Value : Interfaces.C.int;
       use type Interfaces.C.int;
    begin
-      C_Return_Value := pcap_can_set_rfmon (p => Self.Handle);
+      C_Return_Value := pcap_datalink (p => Self.Handle);
       Self.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
       if Self.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with (if Self.Status = PCAP_ERROR then Self.Get_Error_Text else Self.Status_To_String);
+         raise Pcap.Exceptions.Pcap_Error with Self.Status_To_String;
       end if;
-      return C_Return_Value = 1;
-   end Can_Set_Monitor_Mode;
-
-   overriding function Datalink (Self : in out Live_Packet_Capture_Type) return Datalink_Type is
-   begin
-      return Abstract_Packet_Capture_Type (Self).Datalink;
+      return Datalink_Type (C_Return_Value);
    end Datalink;
 
-   function Get_Nonblock (Self : in out Live_Packet_Capture_Type) return Boolean is
+   overriding procedure Finalize (Self : in out Packet_Capture_Type) is
+   begin
+      Self.Close;
+   end Finalize;
+
+   function Get_Nonblock (Self : in out Packet_Capture_Type) return Boolean is
       C_Error_Buffer : pcap_errbuf_t := (others => Interfaces.C.nul);
       C_Return_Value : Interfaces.C.int;
       use type Interfaces.C.int;
@@ -300,7 +203,31 @@ package body Pcap is
       return C_Return_Value /= 0;
    end Get_Nonblock;
 
-   procedure List_Datalinks (Self      : in out Live_Packet_Capture_Type;
+   function Get_Timestamp_Precision (Self : Packet_Capture_Type) return Timestamp_Precision_Type is
+      C_Precision : Interfaces.C.int;
+   begin
+      C_Precision := pcap_get_tstamp_precision (p => Self.Handle);
+      return Timestamp_Precision_Type (C_Precision);
+   end Get_Timestamp_Precision;
+
+   function Get_Error_Text (Self : Packet_Capture_Type) return String is
+      C_Error_Text : Interfaces.C.Strings.chars_ptr;
+   begin
+      C_Error_Text := pcap_geterr (p => Self.Handle);
+      return Interfaces.C.Strings.Value (Item => C_Error_Text);
+   end Get_Error_Text;
+
+   function Has_Error_Status (Self : Packet_Capture_Type) return Boolean is
+   begin
+      return Self.Status < 0;
+   end Has_Error_Status;
+
+   function Has_Warning_Status (Self : Packet_Capture_Type) return Boolean is
+   begin
+      return Self.Status > 0;
+   end Has_Warning_Status;
+
+   procedure List_Datalinks (Self      : in out Packet_Capture_Type;
                              Datalinks :    out Datalinks_Type) is
       C_Return_Value : Interfaces.C.int;
       C_Dlt_Buffer   : System.Address;
@@ -325,7 +252,7 @@ package body Pcap is
       pcap_free_datalinks (dlt_list => C_Dlt_Buffer);
    end List_Datalinks;
 
-   procedure List_Timestamp_Types (Self            : in out Live_Packet_Capture_Type;
+   procedure List_Timestamp_Types (Self            : in out Packet_Capture_Type;
                                    Timestamp_Types :    out Timestamp_Types_Type) is
       C_Return_Value : Interfaces.C.int;
       C_Tstamp_Types : System.Address;
@@ -352,7 +279,60 @@ package body Pcap is
       end;
    end List_Timestamp_Types;
 
-   procedure Set_Buffer_Size (Self        : in out Live_Packet_Capture_Type;
+   procedure Open_Dead (Self            : in out Packet_Capture_Type;
+                        Datalink        :        Datalink_Type;
+                        Snapshot_Length :        Snapshot_Length_Type     := 65535;
+                        Precision       :        Timestamp_Precision_Type := PCAP_TSTAMP_PRECISION_MICRO) is
+   begin
+      if Self.Handle = null then
+         Self.Handle := pcap_open_dead_with_tstamp_precision (linktype  => Interfaces.C.int (Datalink),
+                                                              snaplen   => Interfaces.C.int (Snapshot_Length),
+                                                              precision => Interfaces.C.unsigned (Precision));
+      end if;
+   end Open_Dead;
+
+   procedure Open_Live (Self                : in out Packet_Capture_Type;
+                        Device              :        String;
+                        Snapshot_Length     :        Snapshot_Length_Type := 65535;
+                        Promiscuous_Mode    :        Boolean              := False;
+                        Read_Timeout        :        Timeout_Milliseconds_Type;
+                        Warning_Text        :    out Pcap.Warning_Text_Type;
+                        Warning_Text_Length :    out Pcap.Warning_Text_Length_Type) is
+      C_Device       : constant Interfaces.C.char_array := Interfaces.C.To_C (Item => Device);
+      C_Error_Buffer : Pcap.pcap_errbuf_t;
+      use type Interfaces.C.char;
+   begin
+      if Self.Handle = null then
+         C_Error_Buffer := (others => Interfaces.C.nul);
+         Self.Handle := pcap_open_live (device  => C_Device,
+                                        snaplen => Interfaces.C.int (Snapshot_Length),
+                                        promisc => Interfaces.C.int (Boolean'Pos (Promiscuous_Mode)),
+                                        to_ms   => Interfaces.C.int (Read_Timeout),
+                                        errbuf  => C_Error_Buffer);
+         if C_Error_Buffer (0) /= Interfaces.C.nul then
+            declare
+               Text : constant String := Interfaces.C.To_Ada (Item => C_Error_Buffer);
+            begin
+               Warning_Text_Length := Text'Length;
+               Warning_Text (1 .. Warning_Text_Length) := Text;
+            end;
+         end if;
+         if Self.Handle = null then
+            raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => C_Error_Buffer);
+         end if;
+         Self.Activated := True;
+      end if;
+   end Open_Live;
+
+   procedure Perror (Self   : Packet_Capture_Type;
+                     Prefix : String) is
+      C_Prefix : constant Interfaces.C.char_array := Interfaces.C.To_C (Item => Prefix);
+   begin
+      pcap_perror (p      => Self.Handle,
+                   prefix => C_Prefix);
+   end Perror;
+
+   procedure Set_Buffer_Size (Self        : in out Packet_Capture_Type;
                               Buffer_Size :        Buffer_Size_Type) is
       C_Return_Value : Interfaces.C.int;
    begin
@@ -364,7 +344,7 @@ package body Pcap is
       end if;
    end Set_Buffer_Size;
 
-   procedure Set_Datalink (Self     : in out Live_Packet_Capture_Type;
+   procedure Set_Datalink (Self     : in out Packet_Capture_Type;
                            Datalink :        Datalink_Type) is
       C_Return_Value : Interfaces.C.int;
    begin
@@ -376,7 +356,7 @@ package body Pcap is
       end if;
    end Set_Datalink;
 
-   procedure Set_Direction (Self      : in out Live_Packet_Capture_Type;
+   procedure Set_Direction (Self      : in out Packet_Capture_Type;
                             Direction :        Direction_Type) is
       C_Return_Value : Interfaces.C.int;
    begin
@@ -388,7 +368,7 @@ package body Pcap is
       end if;
    end Set_Direction;
 
-   procedure Set_Immediate_Mode (Self           : in out Live_Packet_Capture_Type;
+   procedure Set_Immediate_Mode (Self           : in out Packet_Capture_Type;
                                  Immediate_Mode :        Boolean := True) is
       C_Return_Value : Interfaces.C.int;
    begin
@@ -400,7 +380,7 @@ package body Pcap is
       end if;
    end Set_Immediate_Mode;
 
-   procedure Set_Monitor_Mode (Self         : in out Live_Packet_Capture_Type;
+   procedure Set_Monitor_Mode (Self         : in out Packet_Capture_Type;
                                Monitor_Mode :        Boolean := True) is
       C_Return_Value : Interfaces.C.int;
    begin
@@ -412,7 +392,7 @@ package body Pcap is
       end if;
    end Set_Monitor_Mode;
 
-   procedure Set_Nonblock (Self     : in out Live_Packet_Capture_Type;
+   procedure Set_Nonblock (Self     : in out Packet_Capture_Type;
                            Nonblock :        Boolean := True) is
       C_Error_Buffer : Pcap.pcap_errbuf_t := (others => Interfaces.C.nul);
       C_Return_Value : Interfaces.C.int;
@@ -426,7 +406,7 @@ package body Pcap is
       end if;
    end Set_Nonblock;
 
-   procedure Set_Promiscuous_Mode (Self             : in out Live_Packet_Capture_Type;
+   procedure Set_Promiscuous_Mode (Self             : in out Packet_Capture_Type;
                                    Promiscuous_Mode :        Boolean := True) is
       C_Return_Value : Interfaces.C.int;
    begin
@@ -438,7 +418,7 @@ package body Pcap is
       end if;
    end Set_Promiscuous_Mode;
 
-   procedure Set_Snapshot_Length (Self            : in out Live_Packet_Capture_Type;
+   procedure Set_Snapshot_Length (Self            : in out Packet_Capture_Type;
                                   Snapshot_Length :        Snapshot_Length_Type := 65535) is
       C_Return_Value : Interfaces.C.int;
    begin
@@ -450,7 +430,7 @@ package body Pcap is
       end if;
    end Set_Snapshot_Length;
 
-   procedure Set_Timeout (Self    : in out Live_Packet_Capture_Type;
+   procedure Set_Timeout (Self    : in out Packet_Capture_Type;
                           Timeout :        Timeout_Milliseconds_Type) is
       C_Return_Value : Interfaces.C.int;
    begin
@@ -462,7 +442,7 @@ package body Pcap is
       end if;
    end Set_Timeout;
 
-   procedure Set_Timestamp_Precision (Self                : in out Live_Packet_Capture_Type;
+   procedure Set_Timestamp_Precision (Self                : in out Packet_Capture_Type;
                                       Timestamp_Precision :        Timestamp_Precision_Type) is
       C_Return_Value : Interfaces.C.int;
    begin
@@ -474,7 +454,7 @@ package body Pcap is
       end if;
    end Set_Timestamp_Precision;
 
-   procedure Set_Timestamp_Type (Self           : in out Live_Packet_Capture_Type;
+   procedure Set_Timestamp_Type (Self           : in out Packet_Capture_Type;
                                  Timestamp_Type :        Timestamp_Type_Type) is
       C_Return_Value : Interfaces.C.int;
    begin
@@ -486,7 +466,7 @@ package body Pcap is
       end if;
    end Set_Timestamp_Type;
 
-   function Stats (Self  : in out Live_Packet_Capture_Type) return Packet_Statistics_Type is
+   function Stats (Self  : in out Packet_Capture_Type) return Packet_Statistics_Type is
       C_Return_Value : Interfaces.C.int;
       C_Stats        : Pcap.pcap_stat;
       Statistics     : Packet_Statistics_Type;
@@ -503,5 +483,10 @@ package body Pcap is
       Statistics.Dropped_By_Network_Interface := Natural (C_Stats.ps_ifdrop);
       return Statistics;
    end Stats;
+
+   function Status_To_String (Self : Packet_Capture_Type) return String is
+   begin
+      return Status_To_String (Status => Self.Status);
+   end Status_To_String;
 
 end Pcap;

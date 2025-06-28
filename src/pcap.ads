@@ -118,135 +118,121 @@ package Pcap is
 
    ----------------------------------------------------------------------------
 
-   type Abstract_Packet_Capture_Type is abstract limited new Ada.Finalization.Limited_Controlled with private;
+   type Packet_Capture_Type is limited new Ada.Finalization.Limited_Controlled with private;
 
-   procedure Break_Loop (Self : Abstract_Packet_Capture_Type);
+   procedure Activate (Self : in out Packet_Capture_Type)
+     with Pre => Self.Is_Open and then not Self.Is_Activated;
 
-   procedure Close (Self : in out Abstract_Packet_Capture_Type)
+   procedure Break_Loop (Self : Packet_Capture_Type);
+
+   function Can_Set_Monitor_Mode (Self : in out Packet_Capture_Type) return Boolean
+     with Pre => Self.Is_Open and then Self.Is_Not_Activated;
+
+   procedure Close (Self : in out Packet_Capture_Type)
      with Pre => Self.Is_Open;
 
-   function Datalink (Self : in out Abstract_Packet_Capture_Type) return Datalink_Type;
+   procedure Create (Self         : in out Packet_Capture_Type;
+                     Source       :        String)
+     with Pre => not Self.Is_Open;
 
-   function Get_Timestamp_Precision (Self : Abstract_Packet_Capture_Type) return Timestamp_Precision_Type
+   function Datalink (Self : in out Packet_Capture_Type) return Datalink_Type
      with Pre => Self.Is_Open;
 
-   function Get_Error_Text (Self : Abstract_Packet_Capture_Type) return String
+   function Get_Error_Text (Self : Packet_Capture_Type) return String
      with Pre => Self.Is_Open;
 
-   function Has_Error_Status (Self : Abstract_Packet_Capture_Type) return Boolean;
+   function Get_Nonblock (Self : in out Packet_Capture_Type) return Boolean
+     with Pre => Self.Is_Open and then Self.Is_Activated;
 
-   function Has_Warning_Status (Self : Abstract_Packet_Capture_Type) return Boolean;
-
-   function Is_Open (Self : Abstract_Packet_Capture_Type) return Boolean;
-
-   procedure Perror (Self   : Abstract_Packet_Capture_Type;
-                     Prefix : String)
+   function Get_Timestamp_Precision (Self : Packet_Capture_Type) return Timestamp_Precision_Type
      with Pre => Self.Is_Open;
 
-   function Status_To_String (Self : Abstract_Packet_Capture_Type) return String
-     with Pre => Self.Is_Open;
+   function Has_Error_Status (Self : Packet_Capture_Type) return Boolean;
 
-   ----------------------------------------------------------------------------
+   function Has_Warning_Status (Self : Packet_Capture_Type) return Boolean;
 
-   type Dead_Packet_Capture_Type is limited new Abstract_Packet_Capture_Type with private;
+   function Is_Activated (Self : Packet_Capture_Type) return Boolean;
 
-   overriding function Datalink (Self : in out Dead_Packet_Capture_Type) return Datalink_Type;
+   function Is_Not_Activated (Self : Packet_Capture_Type) return Boolean;
 
-   procedure Open_Dead (Self            : in out Dead_Packet_Capture_Type;
+   function Is_Open (Self : Packet_Capture_Type) return Boolean;
+
+   procedure List_Datalinks (Self      : in out Packet_Capture_Type;
+                             Datalinks :    out Datalinks_Type);
+
+   procedure List_Timestamp_Types (Self            : in out Packet_Capture_Type;
+                                   Timestamp_Types :    out Timestamp_Types_Type);
+
+   procedure Open_Dead (Self            : in out Packet_Capture_Type;
                         Datalink        :        Datalink_Type;
                         Snapshot_Length :        Snapshot_Length_Type     := 65535;
                         Precision       :        Timestamp_Precision_Type := PCAP_TSTAMP_PRECISION_MICRO)
      with Pre => not Self.Is_Open;
 
-   ----------------------------------------------------------------------------
-
-   type Live_Packet_Capture_Type is limited new Abstract_Packet_Capture_Type with private;
-
-   function Is_Activated (Self : Live_Packet_Capture_Type) return Boolean;
-
-   function Is_Not_Activated (Self : Live_Packet_Capture_Type) return Boolean;
-
-   procedure Activate (Self : in out Live_Packet_Capture_Type)
-     with Pre => Self.Is_Open and then not Self.Is_Activated;
-
-   procedure Create (Self         : in out Live_Packet_Capture_Type;
-                     Source       :        String)
+   procedure Open_Live (Self                : in out Packet_Capture_Type;
+                        Device              :        String;
+                        Snapshot_Length     :        Snapshot_Length_Type := 65535;
+                        Promiscuous_Mode    :        Boolean              := False;
+                        Read_Timeout        :        Timeout_Milliseconds_Type;
+                        Warning_Text        :    out Pcap.Warning_Text_Type;
+                        Warning_Text_Length :    out Pcap.Warning_Text_Length_Type)
      with Pre => not Self.Is_Open;
 
-   procedure Open (Self                : in out Live_Packet_Capture_Type;
-                   Device              :        String;
-                   Snapshot_Length     :        Snapshot_Length_Type := 65535;
-                   Promiscuous_Mode    :        Boolean              := False;
-                   Read_Timeout        :        Timeout_Milliseconds_Type;
-                   Warning_Text        :    out Pcap.Warning_Text_Type;
-                   Warning_Text_Length :    out Pcap.Warning_Text_Length_Type)
-     with Pre => not Self.Is_Open;
+   procedure Perror (Self   : Packet_Capture_Type;
+                     Prefix : String)
+     with Pre => Self.Is_Open;
 
-   function Can_Set_Monitor_Mode (Self : in out Live_Packet_Capture_Type) return Boolean
-     with Pre => Self.Is_Open and then Self.Is_Not_Activated;
-
-   overriding function Datalink (Self : in out Live_Packet_Capture_Type) return Datalink_Type
-     with Pre => Self.Is_Open and then Self.Is_Activated;
-
-   function Get_Nonblock (Self : in out Live_Packet_Capture_Type) return Boolean
-     with Pre => Self.Is_Open and then Self.Is_Activated;
-
-   procedure List_Datalinks (Self      : in out Live_Packet_Capture_Type;
-                             Datalinks :    out Datalinks_Type);
-
-   procedure List_Timestamp_Types (Self            : in out Live_Packet_Capture_Type;
-                                   Timestamp_Types :    out Timestamp_Types_Type);
-
-   procedure Set_Buffer_Size (Self        : in out Live_Packet_Capture_Type;
+   procedure Set_Buffer_Size (Self        : in out Packet_Capture_Type;
                               Buffer_Size :        Buffer_Size_Type)
      with Pre => Self.Is_Open and then Self.Is_Not_Activated;
 
-   procedure Set_Datalink (Self     : in out Live_Packet_Capture_Type;
+   procedure Set_Datalink (Self     : in out Packet_Capture_Type;
                            Datalink :        Datalink_Type)
      with Pre => Self.Is_Open and then Self.Is_Activated;
 
-   procedure Set_Direction (Self      : in out Live_Packet_Capture_Type;
+   procedure Set_Direction (Self      : in out Packet_Capture_Type;
                             Direction :        Direction_Type)
      with Pre => Self.Is_Open and then Self.Is_Activated;
 
-   procedure Set_Immediate_Mode (Self           : in out Live_Packet_Capture_Type;
+   procedure Set_Immediate_Mode (Self           : in out Packet_Capture_Type;
                                  Immediate_Mode :        Boolean := True)
      with Pre => Self.Is_Open and then Self.Is_Not_Activated;
 
-   procedure Set_Monitor_Mode (Self         : in out Live_Packet_Capture_Type;
+   procedure Set_Monitor_Mode (Self         : in out Packet_Capture_Type;
                                Monitor_Mode :        Boolean := True)
      with Pre => Self.Is_Open and then Self.Is_Not_Activated;
 
-   procedure Set_Nonblock (Self     : in out Live_Packet_Capture_Type;
+   procedure Set_Nonblock (Self     : in out Packet_Capture_Type;
                            Nonblock :        Boolean := True)
      with Pre => Self.Is_Open and then Self.Is_Activated;
 
-   procedure Set_Promiscuous_Mode (Self             : in out Live_Packet_Capture_Type;
+   procedure Set_Promiscuous_Mode (Self             : in out Packet_Capture_Type;
                                    Promiscuous_Mode :        Boolean := True)
      with Pre => Self.Is_Open and then Self.Is_Not_Activated;
 
-   procedure Set_Snapshot_Length (Self            : in out Live_Packet_Capture_Type;
+   procedure Set_Snapshot_Length (Self            : in out Packet_Capture_Type;
                                   Snapshot_Length :        Snapshot_Length_Type := 65535)
      with Pre => Self.Is_Open and then Self.Is_Not_Activated;
 
-   procedure Set_Timeout (Self    : in out Live_Packet_Capture_Type;
+   procedure Set_Timeout (Self    : in out Packet_Capture_Type;
                           Timeout :        Timeout_Milliseconds_Type)
      with Pre => Self.Is_Open and then Self.Is_Not_Activated;
 
-   procedure Set_Timestamp_Precision (Self                : in out Live_Packet_Capture_Type;
+   procedure Set_Timestamp_Precision (Self                : in out Packet_Capture_Type;
                                       Timestamp_Precision :        Timestamp_Precision_Type)
      with Pre => Self.Is_Open and then Self.Is_Not_Activated;
 
-   procedure Set_Timestamp_Type (Self           : in out Live_Packet_Capture_Type;
+   procedure Set_Timestamp_Type (Self           : in out Packet_Capture_Type;
                                  Timestamp_Type :        Timestamp_Type_Type)
      with Pre => Self.Is_Open and then Self.Is_Not_Activated;
 
-   function Stats (Self  : in out Live_Packet_Capture_Type) return Packet_Statistics_Type
+   function Stats (Self  : in out Packet_Capture_Type) return Packet_Statistics_Type
      with Pre => Self.Is_Open and then Self.Is_Activated;
 
-private
+   function Status_To_String (Self : Packet_Capture_Type) return String
+     with Pre => Self.Is_Open;
 
-   ----------------------------------------------------------------------------
+private
 
    PCAP_ERRBUF_SIZE : constant := 256;
 
@@ -501,12 +487,6 @@ private
 
    ----------------------------------------------------------------------------
 
-   function Pcap_Ada_Version return String is ($PCAP_ADA_VERSION);
-
-   function Pcap_Api_Version return String is ("1.8.1");
-
-   function Pcap_Version return String is (Interfaces.C.Strings.Value (Item => pcap_lib_version));
-
    PCAP_SUCCESS_WITHOUT_WARNINGS   : constant Status_Type := 0;
 
    PCAP_ERROR                      : constant Status_Type := -1;
@@ -535,25 +515,27 @@ private
    PCAP_TSTAMP_ADAPTER_UNSYNCED     : constant Timestamp_Type_Type := 4;
    PCAP_TSTAMP_HOST_HIPREC_UNSYNCED : constant Timestamp_Type_Type := 5;
 
-   type Abstract_Packet_Capture_Type is abstract limited new Ada.Finalization.Limited_Controlled with
+   function Pcap_Ada_Version return String is ($PCAP_ADA_VERSION);
+
+   function Pcap_Api_Version return String is ("1.8.1");
+
+   function Pcap_Version return String is (Interfaces.C.Strings.Value (Item => pcap_lib_version));
+
+   ----------------------------------------------------------------------------
+
+   type Packet_Capture_Type is limited new Ada.Finalization.Limited_Controlled with
       record
-         Handle : pcap_t_ptr;
-         Status : Status_Type := 0;
-      end record;
-
-   overriding procedure Finalize (Self : in out Abstract_Packet_Capture_Type);
-
-   function Is_Open (Self : Abstract_Packet_Capture_Type) return Boolean is (Self.Handle /= null);
-
-   type Dead_Packet_Capture_Type is limited new Abstract_Packet_Capture_Type with null record;
-
-   type Live_Packet_Capture_Type is limited new Abstract_Packet_Capture_Type with
-      record
+         Handle    : pcap_t_ptr;
+         Status    : Status_Type := 0;
          Activated : Boolean := False;
       end record;
 
-   function Is_Activated (Self : Live_Packet_Capture_Type) return Boolean is (Self.Activated);
+   overriding procedure Finalize (Self : in out Packet_Capture_Type);
 
-   function Is_Not_Activated (Self : Live_Packet_Capture_Type) return Boolean is (not Self.Activated);
+   function Is_Activated (Self : Packet_Capture_Type) return Boolean is (Self.Activated);
+
+   function Is_Not_Activated (Self : Packet_Capture_Type) return Boolean is (not Self.Activated);
+
+   function Is_Open (Self : Packet_Capture_Type) return Boolean is (Self.Handle /= null);
 
 end Pcap;
