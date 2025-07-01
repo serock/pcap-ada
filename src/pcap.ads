@@ -136,7 +136,7 @@ package Pcap is
      with Pre => not Self.Is_Open;
 
    function Datalink (Self : in out Packet_Capture_Type) return Datalink_Type
-     with Pre => Self.Is_Open;
+     with Pre => Self.Is_Open and then Self.Is_Activated;
 
    function Get_Error_Text (Self : Packet_Capture_Type) return String
      with Pre => Self.Is_Open;
