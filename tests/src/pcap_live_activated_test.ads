@@ -29,26 +29,21 @@
 --  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 --  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
-with Pcap_Dead_Test;
-with Pcap_Live_Activated_Test;
-with Pcap_Live_Test;
-with Pcap_Test;
+with AUnit;
+with AUnit.Test_Cases;
 
-package body Pcap_Ada_Test_Suite is
+package Pcap_Live_Activated_Test is
 
-   Suite_1                  : aliased AUnit.Test_Suites.Test_Suite;
-   Test_Case_Pcap           : aliased Pcap_Test.Test_Case_Type;
-   Test_Case_Dead           : aliased Pcap_Dead_Test.Test_Case_Type;
-   Test_Case_Live           : aliased Pcap_Live_Test.Test_Case_Type;
-   Test_Case_Live_Activated : aliased Pcap_Live_Activated_Test.Test_Case_Type;
+   type Test_Case_Type is new AUnit.Test_Cases.Test_Case with null record;
 
-   function Suite return AUnit.Test_Suites.Access_Test_Suite is
-   begin
-      AUnit.Test_Suites.Add_Test (Suite_1'Access, Test_Case_Pcap'Access);
-      AUnit.Test_Suites.Add_Test (Suite_1'Access, Test_Case_Dead'Access);
-      AUnit.Test_Suites.Add_Test (Suite_1'Access, Test_Case_Live'Access);
-      AUnit.Test_Suites.Add_Test (Suite_1'Access, Test_Case_Live_Activated'Access);
-      return Suite_1'Access;
-   end Suite;
+   overriding function Name (Test : Test_Case_Type) return AUnit.Message_String;
 
-end Pcap_Ada_Test_Suite;
+   overriding procedure Register_Tests (Test : in out Test_Case_Type);
+
+   overriding procedure Set_Up (Test : in out Test_Case_Type);
+
+   overriding procedure Tear_Down (Test : in out Test_Case_Type);
+
+   procedure Test_Datalink (Test : in out AUnit.Test_Cases.Test_Case'Class);
+
+end Pcap_Live_Activated_Test;

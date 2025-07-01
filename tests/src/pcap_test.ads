@@ -40,12 +40,20 @@ package Pcap_Test is
 
    overriding procedure Register_Tests (Test : in out Test_Case_Type);
 
+   procedure Test_Datalink_Name_To_Value (Test : in out AUnit.Test_Cases.Test_Case'Class);
+
+   procedure Test_Datalink_Value_To_Description (Test : in out AUnit.Test_Cases.Test_Case'Class);
+
+   procedure Test_Datalink_Value_To_Name (Test : in out AUnit.Test_Cases.Test_Case'Class);
+
+   procedure Test_Libpcap_Version (Test : in out AUnit.Test_Cases.Test_Case'Class);
+
    procedure Test_Pcap_Ada_Version (Test : in out AUnit.Test_Cases.Test_Case'Class);
 
    procedure Test_Pcap_Api_Version (Test : in out AUnit.Test_Cases.Test_Case'Class);
 
-   procedure Test_Libpcap_Version (Test : in out AUnit.Test_Cases.Test_Case'Class);
+   procedure Test_Status_To_String (Test : in out AUnit.Test_Cases.Test_Case'Class);
 
-   procedure Test_Datalink_Name_To_Value (Test : in out AUnit.Test_Cases.Test_Case'Class);
+   procedure Test_Strerror (Test : in out AUnit.Test_Cases.Test_Case'Class);
 
 end Pcap_Test;

@@ -29,6 +29,7 @@
 --  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 --  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
+with Ada.Exceptions;
 with AUnit.Assertions;
 with Pcap;
 with Pcap.Datalink_Constants;
@@ -44,6 +45,18 @@ package body Pcap_Test is
    overriding procedure Register_Tests (Test : in out Test_Case_Type) is
    begin
       AUnit.Test_Cases.Registration.Register_Routine (Test    => Test,
+                                                      Routine => Test_Datalink_Name_To_Value'Access,
+                                                      Name    => "Test datalink name to value");
+
+      AUnit.Test_Cases.Registration.Register_Routine (Test    => Test,
+                                                      Routine => Test_Datalink_Value_To_Description'Access,
+                                                      Name    => "Test datalink value to description");
+
+      AUnit.Test_Cases.Registration.Register_Routine (Test    => Test,
+                                                      Routine => Test_Datalink_Value_To_Name'Access,
+                                                      Name    => "Test datalink value to name");
+
+      AUnit.Test_Cases.Registration.Register_Routine (Test    => Test,
                                                       Routine => Test_Pcap_Ada_Version'Access,
                                                       Name    => "Test Pcap Ada version");
 
@@ -56,30 +69,13 @@ package body Pcap_Test is
                                                       Name    => "Test libpcap version");
 
       AUnit.Test_Cases.Registration.Register_Routine (Test    => Test,
-                                                      Routine => Test_Datalink_Name_To_Value'Access,
-                                                      Name    => "Test datalink name to value");
+                                                      Routine => Test_Status_To_String'Access,
+                                                      Name    => "Test status to string");
+
+      AUnit.Test_Cases.Registration.Register_Routine (Test    => Test,
+                                                      Routine => Test_Strerror'Access,
+                                                      Name    => "Test strerror");
    end Register_Tests;
-
-   procedure Test_Pcap_Ada_Version (Test : in out AUnit.Test_Cases.Test_Case'Class) is
-   begin
-      AUnit.Assertions.Assert (Actual   => Pcap.Pcap_Ada_Version,
-                               Expected => "1.0.0-dev",
-                               Message  => "Wrong Pcap Ada version");
-   end Test_Pcap_Ada_Version;
-
-   procedure Test_Pcap_Api_Version (Test : in out AUnit.Test_Cases.Test_Case'Class) is
-   begin
-      AUnit.Assertions.Assert (Actual   => Pcap.Pcap_Api_Version,
-                               Expected => "1.8.1",
-                               Message  => "Wrong Pcap Api version");
-   end Test_Pcap_Api_Version;
-
-   procedure Test_Libpcap_Version (Test : in out AUnit.Test_Cases.Test_Case'Class) is
-      Version : constant String := Pcap.Pcap_Version;
-   begin
-      AUnit.Assertions.Assert (Condition => Version'Length > 16 and then Version (1 .. 15) = "libpcap version",
-                               Message   => "Version does not start with 'libpcap version'");
-   end Test_Libpcap_Version;
 
    procedure Test_Datalink_Name_To_Value (Test : in out AUnit.Test_Cases.Test_Case'Class) is
    begin
@@ -98,8 +94,99 @@ package body Pcap_Test is
          AUnit.Assertions.Assert (Condition => False,
                                   Message   => "Expected exception Pcap_Error");
       exception
-         when Pcap.Exceptions.Pcap_Error => null;
+         when E : Pcap.Exceptions.Pcap_Error =>
+            AUnit.Assertions.Assert (Actual   => Ada.Exceptions.Exception_Message (X => E),
+                                     Expected => "Invalid datalink name: ""DLT_EN10MB""",
+                                     Message  => "Wrong exception message");
       end;
    end Test_Datalink_Name_To_Value;
+
+   procedure Test_Datalink_Value_To_Description (Test : in out AUnit.Test_Cases.Test_Case'Class) is
+   begin
+      AUnit.Assertions.Assert (Actual   => Pcap.Datalink_Value_To_Description (Value => Pcap.Datalink_Constants.DLT_EN10MB),
+                               Expected => "Ethernet",
+                               Message  => "Wrong datalink description");
+
+      AUnit.Assertions.Assert (Actual   => Pcap.Datalink_Value_To_Description (Value => Pcap.Datalink_Constants.DLT_RDS),
+                               Expected => "IEC 62106 Radio Data System groups",
+                               Message  => "Wrong datalink description");
+      declare
+         Name : String := Pcap.Datalink_Value_To_Description (Value => Pcap.Datalink_Type'Last);
+      begin
+         AUnit.Assertions.Assert (Condition => False,
+                                  Message   => "Expected exception Pcap_Error");
+      end;
+   exception
+      when E : Pcap.Exceptions.Pcap_Error =>
+         AUnit.Assertions.Assert (Actual   => Ada.Exceptions.Exception_Message (X => E),
+                                  Expected => "Invalid datalink",
+                                  Message  => "Wrong exception message");
+   end Test_Datalink_Value_To_Description;
+
+   procedure Test_Datalink_Value_To_Name (Test : in out AUnit.Test_Cases.Test_Case'Class) is
+   begin
+      AUnit.Assertions.Assert (Actual   => Pcap.Datalink_Value_To_Name (Value => Pcap.Datalink_Constants.DLT_EN10MB),
+                               Expected => "EN10MB",
+                               Message  => "Wrong datalink name");
+
+      AUnit.Assertions.Assert (Actual   => Pcap.Datalink_Value_To_Name (Value => Pcap.Datalink_Constants.DLT_RDS),
+                               Expected => "RDS",
+                               Message  => "Wrong datalink name");
+      declare
+         Name : String := Pcap.Datalink_Value_To_Name (Value => Pcap.Datalink_Type'Last);
+      begin
+         AUnit.Assertions.Assert (Condition => False,
+                                  Message   => "Expected exception Pcap_Error");
+      end;
+   exception
+      when E : Pcap.Exceptions.Pcap_Error =>
+         AUnit.Assertions.Assert (Actual   => Ada.Exceptions.Exception_Message (X => E),
+                                  Expected => "Invalid datalink",
+                                  Message  => "Wrong exception message");
+   end Test_Datalink_Value_To_Name;
+
+   procedure Test_Libpcap_Version (Test : in out AUnit.Test_Cases.Test_Case'Class) is
+      Version : constant String := Pcap.Pcap_Version;
+   begin
+      AUnit.Assertions.Assert (Condition => Version'Length > 16 and then Version (1 .. 15) = "libpcap version",
+                               Message   => "Version does not start with 'libpcap version'");
+   end Test_Libpcap_Version;
+
+   procedure Test_Pcap_Ada_Version (Test : in out AUnit.Test_Cases.Test_Case'Class) is
+   begin
+      AUnit.Assertions.Assert (Actual   => Pcap.Pcap_Ada_Version,
+                               Expected => "1.0.0-dev",
+                               Message  => "Wrong Pcap Ada version");
+   end Test_Pcap_Ada_Version;
+
+   procedure Test_Pcap_Api_Version (Test : in out AUnit.Test_Cases.Test_Case'Class) is
+   begin
+      AUnit.Assertions.Assert (Actual   => Pcap.Pcap_Api_Version,
+                               Expected => "1.8.1",
+                               Message  => "Wrong Pcap Api version");
+   end Test_Pcap_Api_Version;
+
+   procedure Test_Status_To_String (Test : in out AUnit.Test_Cases.Test_Case'Class) is
+   begin
+      AUnit.Assertions.Assert (Actual   => Pcap.Status_To_String (Status => Pcap.PCAP_ERROR),
+                               Expected => "Generic error",
+                               Message  => "Wrong status string");
+      AUnit.Assertions.Assert (Actual   => Pcap.Status_To_String (Status => Pcap.PCAP_ERROR_PROMISC_PERM_DENIED),
+                               Expected => "You don't have permission to capture in promiscuous mode on that device",
+                               Message  => "Wrong status string");
+      AUnit.Assertions.Assert (Actual   => Pcap.Status_To_String (Status => Pcap.PCAP_WARNING),
+                               Expected => "Generic warning",
+                               Message  => "Wrong status string");
+      AUnit.Assertions.Assert (Actual   => Pcap.Status_To_String (Status => Pcap.PCAP_WARNING_TSTAMP_TYPE_NOTSUP),
+                               Expected => "That type of time stamp is not supported by that device",
+                               Message  => "Wrong status string");
+   end Test_Status_To_String;
+
+   procedure Test_Strerror (Test : in out AUnit.Test_Cases.Test_Case'Class) is
+   begin
+      AUnit.Assertions.Assert (Actual   => Pcap.Strerror (Error => 13),
+                               Expected => "Permission denied",
+                               Message  => "Wrong error string");
+   end Test_Strerror;
 
 end Pcap_Test;

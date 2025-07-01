@@ -31,7 +31,7 @@
 -----------------------------------------------------------------------------
 with AUnit.Assertions;
 with Pcap;
-with Pcap.Datalink_Constants;
+with Pcap.Exceptions;
 
 package body Pcap_Live_Test is
 
@@ -51,13 +51,8 @@ package body Pcap_Live_Test is
    end Register_Tests;
 
    overriding procedure Set_Up (Test : in out Test_Case_Type) is
-      Warning        : Pcap.Warning_Text_Type;
-      Warning_Length : Pcap.Warning_Text_Length_Type;
    begin
-      Packet_Capture.Open_Live (Device              => "eth0",
-                                Read_Timeout        => 2000,
-                                Warning_Text        => Warning,
-                                Warning_Text_Length => Warning_Length);
+      Packet_Capture.Create (Source => "eth0");
    end Set_Up;
 
    overriding procedure Tear_Down (Test : in out Test_Case_Type) is
@@ -67,9 +62,15 @@ package body Pcap_Live_Test is
 
    procedure Test_Datalink (Test : in out AUnit.Test_Cases.Test_Case'Class) is
    begin
-      AUnit.Assertions.Assert (Actual   => Pcap.Datalink_Value_To_Name (Value => Packet_Capture.Datalink),
-                               Expected => Pcap.Datalink_Value_To_Name (Value => Pcap.Datalink_Constants.DLT_EN10MB),
-                               Message  => "Wrong datalink");
+      declare
+         Value : Pcap.Datalink_Type := Packet_Capture.Datalink;
+      begin
+         null;
+      end;
+      AUnit.Assertions.Assert (Condition => False,
+                               Message   => "Expected exception Pcap_Error");
+   exception
+      when Pcap.Exceptions.Pcap_Error => null;
    end Test_Datalink;
 
 end Pcap_Live_Test;
