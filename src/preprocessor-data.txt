@@ -30,4 +30,4 @@
 --  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 "pcap-datalink_constants.ads" -c
-"pcap.ads"
+"pcap.ads" -c

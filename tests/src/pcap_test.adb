@@ -96,7 +96,7 @@ package body Pcap_Test is
       exception
          when E : Pcap.Exceptions.Pcap_Error =>
             AUnit.Assertions.Assert (Actual   => Ada.Exceptions.Exception_Message (X => E),
-                                     Expected => "Invalid datalink name: ""DLT_EN10MB""",
+                                     Expected => "Invalid argument",
                                      Message  => "Wrong exception message");
       end;
    end Test_Datalink_Name_To_Value;
@@ -119,7 +119,7 @@ package body Pcap_Test is
    exception
       when E : Pcap.Exceptions.Pcap_Error =>
          AUnit.Assertions.Assert (Actual   => Ada.Exceptions.Exception_Message (X => E),
-                                  Expected => "Invalid datalink",
+                                  Expected => "Invalid argument",
                                   Message  => "Wrong exception message");
    end Test_Datalink_Value_To_Description;
 
@@ -141,7 +141,7 @@ package body Pcap_Test is
    exception
       when E : Pcap.Exceptions.Pcap_Error =>
          AUnit.Assertions.Assert (Actual   => Ada.Exceptions.Exception_Message (X => E),
-                                  Expected => "Invalid datalink",
+                                  Expected => "Invalid argument",
                                   Message  => "Wrong exception message");
    end Test_Datalink_Value_To_Name;
 

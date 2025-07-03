@@ -40,7 +40,7 @@ package body Pcap is
    begin
       C_Value := pcap_datalink_name_to_val (name => C_Name);
       if C_Value < 0 then
-         raise Pcap.Exceptions.Pcap_Error with "Invalid datalink name: """ & Name & """";
+         raise Pcap.Exceptions.Pcap_Error with Strerror (Error => EINVAL);
       end if;
       return Datalink_Type (C_Value);
    end Datalink_Name_To_Value;
@@ -51,7 +51,7 @@ package body Pcap is
    begin
       C_Description := pcap_datalink_val_to_description (dlt => Interfaces.C.int (Value));
       if C_Description = Interfaces.C.Strings.Null_Ptr then
-         raise Pcap.Exceptions.Pcap_Error with "Invalid datalink";
+         raise Pcap.Exceptions.Pcap_Error with Strerror (Error => EINVAL);
       end if;
       return Interfaces.C.Strings.Value (Item => C_Description);
    end Datalink_Value_To_Description;
@@ -62,7 +62,7 @@ package body Pcap is
    begin
       C_Name := pcap_datalink_val_to_name (dlt => Interfaces.C.int (Value));
       if C_Name = Interfaces.C.Strings.Null_Ptr then
-         raise Pcap.Exceptions.Pcap_Error with "Invalid datalink";
+         raise Pcap.Exceptions.Pcap_Error with Strerror (Error => EINVAL);
       end if;
       return Interfaces.C.Strings.Value (Item => C_Name);
    end Datalink_Value_To_Name;
