@@ -22,10 +22,10 @@ library project Pcap_Ada is
    package Compiler is
       for Default_Switches ("Ada") use Pcap_Ada_Config.Ada_Compiler_Switches;
       Pcap_Ada_Version := """" & external("PCAP_ADA_VERSION", Pcap_Ada_Config.Crate_Version) & """";
-      Pcap_Os_Type     := external("PCAP_OS_TYPE", Pcap_Ada_Config.Alire_Host_Os);
+      Pcap_Ada_Os_Type := external("PCAP_ADA_OS_TYPE", Pcap_Ada_Config.Alire_Host_Os);
       Preprocessor_Switches := (
          "-gnateDPCAP_ADA_VERSION=" & Pcap_Ada_Version,
-         "-gnateDPCAP_OS_TYPE=" & Pcap_Os_Type,
+         "-gnateDPCAP_ADA_OS_TYPE=" & Pcap_Ada_Os_Type,
          "-gnatep=preprocessor-data.txt"
       );
       for Switches ("Ada") use Compiler'Default_Switches ("Ada") & Preprocessor_Switches;

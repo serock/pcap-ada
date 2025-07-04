@@ -234,9 +234,9 @@ package Pcap is
 
 private
 
-#if PCAP_OS_TYPE = "freebsd" or PCAP_OS_TYPE = "linux" or PCAP_OS_TYPE = "macos" or PCAP_OS_TYPE = "openbsd"
+#if PCAP_ADA_OS_TYPE = "freebsd" or PCAP_ADA_OS_TYPE = "linux" or PCAP_ADA_OS_TYPE = "macos" or PCAP_ADA_OS_TYPE = "openbsd"
    EINVAL : constant := 22;
-#elsif PCAP_OS_TYPE = "windows"
+#elsif PCAP_ADA_OS_TYPE = "windows"
    EINVAL : constant := 10022;
 #end if;
 
