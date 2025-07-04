@@ -232,7 +232,7 @@ package Pcap.Datalink_Constants is
    DLT_BLUETOOTH_BREDR_BB         : constant Datalink_Type := 255;
    DLT_BLUETOOTH_LE_LL_WITH_PHDR  : constant Datalink_Type := 256;
    DLT_PROFIBUS_DL                : constant Datalink_Type := 257;
-#if not (PCAP_ADA_OS_TYPE = "macos")
+#if not PCAP_ADA_OS_TYPE = "macos"
    DLT_PKTAP                      : constant Datalink_Type := 258;
 #end if;
    DLT_EPON                       : constant Datalink_Type := 259;

@@ -234,10 +234,8 @@ package Pcap is
 
 private
 
-#if PCAP_ADA_OS_TYPE = "freebsd" or PCAP_ADA_OS_TYPE = "linux" or PCAP_ADA_OS_TYPE = "macos" or PCAP_ADA_OS_TYPE = "openbsd"
+#if not PCAP_ADA_OS_TYPE = "os-unknown"
    EINVAL : constant := 22;
-#elsif PCAP_ADA_OS_TYPE = "windows"
-   EINVAL : constant := 10022;
 #end if;
 
    PCAP_ERRBUF_SIZE : constant := 256;
