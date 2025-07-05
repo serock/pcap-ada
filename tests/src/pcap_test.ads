@@ -48,6 +48,8 @@ package Pcap_Test is
 
    procedure Test_Libpcap_Version (Test : in out AUnit.Test_Cases.Test_Case'Class);
 
+   procedure Test_Lookup_Device (Test : in out AUnit.Test_Cases.Test_Case'Class);
+
    procedure Test_Pcap_Ada_Version (Test : in out AUnit.Test_Cases.Test_Case'Class);
 
    procedure Test_Pcap_Api_Version (Test : in out AUnit.Test_Cases.Test_Case'Class);

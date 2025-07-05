@@ -54,7 +54,7 @@ package body Pcap_Live_Activated_Test is
       Warning        : Pcap.Warning_Text_Type;
       Warning_Length : Pcap.Warning_Text_Length_Type;
    begin
-      Packet_Capture.Open_Live (Device              => "eth0",
+      Packet_Capture.Open_Live (Device              => Pcap.Lookup_Device,
                                 Read_Timeout        => 2000,
                                 Warning_Text        => Warning,
                                 Warning_Text_Length => Warning_Length);

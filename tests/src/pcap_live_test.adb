@@ -52,7 +52,7 @@ package body Pcap_Live_Test is
 
    overriding procedure Set_Up (Test : in out Test_Case_Type) is
    begin
-      Packet_Capture.Create (Source => "eth0");
+      Packet_Capture.Create (Source => Pcap.Lookup_Device);
    end Set_Up;
 
    overriding procedure Tear_Down (Test : in out Test_Case_Type) is

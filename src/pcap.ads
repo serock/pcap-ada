@@ -100,6 +100,8 @@ package Pcap is
 
    function Datalink_Value_To_Name (Value : Datalink_Type) return String;
 
+   function Lookup_Device return String;
+
    function Pcap_Ada_Version return String;
 
    function Pcap_Api_Version return String;
@@ -355,6 +357,11 @@ private
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_list_tstamp_types";
+
+   function pcap_lookupdev (errbuf : out pcap_errbuf_t) return Interfaces.C.Strings.chars_ptr
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_lookupdev";
 
    function pcap_open_dead (linktype : Interfaces.C.int;
                             snaplen  : Interfaces.C.int) return pcap_t_ptr

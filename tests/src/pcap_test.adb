@@ -57,12 +57,16 @@ package body Pcap_Test is
                                                       Name    => "Test datalink value to name");
 
       AUnit.Test_Cases.Registration.Register_Routine (Test    => Test,
+                                                      Routine => Test_Lookup_Device'Access,
+                                                      Name    => "Test lookup device");
+
+      AUnit.Test_Cases.Registration.Register_Routine (Test    => Test,
                                                       Routine => Test_Pcap_Ada_Version'Access,
                                                       Name    => "Test Pcap Ada version");
 
       AUnit.Test_Cases.Registration.Register_Routine (Test    => Test,
                                                       Routine => Test_Pcap_Api_Version'Access,
-                                                      Name    => "Test Pcap Api version");
+                                                      Name    => "Test Pcap API version");
 
       AUnit.Test_Cases.Registration.Register_Routine (Test    => Test,
                                                       Routine => Test_Libpcap_Version'Access,
@@ -152,6 +156,13 @@ package body Pcap_Test is
                                Message   => "Wrong libpcap version");
    end Test_Libpcap_Version;
 
+   procedure Test_Lookup_Device (Test : in out AUnit.Test_Cases.Test_Case'Class) is
+      Device : constant String := Pcap.Lookup_Device;
+   begin
+      AUnit.Assertions.Assert (Condition => Device'Length > 0,
+                               Message   => "Invalid device name");
+   end Test_Lookup_Device;
+
    procedure Test_Pcap_Ada_Version (Test : in out AUnit.Test_Cases.Test_Case'Class) is
    begin
       AUnit.Assertions.Assert (Actual   => Pcap.Pcap_Ada_Version,
@@ -163,7 +174,7 @@ package body Pcap_Test is
    begin
       AUnit.Assertions.Assert (Actual   => Pcap.Pcap_Api_Version,
                                Expected => "1.8.1",
-                               Message  => "Wrong Pcap Api version");
+                               Message  => "Wrong Pcap API version");
    end Test_Pcap_Api_Version;
 
    procedure Test_Status_To_String (Test : in out AUnit.Test_Cases.Test_Case'Class) is

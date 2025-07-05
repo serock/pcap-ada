@@ -4,7 +4,7 @@ An Ada binding for libpcap
 `pcap-ada` is in the early stages of development.
 The initial release will implement the [libpcap 1.8.x API](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap.3pcap.html).
 
-## 1.8.x API Progress - 38 of 71 (54%) implemented
+## 1.8.x API Progress - 39 of 71 (55%) implemented
 
 - [x] [pcap_activate](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_activate.3pcap.html)
 - [x] [pcap_breakloop](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_breakloop.3pcap.html)
@@ -43,7 +43,7 @@ The initial release will implement the [libpcap 1.8.x API](https://www.tcpdump.o
 - [x] [pcap_lib_version](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_lib_version.3pcap.html)
 - [x] [pcap_list_datalinks](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_list_datalinks.3pcap.html)
 - [x] [pcap_list_tstamp_types](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_list_tstamp_types.3pcap.html)
-- [ ] [pcap_lookupdev](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_lookupdev.3pcap.html)
+- [x] [pcap_lookupdev](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_lookupdev.3pcap.html)
 - [ ] [pcap_lookupnet](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_lookupnet.3pcap.html)
 - [ ] [pcap_loop](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_loop.3pcap.html)
 - [ ] [pcap_major_version](https://www.tcpdump.org/manpages/libpcap-1.8.1/pcap_major_version.3pcap.html)

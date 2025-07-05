@@ -67,6 +67,18 @@ package body Pcap is
       return Interfaces.C.Strings.Value (Item => C_Name);
    end Datalink_Value_To_Name;
 
+   function Lookup_Device return String is
+      C_Device       : Interfaces.C.Strings.chars_ptr;
+      C_Error_Buffer : Pcap.pcap_errbuf_t := (others => Interfaces.C.nul);
+      use type Interfaces.C.Strings.chars_ptr;
+   begin
+      C_Device := pcap_lookupdev (errbuf => C_Error_Buffer);
+      if C_Device = Interfaces.C.Strings.Null_Ptr then
+         raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => C_Error_Buffer);
+      end if;
+      return Interfaces.C.Strings.Value (Item => C_Device);
+   end Lookup_Device;
+
    function Status_To_String (Status : Status_Type) return String is
       C_String : Interfaces.C.Strings.chars_ptr;
    begin
