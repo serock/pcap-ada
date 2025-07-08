@@ -234,9 +234,36 @@ package Pcap is
    function Status_To_String (Self : Packet_Capture_Type) return String
      with Pre => Self.Is_Open;
 
+   ----------------------------------------------------------------------------
+
+   type Device_Type is tagged private;
+
+   function Description (Device : Device_Type) return String;
+
+   function Has_Next (Device : Device_Type) return Boolean;
+
+   function Name (Device : Device_Type) return String;
+
+   ----------------------------------------------------------------------------
+
+   type Devices_Type is limited new Ada.Finalization.Limited_Controlled with private;
+
+   function Device (Devices : Devices_Type) return Device_Type'Class
+     with Pre => Devices.Has_Device;
+
+   procedure Find_All (Devices : in out Devices_Type)
+     with Pre => not Devices.Has_Device;
+
+   procedure Free_All (Devices : in out Devices_Type)
+     with Pre  => Devices.Has_Device,
+          Post => not Devices.Has_Device;
+
+   function Has_Device (Devices : Devices_Type) return Boolean;
+
 private
 
 #if not PCAP_ADA_OS_TYPE = "os-unknown"
+   EFAULT : constant := 14;
    EINVAL : constant := 22;
 #end if;
 
@@ -245,6 +272,46 @@ private
    type pcap_t is null record;
 
    type pcap_t_ptr is access pcap_t;
+
+   subtype sa_data_t is Interfaces.C.char_array (0 .. 13);
+
+   subtype sa_family_t is Interfaces.C.unsigned_short;
+
+   type sockaddr is record
+      sa_family : aliased sa_family_t;
+      sa_data   : aliased sa_data_t;
+   end record
+   with Convention => C;
+
+   type sockaddr_ptr is access sockaddr;
+
+   type pcap_addr_t;
+
+   type pcap_addr_t_ptr is access pcap_addr_t;
+
+   type pcap_addr_t is record
+      next      : pcap_addr_t_ptr;
+      addr      : sockaddr_ptr;
+      netmask   : sockaddr_ptr;
+      broadaddr : sockaddr_ptr;
+      dstaddr   : sockaddr_ptr;
+   end record
+   with Convention => C;
+
+   type pcap_if_t;
+
+   type pcap_if_t_ptr is access pcap_if_t;
+
+   subtype bpf_u_int32 is Interfaces.C.unsigned;
+
+   type pcap_if_t is record
+      next        : pcap_if_t_ptr;
+      name        : Interfaces.C.Strings.chars_ptr;
+      description : Interfaces.C.Strings.chars_ptr;
+      addresses   : pcap_addr_t_ptr;
+      flags       : aliased bpf_u_int32;
+   end record
+   with Convention => C;
 
    type pcap_direction_t is
      (PCAP_D_INOUT,
@@ -307,6 +374,17 @@ private
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_datalink_val_to_description";
+
+   function pcap_findalldevs (alldevsp : out pcap_if_t_ptr;
+                              errbuf   : out pcap_errbuf_t) return Interfaces.C.int
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_findalldevs";
+
+   procedure pcap_freealldevs (alldevs : pcap_if_t_ptr)
+   with Import        => True,
+        Convention    => C,
+        External_Name => "pcap_freealldevs";
 
    procedure pcap_free_datalinks (dlt_list : System.Address)
    with Import        => True,
@@ -548,5 +626,21 @@ private
    function Is_Not_Activated (Self : Packet_Capture_Type) return Boolean is (not Self.Activated);
 
    function Is_Open (Self : Packet_Capture_Type) return Boolean is (Self.Handle /= null);
+
+   ----------------------------------------------------------------------------
+
+   type Device_Type is tagged
+      record
+         Network_Device_Access : pcap_if_t_ptr;
+      end record;
+
+   ----------------------------------------------------------------------------
+
+   type Devices_Type is limited new Ada.Finalization.Limited_Controlled with
+      record
+         Network_Device_Access : pcap_if_t_ptr;
+      end record;
+
+   overriding procedure Finalize (Devices : in out Devices_Type);
 
 end Pcap;

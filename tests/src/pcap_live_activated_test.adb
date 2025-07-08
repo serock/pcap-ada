@@ -51,13 +51,17 @@ package body Pcap_Live_Activated_Test is
    end Register_Tests;
 
    overriding procedure Set_Up (Test : in out Test_Case_Type) is
+      Devices        : Pcap.Devices_Type;
       Warning        : Pcap.Warning_Text_Type;
       Warning_Length : Pcap.Warning_Text_Length_Type;
    begin
-      Packet_Capture.Open_Live (Device              => Pcap.Lookup_Device,
-                                Read_Timeout        => 2000,
-                                Warning_Text        => Warning,
-                                Warning_Text_Length => Warning_Length);
+      Devices.Find_All;
+      if Devices.Has_Device then
+         Packet_Capture.Open_Live (Device              => Devices.Device.Name,
+                                   Read_Timeout        => 2000,
+                                   Warning_Text        => Warning,
+                                   Warning_Text_Length => Warning_Length);
+      end if;
    end Set_Up;
 
    overriding procedure Tear_Down (Test : in out Test_Case_Type) is

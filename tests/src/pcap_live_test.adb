@@ -47,12 +47,15 @@ package body Pcap_Live_Test is
       AUnit.Test_Cases.Registration.Register_Routine (Test    => Test,
                                                       Routine => Test_Datalink'Access,
                                                       Name    => "Test datalink");
-
    end Register_Tests;
 
    overriding procedure Set_Up (Test : in out Test_Case_Type) is
+      Devices : Pcap.Devices_Type;
    begin
-      Packet_Capture.Create (Source => Pcap.Lookup_Device);
+      Devices.Find_All;
+      if Devices.Has_Device then
+         Packet_Capture.Create (Source => Devices.Device.Name);
+      end if;
    end Set_Up;
 
    overriding procedure Tear_Down (Test : in out Test_Case_Type) is

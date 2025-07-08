@@ -501,4 +501,66 @@ package body Pcap is
       return Status_To_String (Status => Self.Status);
    end Status_To_String;
 
+   ----------------------------------------------------------------------------
+
+   function Description (Device : Device_Type) return String is
+   begin
+      return Interfaces.C.Strings.Value (Item => Device.Network_Device_Access.all.description);
+   end Description;
+
+   function Has_Next (Device : Device_Type) return Boolean is
+   begin
+      return Device.Network_Device_Access.all.next /= null;
+   end Has_Next;
+
+   function Name (Device : Device_Type) return String is
+   begin
+      return Interfaces.C.Strings.Value (Item => Device.Network_Device_Access.all.name);
+   end Name;
+
+   ----------------------------------------------------------------------------
+
+   function Device (Devices : Devices_Type) return Device_Type'Class is
+      Device : Device_Type;
+   begin
+      if Devices.Network_Device_Access = null then
+         raise Pcap.Exceptions.Pcap_Error with Strerror (Error => EFAULT);
+      end if;
+      Device.Network_Device_Access := Devices.Network_Device_Access;
+      return Device;
+   end Device;
+
+   function Has_Device (Devices : Devices_Type) return Boolean is
+   begin
+      return Devices.Network_Device_Access /= null;
+   end Has_Device;
+
+   overriding procedure Finalize (Devices : in out Devices_Type) is
+   begin
+      Devices.Free_All;
+   end Finalize;
+
+   procedure Find_All (Devices : in out Devices_Type) is
+      C_Device_Ptr   : pcap_if_t_ptr;
+      C_Error_Buffer : Pcap.pcap_errbuf_t := (others => Interfaces.C.nul);
+      C_Return_Value : Interfaces.C.int;
+      use type Interfaces.C.int;
+   begin
+      Devices.Free_All;
+      C_Return_Value := pcap_findalldevs (alldevsp => C_Device_Ptr,
+                                          errbuf   => C_Error_Buffer);
+      if C_Return_Value < 0 then
+         raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => C_Error_Buffer);
+      end if;
+      Devices.Network_Device_Access := C_Device_Ptr;
+   end Find_All;
+
+   procedure Free_All (Devices : in out Devices_Type) is
+   begin
+      if Devices.Has_Device then
+         pcap_freealldevs (alldevs => Devices.Network_Device_Access);
+         Devices.Network_Device_Access := null;
+      end if;
+   end Free_All;
+
 end Pcap;
