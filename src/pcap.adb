@@ -503,20 +503,26 @@ package body Pcap is
 
    ----------------------------------------------------------------------------
 
-   function Description (Device : Device_Type) return String is
+   function Is_Loopback (Device : Device_Type) return Boolean is
+      PCAP_IF_LOOPBACK : constant := 16#00000001#;
+      use type Interfaces.C.unsigned;
    begin
-      return Interfaces.C.Strings.Value (Item => Device.Network_Device_Access.all.description);
-   end Description;
+      return (Device.Network_Device_Access.all.flags and PCAP_IF_LOOPBACK) = PCAP_IF_LOOPBACK;
+   end Is_Loopback;
 
-   function Has_Next (Device : Device_Type) return Boolean is
+   function Is_Running (Device : Device_Type) return Boolean is
+      PCAP_IF_RUNNING : constant := 16#00000002#;
+      use type Interfaces.C.unsigned;
    begin
-      return Device.Network_Device_Access.all.next /= null;
-   end Has_Next;
+      return (Device.Network_Device_Access.all.flags and PCAP_IF_RUNNING) = PCAP_IF_RUNNING;
+   end Is_Running;
 
-   function Name (Device : Device_Type) return String is
+   function Is_Up (Device : Device_Type) return Boolean is
+      PCAP_IF_UP : constant := 16#00000004#;
+      use type Interfaces.C.unsigned;
    begin
-      return Interfaces.C.Strings.Value (Item => Device.Network_Device_Access.all.name);
-   end Name;
+      return (Device.Network_Device_Access.all.flags and PCAP_IF_UP) = PCAP_IF_UP;
+   end Is_Up;
 
    ----------------------------------------------------------------------------
 

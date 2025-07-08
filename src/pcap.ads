@@ -240,7 +240,15 @@ package Pcap is
 
    function Description (Device : Device_Type) return String;
 
+   function Has_Addresses (Device : Device_Type) return Boolean;
+
    function Has_Next (Device : Device_Type) return Boolean;
+
+   function Is_Loopback (Device : Device_Type) return Boolean;
+
+   function Is_Running (Device : Device_Type) return Boolean;
+
+   function Is_Up (Device : Device_Type) return Boolean;
 
    function Name (Device : Device_Type) return String;
 
@@ -633,6 +641,14 @@ private
       record
          Network_Device_Access : pcap_if_t_ptr;
       end record;
+
+   function Description (Device : Device_Type) return String is (Interfaces.C.Strings.Value (Item => Device.Network_Device_Access.all.description));
+
+   function Has_Addresses (Device : Device_Type) return Boolean is (Device.Network_Device_Access.all.addresses /= null);
+
+   function Has_Next (Device : Device_Type) return Boolean is (Device.Network_Device_Access.all.next /= null);
+
+   function Name (Device : Device_Type) return String is (Interfaces.C.Strings.Value (Item => Device.Network_Device_Access.all.name));
 
    ----------------------------------------------------------------------------
 
