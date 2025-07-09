@@ -133,123 +133,123 @@ package body Pcap is
 
    ----------------------------------------------------------------------------
 
-   procedure Activate (Self : in out Packet_Capture_Type) is
+   procedure Activate (Capture : in out Packet_Capture_Type) is
       C_Return_Value : Interfaces.C.int;
    begin
-      C_Return_Value := pcap_activate (p => Self.Handle);
-      Self.Status := Status_Type (C_Return_Value);
-      if Self.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with (if Self.Status = PCAP_ERROR then Self.Get_Error_Text else Self.Status_To_String);
+      C_Return_Value := pcap_activate (p => Capture.Handle);
+      Capture.Status := Status_Type (C_Return_Value);
+      if Capture.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with (if Capture.Status = PCAP_ERROR then Capture.Get_Error_Text else Capture.Status_To_String);
       end if;
-      Self.Activated := True;
+      Capture.Activated := True;
    end Activate;
 
-   procedure Break_Loop (Self : Packet_Capture_Type) is
+   procedure Break_Loop (Capture : Packet_Capture_Type) is
    begin
-      pcap_breakloop (p => Self.Handle);
+      pcap_breakloop (p => Capture.Handle);
    end Break_Loop;
 
-   function Can_Set_Monitor_Mode (Self : in out Packet_Capture_Type) return Boolean is
+   function Can_Set_Monitor_Mode (Capture : in out Packet_Capture_Type) return Boolean is
       C_Return_Value : Interfaces.C.int;
       use type Interfaces.C.int;
    begin
-      C_Return_Value := pcap_can_set_rfmon (p => Self.Handle);
-      Self.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
-      if Self.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with (if Self.Status = PCAP_ERROR then Self.Get_Error_Text else Self.Status_To_String);
+      C_Return_Value := pcap_can_set_rfmon (p => Capture.Handle);
+      Capture.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
+      if Capture.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with (if Capture.Status = PCAP_ERROR then Capture.Get_Error_Text else Capture.Status_To_String);
       end if;
       return C_Return_Value = 1;
    end Can_Set_Monitor_Mode;
 
-   procedure Close (Self : in out Packet_Capture_Type) is
+   procedure Close (Capture : in out Packet_Capture_Type) is
    begin
-      if Self.Handle /= null then
-         pcap_close (p => Self.Handle);
-         Self.Handle := null;
+      if Capture.Handle /= null then
+         pcap_close (p => Capture.Handle);
+         Capture.Handle := null;
       end if;
    end Close;
 
-   procedure Create (Self         : in out Packet_Capture_Type;
-                     Source       :        String) is
+   procedure Create (Capture : in out Packet_Capture_Type;
+                     Source  :        String) is
       C_Error_Buffer : Pcap.pcap_errbuf_t;
       C_Source       : constant Interfaces.C.char_array := Interfaces.C.To_C (Item => Source);
    begin
-      if Self.Handle = null then
+      if Capture.Handle = null then
          C_Error_Buffer := (others => Interfaces.C.nul);
-         Self.Handle := pcap_create (source => C_Source,
-                                     errbuf => C_Error_Buffer);
-         if Self.Handle = null then
+         Capture.Handle := pcap_create (source => C_Source,
+                                        errbuf => C_Error_Buffer);
+         if Capture.Handle = null then
             raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => C_Error_Buffer);
          end if;
       end if;
    end Create;
 
-   function Datalink (Self : in out Packet_Capture_Type) return Datalink_Type is
+   function Datalink (Capture : in out Packet_Capture_Type) return Datalink_Type is
       C_Return_Value : Interfaces.C.int;
       use type Interfaces.C.int;
    begin
-      C_Return_Value := pcap_datalink (p => Self.Handle);
-      Self.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
-      if Self.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with Self.Status_To_String;
+      C_Return_Value := pcap_datalink (p => Capture.Handle);
+      Capture.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
+      if Capture.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with Capture.Status_To_String;
       end if;
       return Datalink_Type (C_Return_Value);
    end Datalink;
 
-   overriding procedure Finalize (Self : in out Packet_Capture_Type) is
+   overriding procedure Finalize (Capture : in out Packet_Capture_Type) is
    begin
-      Self.Close;
+      Capture.Close;
    end Finalize;
 
-   function Get_Nonblock (Self : in out Packet_Capture_Type) return Boolean is
+   function Get_Nonblock (Capture : in out Packet_Capture_Type) return Boolean is
       C_Error_Buffer : pcap_errbuf_t := (others => Interfaces.C.nul);
       C_Return_Value : Interfaces.C.int;
       use type Interfaces.C.int;
    begin
-      C_Return_Value := pcap_getnonblock (p      => Self.Handle,
+      C_Return_Value := pcap_getnonblock (p      => Capture.Handle,
                                           errbuf => C_Error_Buffer);
-      Self.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
-      if Self.Has_Error_Status then
+      Capture.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
+      if Capture.Has_Error_Status then
          raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => C_Error_Buffer);
       end if;
       return C_Return_Value /= 0;
    end Get_Nonblock;
 
-   function Get_Timestamp_Precision (Self : Packet_Capture_Type) return Timestamp_Precision_Type is
+   function Get_Timestamp_Precision (Capture : Packet_Capture_Type) return Timestamp_Precision_Type is
       C_Precision : Interfaces.C.int;
    begin
-      C_Precision := pcap_get_tstamp_precision (p => Self.Handle);
+      C_Precision := pcap_get_tstamp_precision (p => Capture.Handle);
       return Timestamp_Precision_Type (C_Precision);
    end Get_Timestamp_Precision;
 
-   function Get_Error_Text (Self : Packet_Capture_Type) return String is
+   function Get_Error_Text (Capture : Packet_Capture_Type) return String is
       C_Error_Text : Interfaces.C.Strings.chars_ptr;
    begin
-      C_Error_Text := pcap_geterr (p => Self.Handle);
+      C_Error_Text := pcap_geterr (p => Capture.Handle);
       return Interfaces.C.Strings.Value (Item => C_Error_Text);
    end Get_Error_Text;
 
-   function Has_Error_Status (Self : Packet_Capture_Type) return Boolean is
+   function Has_Error_Status (Capture : Packet_Capture_Type) return Boolean is
    begin
-      return Self.Status < 0;
+      return Capture.Status < 0;
    end Has_Error_Status;
 
-   function Has_Warning_Status (Self : Packet_Capture_Type) return Boolean is
+   function Has_Warning_Status (Capture : Packet_Capture_Type) return Boolean is
    begin
-      return Self.Status > 0;
+      return Capture.Status > 0;
    end Has_Warning_Status;
 
-   procedure List_Datalinks (Self      : in out Packet_Capture_Type;
+   procedure List_Datalinks (Capture   : in out Packet_Capture_Type;
                              Datalinks :    out Datalinks_Type) is
       C_Return_Value : Interfaces.C.int;
       C_Dlt_Buffer   : System.Address;
       use type Interfaces.C.int;
    begin
-      C_Return_Value := pcap_list_datalinks (p       => Self.Handle,
+      C_Return_Value := pcap_list_datalinks (p       => Capture.Handle,
                                              dlt_buf => C_Dlt_Buffer);
-      Self.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
-      if Self.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with (if Self.Status = PCAP_ERROR then Self.Get_Error_Text else Self.Status_To_String);
+      Capture.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
+      if Capture.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with (if Capture.Status = PCAP_ERROR then Capture.Get_Error_Text else Capture.Status_To_String);
       end if;
       declare
          Number_Of_Datalinks : constant Integer := Integer (C_Return_Value);
@@ -264,17 +264,17 @@ package body Pcap is
       pcap_free_datalinks (dlt_list => C_Dlt_Buffer);
    end List_Datalinks;
 
-   procedure List_Timestamp_Types (Self            : in out Packet_Capture_Type;
+   procedure List_Timestamp_Types (Capture         : in out Packet_Capture_Type;
                                    Timestamp_Types :    out Timestamp_Types_Type) is
       C_Return_Value : Interfaces.C.int;
       C_Tstamp_Types : System.Address;
       use type Interfaces.C.int;
    begin
-      C_Return_Value := pcap_list_tstamp_types (p            => Self.Handle,
+      C_Return_Value := pcap_list_tstamp_types (p            => Capture.Handle,
                                                 tstamp_types => C_Tstamp_Types);
-      Self.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
-      if Self.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with (if Self.Status = PCAP_ERROR then Self.Get_Error_Text else Self.Status_To_String);
+      Capture.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
+      if Capture.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with (if Capture.Status = PCAP_ERROR then Capture.Get_Error_Text else Capture.Status_To_String);
       end if;
       declare
          Number_Of_Timestamp_Types : constant Integer := Integer (C_Return_Value);
@@ -291,19 +291,19 @@ package body Pcap is
       end;
    end List_Timestamp_Types;
 
-   procedure Open_Dead (Self            : in out Packet_Capture_Type;
+   procedure Open_Dead (Capture         : in out Packet_Capture_Type;
                         Datalink        :        Datalink_Type;
                         Snapshot_Length :        Snapshot_Length_Type     := 65535;
                         Precision       :        Timestamp_Precision_Type := PCAP_TSTAMP_PRECISION_MICRO) is
    begin
-      if Self.Handle = null then
-         Self.Handle := pcap_open_dead_with_tstamp_precision (linktype  => Interfaces.C.int (Datalink),
-                                                              snaplen   => Interfaces.C.int (Snapshot_Length),
-                                                              precision => Interfaces.C.unsigned (Precision));
+      if Capture.Handle = null then
+         Capture.Handle := pcap_open_dead_with_tstamp_precision (linktype  => Interfaces.C.int (Datalink),
+                                                                 snaplen   => Interfaces.C.int (Snapshot_Length),
+                                                                 precision => Interfaces.C.unsigned (Precision));
       end if;
    end Open_Dead;
 
-   procedure Open_Live (Self                : in out Packet_Capture_Type;
+   procedure Open_Live (Capture             : in out Packet_Capture_Type;
                         Device              :        String;
                         Snapshot_Length     :        Snapshot_Length_Type := 65535;
                         Promiscuous_Mode    :        Boolean              := False;
@@ -314,13 +314,13 @@ package body Pcap is
       C_Error_Buffer : Pcap.pcap_errbuf_t;
       use type Interfaces.C.char;
    begin
-      if Self.Handle = null then
+      if Capture.Handle = null then
          C_Error_Buffer := (others => Interfaces.C.nul);
-         Self.Handle := pcap_open_live (device  => C_Device,
-                                        snaplen => Interfaces.C.int (Snapshot_Length),
-                                        promisc => Interfaces.C.int (Boolean'Pos (Promiscuous_Mode)),
-                                        to_ms   => Interfaces.C.int (Read_Timeout),
-                                        errbuf  => C_Error_Buffer);
+         Capture.Handle := pcap_open_live (device  => C_Device,
+                                           snaplen => Interfaces.C.int (Snapshot_Length),
+                                           promisc => Interfaces.C.int (Boolean'Pos (Promiscuous_Mode)),
+                                           to_ms   => Interfaces.C.int (Read_Timeout),
+                                           errbuf  => C_Error_Buffer);
          if C_Error_Buffer (0) /= Interfaces.C.nul then
             declare
                Text : constant String := Interfaces.C.To_Ada (Item => C_Error_Buffer);
@@ -329,166 +329,166 @@ package body Pcap is
                Warning_Text (1 .. Warning_Text_Length) := Text;
             end;
          end if;
-         if Self.Handle = null then
+         if Capture.Handle = null then
             raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => C_Error_Buffer);
          end if;
-         Self.Activated := True;
+         Capture.Activated := True;
       end if;
    end Open_Live;
 
-   procedure Perror (Self   : Packet_Capture_Type;
-                     Prefix : String) is
+   procedure Perror (Capture : Packet_Capture_Type;
+                     Prefix  : String) is
       C_Prefix : constant Interfaces.C.char_array := Interfaces.C.To_C (Item => Prefix);
    begin
-      pcap_perror (p      => Self.Handle,
+      pcap_perror (p      => Capture.Handle,
                    prefix => C_Prefix);
    end Perror;
 
-   procedure Set_Buffer_Size (Self        : in out Packet_Capture_Type;
+   procedure Set_Buffer_Size (Capture     : in out Packet_Capture_Type;
                               Buffer_Size :        Buffer_Size_Type) is
       C_Return_Value : Interfaces.C.int;
    begin
-      C_Return_Value := pcap_set_buffer_size (p           => Self.Handle,
+      C_Return_Value := pcap_set_buffer_size (p           => Capture.Handle,
                                               buffer_size => Interfaces.C.int (Buffer_Size));
-      Self.Status := Status_Type (C_Return_Value);
-      if Self.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with Self.Status_To_String;
+      Capture.Status := Status_Type (C_Return_Value);
+      if Capture.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with Capture.Status_To_String;
       end if;
    end Set_Buffer_Size;
 
-   procedure Set_Datalink (Self     : in out Packet_Capture_Type;
+   procedure Set_Datalink (Capture  : in out Packet_Capture_Type;
                            Datalink :        Datalink_Type) is
       C_Return_Value : Interfaces.C.int;
    begin
-      C_Return_Value := pcap_set_datalink (p   => Self.Handle,
+      C_Return_Value := pcap_set_datalink (p   => Capture.Handle,
                                            dlt => Interfaces.C.int (Datalink));
-      Self.Status := Status_Type (C_Return_Value);
-      if Self.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with Self.Get_Error_Text;
+      Capture.Status := Status_Type (C_Return_Value);
+      if Capture.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with Capture.Get_Error_Text;
       end if;
    end Set_Datalink;
 
-   procedure Set_Direction (Self      : in out Packet_Capture_Type;
+   procedure Set_Direction (Capture   : in out Packet_Capture_Type;
                             Direction :        Direction_Type) is
       C_Return_Value : Interfaces.C.int;
    begin
-      C_Return_Value := pcap_setdirection (p => Self.Handle,
+      C_Return_Value := pcap_setdirection (p => Capture.Handle,
                                            d => pcap_direction_t'Val (Direction_Type'Pos (Direction)));
-      Self.Status := Status_Type (C_Return_Value);
-      if Self.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with Self.Get_Error_Text;
+      Capture.Status := Status_Type (C_Return_Value);
+      if Capture.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with Capture.Get_Error_Text;
       end if;
    end Set_Direction;
 
-   procedure Set_Immediate_Mode (Self           : in out Packet_Capture_Type;
+   procedure Set_Immediate_Mode (Capture        : in out Packet_Capture_Type;
                                  Immediate_Mode :        Boolean := True) is
       C_Return_Value : Interfaces.C.int;
    begin
-      C_Return_Value := pcap_set_immediate_mode (p              => Self.Handle,
+      C_Return_Value := pcap_set_immediate_mode (p              => Capture.Handle,
                                                  immediate_mode => Boolean'Pos (Immediate_Mode));
-      Self.Status := Status_Type (C_Return_Value);
-      if Self.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with Self.Status_To_String;
+      Capture.Status := Status_Type (C_Return_Value);
+      if Capture.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with Capture.Status_To_String;
       end if;
    end Set_Immediate_Mode;
 
-   procedure Set_Monitor_Mode (Self         : in out Packet_Capture_Type;
+   procedure Set_Monitor_Mode (Capture      : in out Packet_Capture_Type;
                                Monitor_Mode :        Boolean := True) is
       C_Return_Value : Interfaces.C.int;
    begin
-      C_Return_Value := pcap_set_rfmon (p     => Self.Handle,
+      C_Return_Value := pcap_set_rfmon (p     => Capture.Handle,
                                         rfmon => Boolean'Pos (Monitor_Mode));
-      Self.Status := Status_Type (C_Return_Value);
-      if Self.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with Self.Status_To_String;
+      Capture.Status := Status_Type (C_Return_Value);
+      if Capture.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with Capture.Status_To_String;
       end if;
    end Set_Monitor_Mode;
 
-   procedure Set_Nonblock (Self     : in out Packet_Capture_Type;
+   procedure Set_Nonblock (Capture  : in out Packet_Capture_Type;
                            Nonblock :        Boolean := True) is
       C_Error_Buffer : Pcap.pcap_errbuf_t := (others => Interfaces.C.nul);
       C_Return_Value : Interfaces.C.int;
    begin
-      C_Return_Value := pcap_setnonblock (p        => Self.Handle,
+      C_Return_Value := pcap_setnonblock (p        => Capture.Handle,
                                           nonblock => (if Nonblock then 1 else 0),
                                           errbuf   => C_Error_Buffer);
-      Self.Status := Status_Type (C_Return_Value);
-      if Self.Has_Error_Status then
+      Capture.Status := Status_Type (C_Return_Value);
+      if Capture.Has_Error_Status then
          raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => C_Error_Buffer);
       end if;
    end Set_Nonblock;
 
-   procedure Set_Promiscuous_Mode (Self             : in out Packet_Capture_Type;
+   procedure Set_Promiscuous_Mode (Capture          : in out Packet_Capture_Type;
                                    Promiscuous_Mode :        Boolean := True) is
       C_Return_Value : Interfaces.C.int;
    begin
-      C_Return_Value := pcap_set_promisc (p       => Self.Handle,
+      C_Return_Value := pcap_set_promisc (p       => Capture.Handle,
                                           promisc => Boolean'Pos (Promiscuous_Mode));
-      Self.Status := Status_Type (C_Return_Value);
-      if Self.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with Self.Status_To_String;
+      Capture.Status := Status_Type (C_Return_Value);
+      if Capture.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with Capture.Status_To_String;
       end if;
    end Set_Promiscuous_Mode;
 
-   procedure Set_Snapshot_Length (Self            : in out Packet_Capture_Type;
+   procedure Set_Snapshot_Length (Capture         : in out Packet_Capture_Type;
                                   Snapshot_Length :        Snapshot_Length_Type := 65535) is
       C_Return_Value : Interfaces.C.int;
    begin
-      C_Return_Value := pcap_set_snaplen (p       => Self.Handle,
+      C_Return_Value := pcap_set_snaplen (p       => Capture.Handle,
                                           snaplen => Interfaces.C.int (Snapshot_Length));
-      Self.Status := Status_Type (C_Return_Value);
-      if Self.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with Self.Status_To_String;
+      Capture.Status := Status_Type (C_Return_Value);
+      if Capture.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with Capture.Status_To_String;
       end if;
    end Set_Snapshot_Length;
 
-   procedure Set_Timeout (Self    : in out Packet_Capture_Type;
+   procedure Set_Timeout (Capture : in out Packet_Capture_Type;
                           Timeout :        Timeout_Milliseconds_Type) is
       C_Return_Value : Interfaces.C.int;
    begin
-      C_Return_Value := pcap_set_timeout (p     => Self.Handle,
+      C_Return_Value := pcap_set_timeout (p     => Capture.Handle,
                                           to_ms => Interfaces.C.int (Timeout));
-      Self.Status := Status_Type (C_Return_Value);
-      if Self.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with Self.Status_To_String;
+      Capture.Status := Status_Type (C_Return_Value);
+      if Capture.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with Capture.Status_To_String;
       end if;
    end Set_Timeout;
 
-   procedure Set_Timestamp_Precision (Self                : in out Packet_Capture_Type;
+   procedure Set_Timestamp_Precision (Capture             : in out Packet_Capture_Type;
                                       Timestamp_Precision :        Timestamp_Precision_Type) is
       C_Return_Value : Interfaces.C.int;
    begin
-      C_Return_Value := pcap_set_tstamp_precision (p                => Self.Handle,
+      C_Return_Value := pcap_set_tstamp_precision (p                => Capture.Handle,
                                                    tstamp_precision => Interfaces.C.int (Timestamp_Precision));
-      Self.Status := Status_Type (C_Return_Value);
-      if Self.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with Self.Status_To_String;
+      Capture.Status := Status_Type (C_Return_Value);
+      if Capture.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with Capture.Status_To_String;
       end if;
    end Set_Timestamp_Precision;
 
-   procedure Set_Timestamp_Type (Self           : in out Packet_Capture_Type;
+   procedure Set_Timestamp_Type (Capture        : in out Packet_Capture_Type;
                                  Timestamp_Type :        Timestamp_Type_Type) is
       C_Return_Value : Interfaces.C.int;
    begin
-      C_Return_Value := pcap_set_tstamp_type (p           => Self.Handle,
+      C_Return_Value := pcap_set_tstamp_type (p           => Capture.Handle,
                                               tstamp_type => Interfaces.C.int (Timestamp_Type));
-      Self.Status := Status_Type (C_Return_Value);
-      if Self.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with Self.Status_To_String;
+      Capture.Status := Status_Type (C_Return_Value);
+      if Capture.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with Capture.Status_To_String;
       end if;
    end Set_Timestamp_Type;
 
-   function Stats (Self  : in out Packet_Capture_Type) return Packet_Statistics_Type is
+   function Stats (Capture : in out Packet_Capture_Type) return Packet_Statistics_Type is
       C_Return_Value : Interfaces.C.int;
       C_Stats        : Pcap.pcap_stat;
       Statistics     : Packet_Statistics_Type;
       use type Interfaces.C.int;
    begin
-      C_Return_Value := pcap_stats (p  => Self.Handle,
+      C_Return_Value := pcap_stats (p  => Capture.Handle,
                                     ps => C_Stats);
-      Self.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
-      if Self.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with (if Self.Status = PCAP_ERROR then Self.Get_Error_Text else Self.Status_To_String);
+      Capture.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
+      if Capture.Has_Error_Status then
+         raise Pcap.Exceptions.Pcap_Error with (if Capture.Status = PCAP_ERROR then Capture.Get_Error_Text else Capture.Status_To_String);
       end if;
       Statistics.Received := Natural (C_Stats.ps_recv);
       Statistics.Dropped := Natural (C_Stats.ps_drop);
@@ -496,9 +496,9 @@ package body Pcap is
       return Statistics;
    end Stats;
 
-   function Status_To_String (Self : Packet_Capture_Type) return String is
+   function Status_To_String (Capture : Packet_Capture_Type) return String is
    begin
-      return Status_To_String (Status => Self.Status);
+      return Status_To_String (Status => Capture.Status);
    end Status_To_String;
 
    ----------------------------------------------------------------------------
