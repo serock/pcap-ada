@@ -502,44 +502,89 @@ package body Pcap is
    end Status_To_String;
 
    ----------------------------------------------------------------------------
+   function Address_Family (Addresses : Addresses_Type) return Address_Family_Type is
+   begin
+      return Address_Family_Type (Addresses.Addresses_Access.all.addr.all.sa_family);
+   end Address_Family;
+
+   function Broadcast_Address_Family (Addresses : Addresses_Type) return Address_Family_Type is
+   begin
+      if not Addresses.Has_Broadcast_Address then
+         raise Pcap.Exceptions.Pcap_Error with Strerror (Error => EFAULT);
+      end if;
+      return Address_Family_Type (Addresses.Addresses_Access.all.broadaddr.all.sa_family);
+   end Broadcast_Address_Family;
+
+   function Destination_Address_Family (Addresses : Addresses_Type) return Address_Family_Type is
+   begin
+      if not Addresses.Has_Destination_Address then
+         raise Pcap.Exceptions.Pcap_Error with Strerror (Error => EFAULT);
+      end if;
+      return Address_Family_Type (Addresses.Addresses_Access.all.dstaddr.all.sa_family);
+   end Destination_Address_Family;
+
+   function Netmask_Address_Family (Addresses : Addresses_Type) return Address_Family_Type is
+   begin
+      if not Addresses.Has_Netmask then
+         raise Pcap.Exceptions.Pcap_Error with Strerror (Error => EFAULT);
+      end if;
+      return Address_Family_Type (Addresses.Addresses_Access.all.netmask.all.sa_family);
+   end Netmask_Address_Family;
+
+   function Next (Addresses : Addresses_Type) return Addresses_Type is
+      Next_Addresses : Addresses_Type;
+   begin
+      if not Addresses.Has_Next then
+         raise Pcap.Exceptions.Pcap_Error with Strerror (Error => EFAULT);
+      end if;
+      Next_Addresses.Addresses_Access := Addresses.Addresses_Access.all.next;
+      return Next_Addresses;
+   end Next;
+
+   ----------------------------------------------------------------------------
 
    function Is_Loopback (Device : Device_Type) return Boolean is
       PCAP_IF_LOOPBACK : constant := 16#00000001#;
       use type Interfaces.C.unsigned;
    begin
-      return (Device.Network_Device_Access.all.flags and PCAP_IF_LOOPBACK) = PCAP_IF_LOOPBACK;
+      return (Device.Device_Access.all.flags and PCAP_IF_LOOPBACK) = PCAP_IF_LOOPBACK;
    end Is_Loopback;
 
    function Is_Running (Device : Device_Type) return Boolean is
       PCAP_IF_RUNNING : constant := 16#00000002#;
       use type Interfaces.C.unsigned;
    begin
-      return (Device.Network_Device_Access.all.flags and PCAP_IF_RUNNING) = PCAP_IF_RUNNING;
+      return (Device.Device_Access.all.flags and PCAP_IF_RUNNING) = PCAP_IF_RUNNING;
    end Is_Running;
 
    function Is_Up (Device : Device_Type) return Boolean is
       PCAP_IF_UP : constant := 16#00000004#;
       use type Interfaces.C.unsigned;
    begin
-      return (Device.Network_Device_Access.all.flags and PCAP_IF_UP) = PCAP_IF_UP;
+      return (Device.Device_Access.all.flags and PCAP_IF_UP) = PCAP_IF_UP;
    end Is_Up;
+
+   function Next (Device : Device_Type) return Device_Type is
+      Next_Device : Device_Type;
+   begin
+      if not Device.Has_Next then
+         raise Pcap.Exceptions.Pcap_Error with Strerror (Error => EFAULT);
+      end if;
+      Next_Device.Device_Access := Device.Device_Access.all.next;
+      return Next_Device;
+   end Next;
 
    ----------------------------------------------------------------------------
 
    function Device (Devices : Devices_Type) return Device_Type'Class is
       Device : Device_Type;
    begin
-      if Devices.Network_Device_Access = null then
+      if not Devices.Has_Device then
          raise Pcap.Exceptions.Pcap_Error with Strerror (Error => EFAULT);
       end if;
-      Device.Network_Device_Access := Devices.Network_Device_Access;
+      Device.Device_Access := Devices.Device_Access;
       return Device;
    end Device;
-
-   function Has_Device (Devices : Devices_Type) return Boolean is
-   begin
-      return Devices.Network_Device_Access /= null;
-   end Has_Device;
 
    overriding procedure Finalize (Devices : in out Devices_Type) is
    begin
@@ -558,14 +603,14 @@ package body Pcap is
       if C_Return_Value < 0 then
          raise Pcap.Exceptions.Pcap_Error with Interfaces.C.To_Ada (Item => C_Error_Buffer);
       end if;
-      Devices.Network_Device_Access := C_Device_Ptr;
+      Devices.Device_Access := C_Device_Ptr;
    end Find_All;
 
    procedure Free_All (Devices : in out Devices_Type) is
    begin
       if Devices.Has_Device then
-         pcap_freealldevs (alldevs => Devices.Network_Device_Access);
-         Devices.Network_Device_Access := null;
+         pcap_freealldevs (alldevs => Devices.Device_Access);
+         Devices.Device_Access := null;
       end if;
    end Free_All;
 

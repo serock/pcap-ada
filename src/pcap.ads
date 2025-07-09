@@ -236,6 +236,30 @@ package Pcap is
 
    ----------------------------------------------------------------------------
 
+   type Addresses_Type is tagged private;
+
+   type Address_Family_Type is mod 65536;
+
+   function Address_Family (Addresses : Addresses_Type) return Address_Family_Type;
+
+   function Broadcast_Address_Family (Addresses : Addresses_Type) return Address_Family_Type;
+
+   function Destination_Address_Family (Addresses : Addresses_Type) return Address_Family_Type;
+
+   function Has_Broadcast_Address (Addresses : Addresses_Type) return Boolean;
+
+   function Has_Destination_Address (Addresses : Addresses_Type) return Boolean;
+
+   function Has_Netmask (Addresses : Addresses_Type) return Boolean;
+
+   function Has_Next (Addresses : Addresses_Type) return Boolean;
+
+   function Netmask_Address_Family (Addresses : Addresses_Type) return Address_Family_Type;
+
+   function Next (Addresses : Addresses_Type) return Addresses_Type;
+
+   ----------------------------------------------------------------------------
+
    type Device_Type is tagged private;
 
    function Description (Device : Device_Type) return String;
@@ -251,6 +275,8 @@ package Pcap is
    function Is_Up (Device : Device_Type) return Boolean;
 
    function Name (Device : Device_Type) return String;
+
+   function Next (Device : Device_Type) return Device_Type;
 
    ----------------------------------------------------------------------------
 
@@ -279,7 +305,7 @@ private
 
    type pcap_t is null record;
 
-   type pcap_t_ptr is access pcap_t;
+   type pcap_t_ptr is access constant pcap_t;
 
    subtype sa_data_t is Interfaces.C.char_array (0 .. 13);
 
@@ -291,11 +317,11 @@ private
    end record
    with Convention => C;
 
-   type sockaddr_ptr is access sockaddr;
+   type sockaddr_ptr is access constant sockaddr;
 
    type pcap_addr_t;
 
-   type pcap_addr_t_ptr is access pcap_addr_t;
+   type pcap_addr_t_ptr is access constant pcap_addr_t;
 
    type pcap_addr_t is record
       next      : pcap_addr_t_ptr;
@@ -308,7 +334,7 @@ private
 
    type pcap_if_t;
 
-   type pcap_if_t_ptr is access pcap_if_t;
+   type pcap_if_t_ptr is access constant pcap_if_t;
 
    subtype bpf_u_int32 is Interfaces.C.unsigned;
 
@@ -637,26 +663,43 @@ private
 
    ----------------------------------------------------------------------------
 
-   type Device_Type is tagged
+   type Addresses_Type is tagged
       record
-         Network_Device_Access : pcap_if_t_ptr;
+         Addresses_Access : pcap_addr_t_ptr;
       end record;
 
-   function Description (Device : Device_Type) return String is (Interfaces.C.Strings.Value (Item => Device.Network_Device_Access.all.description));
+   function Has_Broadcast_Address (Addresses : Addresses_Type) return Boolean is (Addresses.Addresses_Access.all.broadaddr /= null);
 
-   function Has_Addresses (Device : Device_Type) return Boolean is (Device.Network_Device_Access.all.addresses /= null);
+   function Has_Destination_Address (Addresses : Addresses_Type) return Boolean is (Addresses.Addresses_Access.all.dstaddr /= null);
 
-   function Has_Next (Device : Device_Type) return Boolean is (Device.Network_Device_Access.all.next /= null);
+   function Has_Netmask (Addresses : Addresses_Type) return Boolean is (Addresses.Addresses_Access.all.netmask /= null);
 
-   function Name (Device : Device_Type) return String is (Interfaces.C.Strings.Value (Item => Device.Network_Device_Access.all.name));
+   function Has_Next (Addresses : Addresses_Type) return Boolean is (Addresses.Addresses_Access.all.next /= null);
+
+   ----------------------------------------------------------------------------
+
+   type Device_Type is tagged
+      record
+         Device_Access : pcap_if_t_ptr;
+      end record;
+
+   function Description (Device : Device_Type) return String is (Interfaces.C.Strings.Value (Item => Device.Device_Access.all.description));
+
+   function Has_Addresses (Device : Device_Type) return Boolean is (Device.Device_Access.all.addresses /= null);
+
+   function Has_Next (Device : Device_Type) return Boolean is (Device.Device_Access.all.next /= null);
+
+   function Name (Device : Device_Type) return String is (Interfaces.C.Strings.Value (Item => Device.Device_Access.all.name));
 
    ----------------------------------------------------------------------------
 
    type Devices_Type is limited new Ada.Finalization.Limited_Controlled with
       record
-         Network_Device_Access : pcap_if_t_ptr;
+         Device_Access : pcap_if_t_ptr;
       end record;
 
    overriding procedure Finalize (Devices : in out Devices_Type);
+
+   function Has_Device (Devices : Devices_Type) return Boolean is (Devices.Device_Access /= null);
 
 end Pcap;
