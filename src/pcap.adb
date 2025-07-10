@@ -507,6 +507,11 @@ package body Pcap is
       return Address_Family_Type (Addresses.Addresses_Access.all.addr.all.sa_family);
    end Address_Family;
 
+   function Address_Memory_Location (Addresses : Addresses_Type) return System.Address is
+   begin
+      return Addresses.Addresses_Access.all.addr.all'Address;
+   end Address_Memory_Location;
+
    function Broadcast_Address_Family (Addresses : Addresses_Type) return Address_Family_Type is
    begin
       if not Addresses.Has_Broadcast_Address then
@@ -514,6 +519,14 @@ package body Pcap is
       end if;
       return Address_Family_Type (Addresses.Addresses_Access.all.broadaddr.all.sa_family);
    end Broadcast_Address_Family;
+
+   function Broadcast_Address_Memory_Location (Addresses : Addresses_Type) return System.Address is
+   begin
+      if not Addresses.Has_Broadcast_Address then
+         raise Pcap.Exceptions.Pcap_Error with Strerror (Error => EFAULT);
+      end if;
+      return Addresses.Addresses_Access.all.broadaddr.all'Address;
+   end Broadcast_Address_Memory_Location;
 
    function Destination_Address_Family (Addresses : Addresses_Type) return Address_Family_Type is
    begin
@@ -523,6 +536,14 @@ package body Pcap is
       return Address_Family_Type (Addresses.Addresses_Access.all.dstaddr.all.sa_family);
    end Destination_Address_Family;
 
+   function Destination_Address_Memory_Location (Addresses : Addresses_Type) return System.Address is
+   begin
+      if not Addresses.Has_Destination_Address then
+         raise Pcap.Exceptions.Pcap_Error with Strerror (Error => EFAULT);
+      end if;
+      return Addresses.Addresses_Access.all.dstaddr.all'Address;
+   end Destination_Address_Memory_Location;
+
    function Netmask_Address_Family (Addresses : Addresses_Type) return Address_Family_Type is
    begin
       if not Addresses.Has_Netmask then
@@ -530,6 +551,14 @@ package body Pcap is
       end if;
       return Address_Family_Type (Addresses.Addresses_Access.all.netmask.all.sa_family);
    end Netmask_Address_Family;
+
+   function Netmask_Memory_Location (Addresses : Addresses_Type) return System.Address is
+   begin
+      if not Addresses.Has_Netmask then
+         raise Pcap.Exceptions.Pcap_Error with Strerror (Error => EFAULT);
+      end if;
+      return Addresses.Addresses_Access.all.netmask.all'Address;
+   end Netmask_Memory_Location;
 
    function Next (Addresses : Addresses_Type) return Addresses_Type is
       Next_Addresses : Addresses_Type;

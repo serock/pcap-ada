@@ -30,8 +30,8 @@
 --  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 with Ada.Finalization;
+with System;
 private with Interfaces.C.Strings;
-private with System;
 
 package Pcap is
 
@@ -242,9 +242,15 @@ package Pcap is
 
    function Address_Family (Addresses : Addresses_Type) return Address_Family_Type;
 
+   function Address_Memory_Location (Addresses : Addresses_Type) return System.Address;
+
    function Broadcast_Address_Family (Addresses : Addresses_Type) return Address_Family_Type;
 
+   function Broadcast_Address_Memory_Location (Addresses : Addresses_Type) return System.Address;
+
    function Destination_Address_Family (Addresses : Addresses_Type) return Address_Family_Type;
+
+   function Destination_Address_Memory_Location (Addresses : Addresses_Type) return System.Address;
 
    function Has_Broadcast_Address (Addresses : Addresses_Type) return Boolean;
 
@@ -255,6 +261,8 @@ package Pcap is
    function Has_Next (Addresses : Addresses_Type) return Boolean;
 
    function Netmask_Address_Family (Addresses : Addresses_Type) return Address_Family_Type;
+
+   function Netmask_Memory_Location (Addresses : Addresses_Type) return System.Address;
 
    function Next (Addresses : Addresses_Type) return Addresses_Type;
 
