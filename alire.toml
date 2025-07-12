@@ -15,7 +15,10 @@ tags = ["pcap", "binding"]
 "..." = false
 
 [[depends-on]]
+[depends-on."case(os)".linux]
 libpcap = "^1.8.1"
+[depends-on."case(os)".windows]
+npcap_sdk = "^1.0"
 
 [configuration]
 generate_ada = false
