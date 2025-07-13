@@ -18,6 +18,7 @@ tags = ["pcap", "binding"]
 [depends-on."case(os)".linux]
 libpcap = "^1.8.1"
 [depends-on."case(os)".windows]
+npcap = "^1.0"
 npcap_sdk = "^1.0"
 
 [configuration]
