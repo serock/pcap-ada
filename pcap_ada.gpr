@@ -20,11 +20,15 @@ library project Pcap_Ada is
      external ("PCAP_ADA_LIBRARY_TYPE", external ("LIBRARY_TYPE", "dynamic"));
    for Library_Kind use Library_Type;
 
-   case Pcap_Ada_Os_Kind is
-      when "windows" =>
-         case Pcap_Ada_Arch_Kind is
-            when "x86_64" =>
-               for Library_Options use ("-L" & external ("NPCAP_SDK_HOME") & "\Lib\x64", "-lwpcap");
+   case Library_Type is
+      when "dynamic" | "relocatable" =>
+         case Pcap_Ada_Os_Kind is
+            when "windows" =>
+               case Pcap_Ada_Arch_Kind is
+                  when "x86_64" =>
+                     for Library_Options use ("-L" & external ("NPCAP_SDK_HOME") & "\Lib\x64", "-lwpcap");
+                  when others => null;
+               end case;
             when others => null;
          end case;
       when others => null;
