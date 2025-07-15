@@ -1,6 +1,9 @@
 with "config/pcap_ada_config.gpr";
 library project Pcap_Ada is
 
+   type Arch_Kind is ("x86_64");
+   Pcap_Ada_Arch_Kind : Arch_Kind := Pcap_Ada_Config.Alire_Host_Arch;
+
    type Os_Kind is ("freebsd", "openbsd", "linux", "macos", "windows", "os-unknown");
    Pcap_Ada_Os_Kind : Os_Kind := Pcap_Ada_Config.Alire_Host_Os;
 
@@ -19,7 +22,11 @@ library project Pcap_Ada is
 
    case Pcap_Ada_Os_Kind is
       when "windows" =>
-         for Library_Options use ("-lwpcap");
+         case Pcap_Ada_Arch_Kind is
+            when "x86_64" =>
+               for Library_Options use (external ("NPCAP_SDK_HOME") & "/Lib/x86_64", "-lwpcap");
+            when others => null;
+         end case;
       when others => null;
    end case;
 
