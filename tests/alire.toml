@@ -16,6 +16,8 @@ executables = ["main"]
 [[depends-on]]
 pcap_ada = "*"
 aunit = "^25.0.0"
+[depends-on."case(os)".linux]
+libpcap = "^1.8.1"
 
 [[pins]]
 pcap_ada = { path = ".." }
