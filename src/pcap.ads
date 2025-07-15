@@ -304,7 +304,7 @@ package Pcap is
 
 private
 
-#if not PCAP_ADA_OS_TYPE = "os-unknown"
+#if not PCAP_ADA_OS_KIND = "os-unknown"
    EFAULT : constant := 14;
    EINVAL : constant := 22;
 #end if;
