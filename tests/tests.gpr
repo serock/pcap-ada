@@ -22,10 +22,11 @@ project Tests is
    end Binder;
 
    package Linker is
-      for Switches ("Ada") use
-         External_As_List("LDFLAGS", " ") &
-         ("-lpcap") &
-         External_As_List("LDLIBS", " ");
+      case Pcap_Ada.Pcap_Ada_Os_Kind is
+         when "windows" => null;
+         when others =>
+            for Switches ("Ada") use ("-lpcap");
+      end case;
    end Linker;
 
 end Tests;
