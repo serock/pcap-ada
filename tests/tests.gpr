@@ -26,11 +26,14 @@ project Tests is
    end Binder;
 
    package Linker is
+      Ada_Switches := ();
       case Pcap_Ada.Pcap_Ada_Os_Kind is
-         when "windows" => null;
+         when "windows" =>
+            Ada_Switches := ("-L" & external ("SystemRoot") & "\System32\Npcap", "-lwpcap");
          when others =>
-            for Switches ("Ada") use ("-lpcap");
+            Ada_Switches := ("-lpcap");
       end case;
+      for Default_Switches ("Ada") use Ada_Switches;
    end Linker;
 
 end Tests;
