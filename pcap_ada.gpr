@@ -39,22 +39,23 @@ library project Pcap_Ada is
    end case;
 
    package Builder is
-      for Default_Switches ("Ada") use ("-x");
+      Ada_Switches := ("-x");
+      for Default_Switches ("Ada") use Ada_Switches;
    end Builder;
 
    package Compiler is
-      for Default_Switches ("Ada") use Pcap_Ada_Config.Ada_Compiler_Switches;
       Pcap_Ada_Version := """" & Pcap_Ada_Config.Crate_Version & """";
-      Preprocessor_Switches := (
+      Ada_Switches := (
          "-gnateDPCAP_ADA_VERSION=" & Pcap_Ada_Version,
          "-gnateDPCAP_ADA_OS_KIND=" & Pcap_Ada_Os_Kind,
          "-gnatep=preprocessor-data.txt"
       );
-      for Switches ("Ada") use Compiler'Default_Switches ("Ada") & Preprocessor_Switches;
+      for Default_Switches ("Ada") use Pcap_Ada_Config.Ada_Compiler_Switches & Ada_Switches;
    end Compiler;
 
    package Binder is
-      for Switches ("Ada") use ("-Es"); --  Symbolic traceback
+      Ada_Switches : = ("-Es");  --  Symbolic traceback
+      for Default_Switches ("Ada") use Ada_Switches;
    end Binder;
 
    package Install is

@@ -9,16 +9,20 @@ project Tests is
    for Main use ("harness.adb");
 
    package Builder is
-      for Default_Switches ("Ada") use Pcap_Ada.Builder'Default_Switches ("Ada") & ("-v");
+      Ada_Switches := Pcap_Ada.Builder.Ada_Switches;
+      --  Ada_Switches := ("-v") & Ada_Switches;
+      --  Ada_Switches := ("-vh") & Ada_Switches;
+      for Default_Switches ("Ada") use Ada_Switches;
    end Builder;
 
    package Compiler is
-      for Default_Switches ("Ada") use Tests_Config.Ada_Compiler_Switches;
-      for Switches ("Ada") use Compiler'Default_Switches ("Ada") & Pcap_Ada.Compiler.Preprocessor_Switches;
+      Ada_Switches := Pcap_Ada.Compiler.Ada_Switches;
+      for Default_Switches ("Ada") use Tests_Config.Ada_Compiler_Switches & Ada_Switches;
    end Compiler;
 
    package Binder is
-      for Switches ("Ada") use Pcap_Ada.Binder'Switches ("Ada");
+      Ada_Switches := Pcap_Ada.Binder.Ada_Switches;
+      for Default_Switches ("Ada") use Ada_Switches;
    end Binder;
 
    package Linker is
