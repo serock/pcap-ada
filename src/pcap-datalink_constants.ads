@@ -74,8 +74,10 @@ package Pcap.Datalink_Constants is
    DLT_CHDLC                      : constant Datalink_Type := DLT_C_HDLC;
    DLT_IEEE802_11                 : constant Datalink_Type := 105;
    DLT_FRELAY                     : constant Datalink_Type := 107;
+#if not PCAP_ADA_OS_KIND = "openbsd"
    DLT_LOOP                       : constant Datalink_Type := 108;
    DLT_ENC                        : constant Datalink_Type := 109;
+#end if;
    DLT_LINUX_SLL                  : constant Datalink_Type := 113;
    DLT_LTALK                      : constant Datalink_Type := 114;
    DLT_ECONET                     : constant Datalink_Type := 115;
