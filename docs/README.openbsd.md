@@ -4,5 +4,6 @@ gnatmake -c -D obj/release -vh -aIsrc -O3 -gnatA -gnatn -ffunction-sections -fda
 ```
 
 ```
+mkdir -p lib
 egcc -shared -o lib/libpcap-ada.so.1.0.0-dev -L/usr/local/lib/gcc/x86_64-unknown-openbsd/11.2.0/adalib -Wl,-rpath,/usr/local/lib/gcc/x86_64-unknown-openbsd/11.2.0/adalib -Wl,-soname,libpcap-ada.so.1.0.0-dev obj/release/pcap-datalink_constants.o obj/release/pcap-exceptions.o obj/release/pcap.o -lgnat
 ```
