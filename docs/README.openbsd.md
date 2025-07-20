@@ -2,6 +2,8 @@
 
 ## Mapping file
 
+Put map.txt into root of aunit git workspace
+
 ```
 ada_containers%s
 ada_containers.ads
@@ -102,6 +104,15 @@ aunit-time_measure.ads
 aunit.io%s
 aunit-io.ads
 ../../../include/aunit/framework/fileio/aunit-io.ads
+aunit.simple_test_cases.run_routine%b
+aunit-simple_test_cases-run_routine.adb
+../../../include/aunit/framework/fullexception/aunit-simple_test_cases-run_routine.adb
+aunit.assertions.assert_exception%b
+aunit-assertions-assert_exception.adb
+../../../include/aunit/framework/fullexception/aunit-assertions-assert_exception.adb
+aunit.test_cases.call_set_up_case%b
+aunit-test_cases-call_set_up_case.adb
+../../../include/aunit/framework/fullexception/aunit-test_cases-call_set_up_case.adb
 aunit.memory%b
 aunit-memory.adb
 ../../../include/aunit/framework/nativememory/aunit-memory.adb
