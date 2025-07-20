@@ -175,13 +175,14 @@ egcc -c -x ada -gnatA -O2 -gnatp -gnatn -gnatwa.X -gnatem=../../../map.txt ../..
 egcc -c -x ada -gnatA -O2 -gnatp -gnatn -gnatwa.X -gnatem=../../../map.txt ../../../include/aunit/framework/aunit-test_filters.adb
 egcc -c -x ada -gnatA -O2 -gnatp -gnatn -gnatwa.X -gnatem=../../../map.txt ../../../include/aunit/framework/aunit-options.ads
 egcc -c -x ada -gnatA -O2 -gnatp -gnatn -gnatwa.X -gnatem=../../../map.txt ../../../include/aunit/framework/aunit-reporter.adb
-
+cd -
 ```
 
 ## Create archive
 
 ```
-ar cr lib/aunit/native-full/libaunit.a lib/aunit-obj/native-full/ada_containers-aunit_lists.o lib/aunit-obj/native-full/ada_containers.o lib/aunit-obj/native-full/aunit-assertions.o lib/aunit-obj/native-full/aunit-io.o lib/aunit-obj/native-full/aunit-memory-utils.o lib/aunit-obj/native-full/aunit-memory.o lib/aunit-obj/native-full/aunit-options.o lib/aunit-obj/native-full/aunit-reporter-gnattest.o lib/aunit-obj/native-full/aunit-reporter-junit.o lib/aunit-obj/native-full/aunit-reporter-text.o lib/aunit-obj/native-full/aunit-reporter-xml.o lib/aunit-obj/native-full/aunit-reporter.o lib/aunit-obj/native-full/aunit-run.o lib/aunit-obj/native-full/aunit-simple_test_cases.o lib/aunit-obj/native-full/aunit-test_caller.o lib/aunit-obj/native-full/aunit-test_cases.o lib/aunit-obj/native-full/aunit-test_filters.o lib/aunit-obj/native-full/aunit-test_fixtures.o lib/aunit-obj/native-full/aunit-test_results.o lib/aunit-obj/native-full/aunit-test_suites.o lib/aunit-obj/native-full/aunit-tests.o lib/aunit-obj/native-full/aunit-time_measure.o lib/aunit-obj/native-full/aunit.o
+mkdir -p lib/aunit/native-full
+ar rc lib/aunit/native-full/libaunit.a lib/aunit-obj/native-full/ada_containers-aunit_lists.o lib/aunit-obj/native-full/ada_containers.o lib/aunit-obj/native-full/aunit-assertions.o lib/aunit-obj/native-full/aunit-io.o lib/aunit-obj/native-full/aunit-memory-utils.o lib/aunit-obj/native-full/aunit-memory.o lib/aunit-obj/native-full/aunit-options.o lib/aunit-obj/native-full/aunit-reporter-gnattest.o lib/aunit-obj/native-full/aunit-reporter-junit.o lib/aunit-obj/native-full/aunit-reporter-text.o lib/aunit-obj/native-full/aunit-reporter-xml.o lib/aunit-obj/native-full/aunit-reporter.o lib/aunit-obj/native-full/aunit-run.o lib/aunit-obj/native-full/aunit-simple_test_cases.o lib/aunit-obj/native-full/aunit-test_caller.o lib/aunit-obj/native-full/aunit-test_cases.o lib/aunit-obj/native-full/aunit-test_filters.o lib/aunit-obj/native-full/aunit-test_fixtures.o lib/aunit-obj/native-full/aunit-test_results.o lib/aunit-obj/native-full/aunit-test_suites.o lib/aunit-obj/native-full/aunit-tests.o lib/aunit-obj/native-full/aunit-time_measure.o lib/aunit-obj/native-full/aunit.o
 ranlib lib/aunit/native-full/libaunit.a
 ```
 
