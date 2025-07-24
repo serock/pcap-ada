@@ -15,6 +15,7 @@ git clone https://github.com/AdaCore/aunit.git
 export AUNIT_HOME=~/git/aunit
 export AUNIT_SRC_ROOT=$AUNIT_HOME/include/aunit
 mkdir -p $AUNIT_HOME/lib/aunit-obj/native-full
+mkdir -p $AUNIT_HOME/lib/aunit/native-full
 cd $AUNIT_HOME
 cd lib/aunit-obj/native-full
 export ADA_INCLUDE_PATH=$AUNIT_SRC_ROOT/containers:$AUNIT_SRC_ROOT/framework:$AUNIT_SRC_ROOT/framework/calendar:$AUNIT_SRC_ROOT/framework/fileio:$AUNIT_SRC_ROOT/framework/fullexception:$AUNIT_SRC_ROOT/framework/nativememory:$AUNIT_HOME/include/aunit/reporters
@@ -48,8 +49,7 @@ cd -
 
 ```
 ar rc lib/aunit/native-full/libaunit.a lib/aunit-obj/native-full/*.o
-rm lib/aunit-obj/native-full/*.o
-cp lib/aunit-obj/native-full/*.ali lib/aunit/
+cp lib/aunit-obj/native-full/*.ali lib/aunit/native-full
 ```
 
 # pcap-ada
@@ -82,8 +82,8 @@ egcc -c -gnatA -O3 -gnatn -ffunction-sections -fdata-sections -gnatW8 -gnateDPCA
 egcc -c -gnatA -O3 -gnatn -ffunction-sections -fdata-sections -gnatW8 -gnateDPCAP_ADA_VERSION=\"1.0.0-dev\" -gnateDPCAP_ADA_OS_KIND=openbsd -gnatep=../../../src/preprocessor-data.txt ../../src/pcap_ada_test_suite.adb
 egcc -c -I ../../../src -gnatA -O3 -gnatn -ffunction-sections -fdata-sections -gnatW8 -gnateDPCAP_ADA_VERSION=\"1.0.0-dev\" -gnateDPCAP_ADA_OS_KIND=openbsd -gnatep=../../../src/preprocessor-data.txt ../../src/pcap_dead_test.adb
 egcc -c -I ../../../src -gnatA -O3 -gnatn -ffunction-sections -fdata-sections -gnatW8 -gnateDPCAP_ADA_VERSION=\"1.0.0-dev\" -gnateDPCAP_ADA_OS_KIND=openbsd -gnatep=../../../src/preprocessor-data.txt ../../src/pcap_live_activated_test.adb
-egcc -c -I src -I ../src -gnatA -O3 -gnatn -ffunction-sections -fdata-sections -gnatW8 -gnateDPCAP_ADA_VERSION=\"1.0.0-dev\" -gnateDPCAP_ADA_OS_KIND=openbsd -gnatep=../../../src/preprocessor-data.txt ../../src/pcap_live_test.adb
-egcc -c -I src -I ../src -gnatA -O3 -gnatn -ffunction-sections -fdata-sections -gnatW8 -gnateDPCAP_ADA_VERSION=\"1.0.0-dev\" -gnateDPCAP_ADA_OS_KIND=openbsd -gnatep=../../../src/preprocessor-data.txt ../../src/pcap_test.adb
+egcc -c -I ../../../src -gnatA -O3 -gnatn -ffunction-sections -fdata-sections -gnatW8 -gnateDPCAP_ADA_VERSION=\"1.0.0-dev\" -gnateDPCAP_ADA_OS_KIND=openbsd -gnatep=../../../src/preprocessor-data.txt ../../src/pcap_live_test.adb
+egcc -c -I ../../../src -gnatA -O3 -gnatn -ffunction-sections -fdata-sections -gnatW8 -gnateDPCAP_ADA_VERSION=\"1.0.0-dev\" -gnateDPCAP_ADA_OS_KIND=openbsd -gnatep=../../../src/preprocessor-data.txt ../../src/pcap_test.adb
 ```
 
 ## Bind
