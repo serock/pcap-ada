@@ -91,4 +91,5 @@ egcc -c -I ../../../src -gnatA -O3 -gnatn -ffunction-sections -fdata-sections -g
 ```
 export ADA_OBJECTS_PATH=$AUNIT_HOME/lib/aunit/native-full:../../../lib
 gnatbind -shared -o b__harness.adb ./harness.ali -Es -x
+egcc -c -gnatA -gnatWb -gnatiw -gnatws -O3 -ffunction-sections -fdata-sections b__harness.adb -o b__harness.o
 ```
