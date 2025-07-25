@@ -433,6 +433,7 @@ private
         Convention    => C,
         External_Name => "pcap_free_datalinks";
 
+#if not PCAP_ADA_OS_KIND = "openbsd"
    procedure pcap_free_tstamp_types (tstamp_types : System.Address)
    with Import        => True,
         Convention    => C,
@@ -442,6 +443,7 @@ private
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_get_tstamp_precision";
+#end if;
 
    function pcap_geterr (p : pcap_t_ptr) return Interfaces.C.Strings.chars_ptr
    with Import        => True,
@@ -472,11 +474,13 @@ private
         Convention    => C,
         External_Name => "pcap_list_datalinks";
 
+#if not PCAP_ADA_OS_KIND = "openbsd"
    function pcap_list_tstamp_types (p            :     pcap_t_ptr;
                                     tstamp_types : out System.Address) return Interfaces.C.int
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_list_tstamp_types";
+#end if;
 
    function pcap_lookupdev (errbuf : out pcap_errbuf_t) return Interfaces.C.Strings.chars_ptr
    with Import        => True,
@@ -489,12 +493,14 @@ private
         Convention    => C,
         External_Name => "pcap_open_dead";
 
+#if not PCAP_ADA_OS_KIND = "openbsd"
    function pcap_open_dead_with_tstamp_precision (linktype  : Interfaces.C.int;
                                                   snaplen   : Interfaces.C.int;
                                                   precision : Interfaces.C.unsigned) return pcap_t_ptr
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_open_dead_with_tstamp_precision";
+#end if;
 
    function pcap_open_live (device  :     Interfaces.C.char_array;
                             snaplen :     Interfaces.C.int;
@@ -560,6 +566,7 @@ private
         Convention    => C,
         External_Name => "pcap_set_timeout";
 
+#if not PCAP_ADA_OS_KIND = "openbsd"
    function pcap_set_tstamp_precision (p                : pcap_t_ptr;
                                        tstamp_precision : Interfaces.C.int) return Interfaces.C.int
    with Import        => True,
@@ -571,6 +578,7 @@ private
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_set_tstamp_type";
+#end if;
 
    function pcap_setdirection (p : pcap_t_ptr;
                                d : pcap_direction_t) return Interfaces.C.int
@@ -601,6 +609,7 @@ private
         Convention    => C,
         External_Name => "pcap_strerror";
 
+#if not PCAP_ADA_OS_KIND = "openbsd"
    function pcap_tstamp_type_name_to_val (name : Interfaces.C.char_array) return Interfaces.C.int
    with Import        => True,
         Convention    => C,
@@ -615,6 +624,7 @@ private
    with Import        => True,
         Convention    => C,
         External_Name => "pcap_tstamp_type_val_to_description";
+#end if;
 
    ----------------------------------------------------------------------------
 

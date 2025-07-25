@@ -93,43 +93,11 @@ package body Pcap is
       return Interfaces.C.Strings.Value (Item => C_String);
    end Strerror;
 
-   function Timestamp_Type_Name_To_Value (Name : String) return Timestamp_Type_Type is
-      C_Name  : constant Interfaces.C.char_array := Interfaces.C.To_C (Item => Name);
-      C_Value : Interfaces.C.int;
-      use type Interfaces.C.int;
-   begin
-      C_Value := pcap_tstamp_type_name_to_val (name => C_Name);
-      if C_Value < 0 then
-         raise Pcap.Exceptions.Pcap_Error with Status_To_String (Status => Status_Type (C_Value));
-      end if;
-      return Timestamp_Type_Type (C_Value);
-   end Timestamp_Type_Name_To_Value;
+   function Timestamp_Type_Name_To_Value (Name : String) return Timestamp_Type_Type is separate;
 
-   function Timestamp_Type_Value_To_Description (Value : Timestamp_Type_Type) return String is
-      C_Description : Interfaces.C.Strings.chars_ptr;
-      C_Value       : constant Interfaces.C.int := Interfaces.C.int (Value);
-      use type Interfaces.C.Strings.chars_ptr;
-   begin
-      C_Description := pcap_tstamp_type_val_to_description (tstamp_type => C_Value);
-      if C_Description = Interfaces.C.Strings.Null_Ptr then
-         return "";
-      else
-         return Interfaces.C.Strings.Value (Item => C_Description);
-      end if;
-   end Timestamp_Type_Value_To_Description;
+   function Timestamp_Type_Value_To_Description (Value : Timestamp_Type_Type) return String is separate;
 
-   function Timestamp_Type_Value_To_Name (Value : Timestamp_Type_Type) return String is
-      C_Name  : Interfaces.C.Strings.chars_ptr;
-      C_Value : constant Interfaces.C.int := Interfaces.C.int (Value);
-      use type Interfaces.C.Strings.chars_ptr;
-   begin
-      C_Name := pcap_tstamp_type_val_to_name (tstamp_type => C_Value);
-      if C_Name = Interfaces.C.Strings.Null_Ptr then
-         return "";
-      else
-         return Interfaces.C.Strings.Value (Item => C_Name);
-      end if;
-   end Timestamp_Type_Value_To_Name;
+   function Timestamp_Type_Value_To_Name (Value : Timestamp_Type_Type) return String is separate;
 
    ----------------------------------------------------------------------------
 
@@ -215,12 +183,7 @@ package body Pcap is
       return C_Return_Value /= 0;
    end Get_Nonblock;
 
-   function Get_Timestamp_Precision (Capture : Packet_Capture_Type) return Timestamp_Precision_Type is
-      C_Precision : Interfaces.C.int;
-   begin
-      C_Precision := pcap_get_tstamp_precision (p => Capture.Handle);
-      return Timestamp_Precision_Type (C_Precision);
-   end Get_Timestamp_Precision;
+   function Get_Timestamp_Precision (Capture : Packet_Capture_Type) return Timestamp_Precision_Type is separate;
 
    function Get_Error_Text (Capture : Packet_Capture_Type) return String is
       C_Error_Text : Interfaces.C.Strings.chars_ptr;
@@ -265,43 +228,12 @@ package body Pcap is
    end List_Datalinks;
 
    procedure List_Timestamp_Types (Capture         : in out Packet_Capture_Type;
-                                   Timestamp_Types :    out Timestamp_Types_Type) is
-      C_Return_Value : Interfaces.C.int;
-      C_Tstamp_Types : System.Address;
-      use type Interfaces.C.int;
-   begin
-      C_Return_Value := pcap_list_tstamp_types (p            => Capture.Handle,
-                                                tstamp_types => C_Tstamp_Types);
-      Capture.Status := (if C_Return_Value < 0 then Status_Type (C_Return_Value) else PCAP_SUCCESS_WITHOUT_WARNINGS);
-      if Capture.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with (if Capture.Status = PCAP_ERROR then Capture.Get_Error_Text else Capture.Status_To_String);
-      end if;
-      declare
-         Number_Of_Timestamp_Types : constant Integer := Integer (C_Return_Value);
-         C_Timestamp_Types         : array (Integer range 0 .. Number_Of_Timestamp_Types - 1) of Interfaces.C.int with Address => C_Tstamp_Types;
-         Timestamp_Types_Copy      : Timestamp_Types_Type (0 .. Number_Of_Timestamp_Types - 1);
-      begin
-         for I in 0 .. Number_Of_Timestamp_Types - 1 loop
-            Timestamp_Types_Copy (I) := Timestamp_Type_Type (C_Timestamp_Types (I));
-         end loop;
-         Timestamp_Types := Timestamp_Types_Copy;
-         if Number_Of_Timestamp_Types > 0 then
-            pcap_free_tstamp_types (tstamp_types => C_Tstamp_Types);
-         end if;
-      end;
-   end List_Timestamp_Types;
+                                   Timestamp_Types :    out Timestamp_Types_Type) is separate;
 
    procedure Open_Dead (Capture         : in out Packet_Capture_Type;
                         Datalink        :        Datalink_Type;
                         Snapshot_Length :        Snapshot_Length_Type     := 65535;
-                        Precision       :        Timestamp_Precision_Type := PCAP_TSTAMP_PRECISION_MICRO) is
-   begin
-      if Capture.Handle = null then
-         Capture.Handle := pcap_open_dead_with_tstamp_precision (linktype  => Interfaces.C.int (Datalink),
-                                                                 snaplen   => Interfaces.C.int (Snapshot_Length),
-                                                                 precision => Interfaces.C.unsigned (Precision));
-      end if;
-   end Open_Dead;
+                        Precision       :        Timestamp_Precision_Type := PCAP_TSTAMP_PRECISION_MICRO) is separate;
 
    procedure Open_Live (Capture             : in out Packet_Capture_Type;
                         Device              :        String;
@@ -455,28 +387,10 @@ package body Pcap is
    end Set_Timeout;
 
    procedure Set_Timestamp_Precision (Capture             : in out Packet_Capture_Type;
-                                      Timestamp_Precision :        Timestamp_Precision_Type) is
-      C_Return_Value : Interfaces.C.int;
-   begin
-      C_Return_Value := pcap_set_tstamp_precision (p                => Capture.Handle,
-                                                   tstamp_precision => Interfaces.C.int (Timestamp_Precision));
-      Capture.Status := Status_Type (C_Return_Value);
-      if Capture.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with Capture.Status_To_String;
-      end if;
-   end Set_Timestamp_Precision;
+                                      Timestamp_Precision :        Timestamp_Precision_Type) is separate;
 
    procedure Set_Timestamp_Type (Capture        : in out Packet_Capture_Type;
-                                 Timestamp_Type :        Timestamp_Type_Type) is
-      C_Return_Value : Interfaces.C.int;
-   begin
-      C_Return_Value := pcap_set_tstamp_type (p           => Capture.Handle,
-                                              tstamp_type => Interfaces.C.int (Timestamp_Type));
-      Capture.Status := Status_Type (C_Return_Value);
-      if Capture.Has_Error_Status then
-         raise Pcap.Exceptions.Pcap_Error with Capture.Status_To_String;
-      end if;
-   end Set_Timestamp_Type;
+                                 Timestamp_Type :        Timestamp_Type_Type) is separate;
 
    function Stats (Capture : in out Packet_Capture_Type) return Packet_Statistics_Type is
       C_Return_Value : Interfaces.C.int;

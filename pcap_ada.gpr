@@ -10,7 +10,13 @@ library project Pcap_Ada is
    for Library_Name use "pcap-ada";
    for Library_Version use "libpcap-ada.so." & Pcap_Ada_Config.Crate_Version;
 
-   for Source_Dirs use ("src/");
+   case Pcap_Ada_Os_Kind is
+      when "openbsd" =>
+         for Source_Dirs use ("src/", "src/tstamp-openbsd/");
+      when others =>
+         for Source_Dirs use ("src/", "src/tstamp/");
+   end case;
+
    for Object_Dir use "obj/" & Pcap_Ada_Config.Build_Profile;
    for Create_Missing_Dirs use "True";
    for Library_Dir use "lib";
