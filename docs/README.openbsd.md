@@ -69,6 +69,7 @@ gnatmake -c -D obj/release -vh -aIsrc -gnatA -O3 -gnatn -ffunction-sections -fda
 
 ```
 egcc -shared -o lib/libpcap-ada.so.1.0.0-dev -L/usr/local/lib/gcc/x86_64-unknown-openbsd/11.2.0/adalib -Wl,-rpath,/usr/local/lib/gcc/x86_64-unknown-openbsd/11.2.0/adalib -Wl,-soname,libpcap-ada.so.1.0.0-dev obj/release/pcap-datalink_constants.o obj/release/pcap-exceptions.o obj/release/pcap.o -lgnat
+ln -s lib/libpcap-ada.so.1.0.0-dev lib/libpcap-ada.so
 cp obj/release/*.ali lib/
 ```
 
@@ -92,4 +93,13 @@ egcc -c -I ../../../src -gnatA -O3 -gnatn -ffunction-sections -fdata-sections -g
 export ADA_OBJECTS_PATH=$AUNIT_HOME/lib/aunit/native-full:../../../lib
 gnatbind -shared -o b__harness.adb ./harness.ali -Es -x
 egcc -c -gnatA -gnatWb -gnatiw -gnatws -O3 -ffunction-sections -fdata-sections b__harness.adb -o b__harness.o
+```
+
+## Link
+
+```
+unset ADA_OBJECTS_PATH
+export LD_LIBRARY_PATH=../../../lib:/usr/local/lib/gcc/x86_64-unknown-openbsd/11.2.0/adalib:$AUNIT_HOME/lib/aunit/native-full
+export LD_RUN_PATH=../../../lib:/usr/local/lib/gcc/x86_64-unknown-openbsd/11.2.0/adalib
+gcc harness.o b__harness.o pcap_dead_test.o pcap_live_activated_test.o pcap_live_test.o pcap_test.o pcap_ada_test_suite.o -shared-libgcc -lpcap-ada -lpcap -lgnat -launit -o ../../bin/harness
 ```
