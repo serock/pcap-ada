@@ -12,6 +12,7 @@ project Tests is
       Ada_Switches := Pcap_Ada.Builder.Ada_Switches;
       --  Ada_Switches := ("-v") & Ada_Switches;
       --  Ada_Switches := ("-vh") & Ada_Switches;
+      --  Ada_Switches := ("--keep-temp-files") & Ada_Switches;
       for Default_Switches ("Ada") use Ada_Switches;
    end Builder;
 
