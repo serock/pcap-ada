@@ -62,7 +62,8 @@ mkdir -p ~/git/pcap-ada/lib
 mkdir -p ~/git/pcap-ada/tests/bin
 mkdir -p ~/git/pcap-ada/tests/obj/release
 cd ~/git/pcap-ada
-gnatmake -c -D obj/release -vh -aIsrc -gnatA -O3 -gnatn -ffunction-sections -fdata-sections -gnatW8 -gnateDPCAP_ADA_VERSION=\"1.0.0-dev\" -gnateDPCAP_ADA_OS_KIND=openbsd -gnatep=preprocessor-data.txt -fPIC pcap.adb pcap-datalink_constants.ads
+export ADA_INCLUDE_PATH=src:src/tstamp-openbsd
+gnatmake -c -D obj/release -vh -gnatA -O3 -gnatn -ffunction-sections -fdata-sections -gnatW8 -gnateDPCAP_ADA_VERSION=\"1.0.0-dev\" -gnateDPCAP_ADA_OS_KIND=openbsd -gnatep=preprocessor-data.txt -fPIC pcap.adb pcap-datalink_constants.ads
 ```
 
 ## Link
