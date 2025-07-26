@@ -232,8 +232,18 @@ package body Pcap is
 
    procedure Open_Dead (Capture         : in out Packet_Capture_Type;
                         Datalink        :        Datalink_Type;
-                        Snapshot_Length :        Snapshot_Length_Type     := 65535;
-                        Precision       :        Timestamp_Precision_Type := PCAP_TSTAMP_PRECISION_MICRO) is separate;
+                        Snapshot_Length :        Snapshot_Length_Type := 65535) is
+   begin
+      if Capture.Handle = null then
+         Capture.Handle := pcap_open_dead (linktype  => Interfaces.C.int (Datalink),
+                                           snaplen   => Interfaces.C.int (Snapshot_Length));
+      end if;
+   end Open_Dead;
+
+   procedure Open_Dead (Capture         : in out Packet_Capture_Type;
+                        Datalink        :        Datalink_Type;
+                        Snapshot_Length :        Snapshot_Length_Type := 65535;
+                        Precision       :        Timestamp_Precision_Type) is separate;
 
    procedure Open_Live (Capture             : in out Packet_Capture_Type;
                         Device              :        String;
