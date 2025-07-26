@@ -9,10 +9,11 @@ licenses = 'BSD-3-Clause'
 website = 'https://github.com/serock/pcap-ada'
 tags = ['pcap', 'binding']
 
-[available."case(os)"]
-"linux" = true
-"windows" = true
-"..." = false
+available."case(os)".linux."case(word-size)".bits-64 = true
+available."case(os)".linux."case(word-size)".bits-32 = true
+available."case(os)".windows."case(word-size)".bits-64 = true
+available."case(os)".windows."case(word-size)".bits-32 = false
+available."case(os)"."..." = false
 
 [[depends-on]]
 [depends-on."case(os)".windows]
