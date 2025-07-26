@@ -31,8 +31,8 @@
 -----------------------------------------------------------------------------
 separate (Pcap) procedure Open_Dead (Capture         : in out Packet_Capture_Type;
                                      Datalink        :        Datalink_Type;
-                                     Snapshot_Length :        Snapshot_Length_Type     := 65535;
-                                     Precision       :        Timestamp_Precision_Type := PCAP_TSTAMP_PRECISION_MICRO) is
+                                     Snapshot_Length :        Snapshot_Length_Type := 65535;
+                                     Precision       :        Timestamp_Precision_Type) is
 begin
    raise Pcap.Exceptions.Pcap_Error with "Not implementable";
 end Open_Dead;
