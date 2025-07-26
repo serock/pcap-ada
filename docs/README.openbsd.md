@@ -1,3 +1,7 @@
+This was an attempt to get the test harness to build and run on OpenBSD 7.7.
+Although it builds, when running the harness, it fails immediately with a SIGABRT.
+Neither `egdb` nor `lldb` provided me with any useful information from the `harness.core` file.
+
 # Setup
 
 ```
@@ -12,6 +16,7 @@ git clone https://github.com/AdaCore/aunit.git
 ## Compile
 
 ```
+export PCAP_ADA_HOME=~/git/pcap-ada
 export AUNIT_HOME=~/git/aunit
 export AUNIT_SRC_ROOT=$AUNIT_HOME/include/aunit
 mkdir -p $AUNIT_HOME/lib/aunit-obj/native-full
@@ -61,7 +66,7 @@ mkdir -p ~/git/pcap-ada/obj/release
 mkdir -p ~/git/pcap-ada/lib
 mkdir -p ~/git/pcap-ada/tests/bin
 mkdir -p ~/git/pcap-ada/tests/obj/release
-cd ~/git/pcap-ada
+cd $PCAP_ADA_HOME
 export ADA_INCLUDE_PATH=src:src/tstamp-openbsd
 gnatmake -c -D obj/release -vh -gnatA -O3 -gnatn -ffunction-sections -fdata-sections -gnatW8 -gnateDPCAP_ADA_VERSION=\"1.0.0-dev\" -gnateDPCAP_ADA_OS_KIND=openbsd -gnatep=preprocessor-data.txt -fPIC pcap.adb pcap-datalink_constants.ads
 ```
@@ -101,5 +106,5 @@ unset ADA_OBJECTS_PATH
 ## Link
 
 ```
-egcc harness.o b__harness.o pcap_dead_test.o pcap_live_activated_test.o pcap_live_test.o pcap_test.o pcap_ada_test_suite.o -L../../../lib -L/usr/local/lib/gcc/x86_64-unknown-openbsd/11.2.0/adalib -L$AUNIT_HOME/lib/aunit/native-full -shared-libgcc -lpcap-ada -lpcap -lgnat -launit -Wl,-rpath,../../../lib:/usr/local/lib/gcc/x86_64-unknown-openbsd/11.2.0/adalib -o ../../bin/harness
+egcc harness.o b__harness.o pcap_dead_test.o pcap_live_activated_test.o pcap_live_test.o pcap_test.o pcap_ada_test_suite.o -L../../../lib -L/usr/local/lib/gcc/x86_64-unknown-openbsd/11.2.0/adalib -L$AUNIT_HOME/lib/aunit/native-full -shared-libgcc -lpcap-ada -lpcap -lgnat -launit -Wl,-rpath,$PCAP_ADA_HOME/lib:/usr/local/lib/gcc/x86_64-unknown-openbsd/11.2.0/adalib -o ../../bin/harness
 ```
