@@ -101,7 +101,5 @@ unset ADA_OBJECTS_PATH
 ## Link
 
 ```
-export LD_LIBRARY_PATH=../../../lib:/usr/local/lib/gcc/x86_64-unknown-openbsd/11.2.0/adalib:$AUNIT_HOME/lib/aunit/native-full
-export LD_RUN_PATH=../../../lib:/usr/local/lib/gcc/x86_64-unknown-openbsd/11.2.0/adalib
-egcc harness.o b__harness.o pcap_dead_test.o pcap_live_activated_test.o pcap_live_test.o pcap_test.o pcap_ada_test_suite.o -shared-libgcc -lpcap-ada -lpcap -lgnat -launit -o ../../bin/harness
+egcc harness.o b__harness.o pcap_dead_test.o pcap_live_activated_test.o pcap_live_test.o pcap_test.o pcap_ada_test_suite.o -L../../../lib -L/usr/local/lib/gcc/x86_64-unknown-openbsd/11.2.0/adalib -L$AUNIT_HOME/lib/aunit/native-full -shared-libgcc -lpcap-ada -lpcap -lgnat -launit -Wl,-rpath,../../../lib:/usr/local/lib/gcc/x86_64-unknown-openbsd/11.2.0/adalib -o ../../bin/harness
 ```
