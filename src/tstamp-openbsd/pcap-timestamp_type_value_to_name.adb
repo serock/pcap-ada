@@ -32,4 +32,5 @@
 separate (Pcap) function Timestamp_Type_Value_To_Name (Value : Timestamp_Type_Type) return String is
 begin
    raise Pcap.Exceptions.Pcap_Error with "Not implementable";
+   return "";
 end Timestamp_Type_Value_To_Name;

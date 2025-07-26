@@ -32,4 +32,5 @@
 separate (Pcap) function Get_Timestamp_Precision (Capture : Packet_Capture_Type) return Timestamp_Precision_Type is
 begin
    raise Pcap.Exceptions.Pcap_Error with "Not implementable";
+   return PCAP_TSTAMP_PRECISION_MICRO;
 end Get_Timestamp_Precision;
