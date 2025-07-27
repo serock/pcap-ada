@@ -11,8 +11,12 @@ library project Pcap_Ada is
    for Library_Version use "libpcap-ada.so." & Pcap_Ada_Config.Crate_Version;
 
    case Pcap_Ada_Os_Kind is
+      when "linux" =>
+         for Source_Dirs use ("src/", "src/linux/", "src/tstamp/");
       when "openbsd" =>
-         for Source_Dirs use ("src/", "src/tstamp-openbsd/");
+         for Source_Dirs use ("src/", "src/openbsd/", "src/tstamp-openbsd/");
+      when "windows" =>
+         for Source_Dirs use ("src/", "src/windows/", "src/tstamp/");
       when others =>
          for Source_Dirs use ("src/", "src/tstamp/");
    end case;

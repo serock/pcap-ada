@@ -43,28 +43,9 @@ package Pcap.Datalink_Constants is
    DLT_PPP                        : constant Datalink_Type := 9;
    DLT_FDDI                       : constant Datalink_Type := 10;
    DLT_ATM_RFC1483                : constant Datalink_Type := 11;
-#if PCAP_ADA_OS_KIND = "openbsd"
-   DLT_LOOP                       : constant Datalink_Type := 12;
-#else
    DLT_RAW                        : constant Datalink_Type := 12;
-#end if;
-#if PCAP_ADA_OS_KIND = "freebsd"
-   DLT_SLIP_BSDOS                 : constant Datalink_Type := 13;
-#elsif PCAP_ADA_OS_KIND = "openbsd"
-   DLT_ENC                        : constant Datalink_Type := 13;
-#end if;
-#if PCAP_ADA_OS_KIND = "freebsd"
-   DLT_PPP_BSDOS                  : constant Datalink_Type := 14;
-#elsif PCAP_ADA_OS_KIND = "openbsd"
-   DLT_RAW                        : constant Datalink_Type := 14;
-#end if;
-#if not PCAP_ADA_OS_KIND = "freebsd"
    DLT_SLIP_BSDOS                 : constant Datalink_Type := 15;
    DLT_PPP_BSDOS                  : constant Datalink_Type := 16;
-#end if;
-#if PCAP_ADA_OS_KIND = "macos" or PCAP_ADA_OS_KIND = "openbsd"
-   DLT_PFSYNC                     : constant Datalink_Type := 18;
-#end if;
    DLT_ATM_CLIP                   : constant Datalink_Type := 19;
    DLT_REDBACK_SMARTEDGE          : constant Datalink_Type := 32;
    DLT_PPP_SERIAL                 : constant Datalink_Type := 50;
@@ -74,10 +55,8 @@ package Pcap.Datalink_Constants is
    DLT_CHDLC                      : constant Datalink_Type := DLT_C_HDLC;
    DLT_IEEE802_11                 : constant Datalink_Type := 105;
    DLT_FRELAY                     : constant Datalink_Type := 107;
-#if not PCAP_ADA_OS_KIND = "openbsd"
    DLT_LOOP                       : constant Datalink_Type := 108;
    DLT_ENC                        : constant Datalink_Type := 109;
-#end if;
    DLT_LINUX_SLL                  : constant Datalink_Type := 113;
    DLT_LTALK                      : constant Datalink_Type := 114;
    DLT_ECONET                     : constant Datalink_Type := 115;
@@ -86,11 +65,7 @@ package Pcap.Datalink_Constants is
    DLT_CISCO_IOS                  : constant Datalink_Type := 118;
    DLT_PRISM_HEADER               : constant Datalink_Type := 119;
    DLT_AIRONET_HEADER             : constant Datalink_Type := 120;
-#if PCAP_ADA_OS_KIND = "freebsd"
-   DLT_PFSYNC                     : constant Datalink_Type := 121;
-#else
    DLT_HHDLC                      : constant Datalink_Type := 121;
-#end if;
    DLT_IP_OVER_FC                 : constant Datalink_Type := 122;
    DLT_SUNATM                     : constant Datalink_Type := 123;
    DLT_RIO                        : constant Datalink_Type := 124;
@@ -119,9 +94,6 @@ package Pcap.Datalink_Constants is
    DLT_USER0                      : constant Datalink_Type := 147;
    DLT_USER1                      : constant Datalink_Type := 148;
    DLT_USER2                      : constant Datalink_Type := 149;
-#if PCAP_ADA_OS_KIND = "macos"
-   DLT_PKTAP                      : constant Datalink_Type := DLT_USER2;
-#end if;
    DLT_USER3                      : constant Datalink_Type := 150;
    DLT_USER4                      : constant Datalink_Type := 151;
    DLT_USER5                      : constant Datalink_Type := 152;
@@ -220,9 +192,7 @@ package Pcap.Datalink_Constants is
    DLT_MPEG_2_TS                  : constant Datalink_Type := 243;
    DLT_NG40                       : constant Datalink_Type := 244;
    DLT_NFC_LLCP                   : constant Datalink_Type := 245;
-#if not (PCAP_ADA_OS_KIND = "freebsd" or PCAP_ADA_OS_KIND = "macos" or PCAP_ADA_OS_KIND = "openbsd")
    DLT_PFSYNC                     : constant Datalink_Type := 246;
-#end if;
    DLT_INFINIBAND                 : constant Datalink_Type := 247;
    DLT_SCTP                       : constant Datalink_Type := 248;
    DLT_USBPCAP                    : constant Datalink_Type := 249;
@@ -234,9 +204,7 @@ package Pcap.Datalink_Constants is
    DLT_BLUETOOTH_BREDR_BB         : constant Datalink_Type := 255;
    DLT_BLUETOOTH_LE_LL_WITH_PHDR  : constant Datalink_Type := 256;
    DLT_PROFIBUS_DL                : constant Datalink_Type := 257;
-#if not PCAP_ADA_OS_KIND = "macos"
    DLT_PKTAP                      : constant Datalink_Type := 258;
-#end if;
    DLT_EPON                       : constant Datalink_Type := 259;
    DLT_IPMI_HPM_2                 : constant Datalink_Type := 260;
    DLT_ZWAVE_R1_R2                : constant Datalink_Type := 261;
