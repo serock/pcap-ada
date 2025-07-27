@@ -4,8 +4,8 @@ begin
                             Expected => "Ethernet (10Mb)",
                             Message  => "Wrong datalink description");
 
-   AUnit.Assertions.Assert (Actual   => Pcap.Datalink_Value_To_Description (Value => Pcap.Datalink_Constants.DLT_RDS),
-                            Expected => "IEC 62106 Radio Data System groups",
+   AUnit.Assertions.Assert (Actual   => Pcap.Datalink_Value_To_Description (Value => Pcap.Datalink_Constants.DLT_USBPCAP),
+                            Expected => "USB",
                             Message  => "Wrong datalink description");
    declare
       Name : String := Pcap.Datalink_Value_To_Description (Value => Pcap.Datalink_Type'Last);

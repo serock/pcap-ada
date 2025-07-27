@@ -81,53 +81,11 @@ package body Pcap_Test is
                                                       Name    => "Test strerror");
    end Register_Tests;
 
-   procedure Test_Datalink_Name_To_Value (Test : in out AUnit.Test_Cases.Test_Case'Class) is
-   begin
-      AUnit.Assertions.Assert (Actual   => Pcap.Datalink_Name_To_Value (Name => "EN10MB")'Image,
-                               Expected => Pcap.Datalink_Constants.DLT_EN10MB'Image,
-                               Message  => "Wrong datalink value");
-
-      AUnit.Assertions.Assert (Actual   => Pcap.Datalink_Name_To_Value (Name => "USBPCAP")'Image,
-                               Expected => Pcap.Datalink_Constants.DLT_USBPCAP'Image,
-                               Message  => "Wrong datalink value");
-
-      declare
-         Value : Pcap.Datalink_Type;
-      begin
-         Value := Pcap.Datalink_Name_To_Value (Name => "DLT_EN10MB");
-         AUnit.Assertions.Assert (Condition => False,
-                                  Message   => "Expected exception Pcap_Error");
-      exception
-         when E : Pcap.Exceptions.Pcap_Error =>
-            AUnit.Assertions.Assert (Actual   => Ada.Exceptions.Exception_Message (X => E),
-                                     Expected => "Invalid argument",
-                                     Message  => "Wrong exception message");
-      end;
-   end Test_Datalink_Name_To_Value;
+   procedure Test_Datalink_Name_To_Value (Test : in out AUnit.Test_Cases.Test_Case'Class) is separate;
 
    procedure Test_Datalink_Value_To_Description (Test : in out AUnit.Test_Cases.Test_Case'Class) is separate;
 
-   procedure Test_Datalink_Value_To_Name (Test : in out AUnit.Test_Cases.Test_Case'Class) is
-   begin
-      AUnit.Assertions.Assert (Actual   => Pcap.Datalink_Value_To_Name (Value => Pcap.Datalink_Constants.DLT_EN10MB),
-                               Expected => "EN10MB",
-                               Message  => "Wrong datalink name");
-
-      AUnit.Assertions.Assert (Actual   => Pcap.Datalink_Value_To_Name (Value => Pcap.Datalink_Constants.DLT_RDS),
-                               Expected => "RDS",
-                               Message  => "Wrong datalink name");
-      declare
-         Name : String := Pcap.Datalink_Value_To_Name (Value => Pcap.Datalink_Type'Last);
-      begin
-         AUnit.Assertions.Assert (Condition => False,
-                                  Message   => "Expected exception Pcap_Error");
-      end;
-   exception
-      when E : Pcap.Exceptions.Pcap_Error =>
-         AUnit.Assertions.Assert (Actual   => Ada.Exceptions.Exception_Message (X => E),
-                                  Expected => "Invalid argument",
-                                  Message  => "Wrong exception message");
-   end Test_Datalink_Value_To_Name;
+   procedure Test_Datalink_Value_To_Name (Test : in out AUnit.Test_Cases.Test_Case'Class) is separate;
 
    procedure Test_Libpcap_Version (Test : in out AUnit.Test_Cases.Test_Case'Class) is separate;
 
