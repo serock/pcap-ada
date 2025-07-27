@@ -87,8 +87,8 @@ package body Pcap_Test is
                                Expected => Pcap.Datalink_Constants.DLT_EN10MB'Image,
                                Message  => "Wrong datalink value");
 
-      AUnit.Assertions.Assert (Actual   => Pcap.Datalink_Name_To_Value (Name => "RDS")'Image,
-                               Expected => Pcap.Datalink_Constants.DLT_RDS'Image,
+      AUnit.Assertions.Assert (Actual   => Pcap.Datalink_Name_To_Value (Name => "USBPCAP")'Image,
+                               Expected => Pcap.Datalink_Constants.DLT_USBPCAP'Image,
                                Message  => "Wrong datalink value");
 
       declare
@@ -105,27 +105,7 @@ package body Pcap_Test is
       end;
    end Test_Datalink_Name_To_Value;
 
-   procedure Test_Datalink_Value_To_Description (Test : in out AUnit.Test_Cases.Test_Case'Class) is
-   begin
-      AUnit.Assertions.Assert (Actual   => Pcap.Datalink_Value_To_Description (Value => Pcap.Datalink_Constants.DLT_EN10MB),
-                               Expected => "Ethernet",
-                               Message  => "Wrong datalink description");
-
-      AUnit.Assertions.Assert (Actual   => Pcap.Datalink_Value_To_Description (Value => Pcap.Datalink_Constants.DLT_RDS),
-                               Expected => "IEC 62106 Radio Data System groups",
-                               Message  => "Wrong datalink description");
-      declare
-         Name : String := Pcap.Datalink_Value_To_Description (Value => Pcap.Datalink_Type'Last);
-      begin
-         AUnit.Assertions.Assert (Condition => False,
-                                  Message   => "Expected exception Pcap_Error");
-      end;
-   exception
-      when E : Pcap.Exceptions.Pcap_Error =>
-         AUnit.Assertions.Assert (Actual   => Ada.Exceptions.Exception_Message (X => E),
-                                  Expected => "Invalid argument",
-                                  Message  => "Wrong exception message");
-   end Test_Datalink_Value_To_Description;
+   procedure Test_Datalink_Value_To_Description (Test : in out AUnit.Test_Cases.Test_Case'Class) is separate;
 
    procedure Test_Datalink_Value_To_Name (Test : in out AUnit.Test_Cases.Test_Case'Class) is
    begin
@@ -149,12 +129,7 @@ package body Pcap_Test is
                                   Message  => "Wrong exception message");
    end Test_Datalink_Value_To_Name;
 
-   procedure Test_Libpcap_Version (Test : in out AUnit.Test_Cases.Test_Case'Class) is
-      Version : constant String := Pcap.Pcap_Version;
-   begin
-      AUnit.Assertions.Assert (Condition => Version'Length > 15 and then (Version (1 .. 15) = "libpcap version" or else Version (1 .. 13) = "Npcap version"),
-                               Message   => "Wrong libpcap version");
-   end Test_Libpcap_Version;
+   procedure Test_Libpcap_Version (Test : in out AUnit.Test_Cases.Test_Case'Class) is separate;
 
    procedure Test_Lookup_Device (Test : in out AUnit.Test_Cases.Test_Case'Class) is
       Device : constant String := Pcap.Lookup_Device;
