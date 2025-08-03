@@ -26,8 +26,23 @@ library project Pcap_Ada is
    for Library_Dir use "lib";
 
    type Library_Type_Type is ("dynamic", "relocatable", "static", "static-pic");
+   Default_Library_Type : Library_Type_Type := "static";
+   case Pcap_Ada_Os_Kind is
+      when "linux" =>
+         Default_Library_Type := "dynamic";
+      when "openbsd" =>
+         --  On OpenBSD, exceptions do not propagate across shared libraries,
+         --  possibly because there is no libgcc*.so, only libgcc.a.
+         --  For example, attempting to raise Ada.Assertions.Assertion_Error
+         --  when using a shared GNAT library results in a SIGABRT.
+         Default_Library_Type := "static";
+      when "windows" =>
+         Default_Library_Type := "static";
+      when others =>
+         Default_Library_Type := "static";
+   end case;
    Library_Type : Library_Type_Type :=
-     external ("PCAP_ADA_LIBRARY_TYPE", external ("LIBRARY_TYPE", "dynamic"));
+     external ("PCAP_ADA_LIBRARY_TYPE", external ("LIBRARY_TYPE", Default_Library_Type));
    for Library_Kind use Library_Type;
 
    case Library_Type is
@@ -49,7 +64,10 @@ library project Pcap_Ada is
    end case;
 
    package Builder is
-      Ada_Switches := ("-x");
+      Ada_Switches := ("-x");  --  create include path file for integrated preprocessing
+      --  Ada_Switches := ("-v") & Ada_Switches;
+      --  Ada_Switches := ("-vh") & Ada_Switches;
+      --  Ada_Switches := ("--keep-temp-files") & Ada_Switches;
       for Default_Switches ("Ada") use Ada_Switches;
    end Builder;
 
@@ -62,11 +80,6 @@ library project Pcap_Ada is
       );
       for Default_Switches ("Ada") use Pcap_Ada_Config.Ada_Compiler_Switches & Ada_Switches;
    end Compiler;
-
-   package Binder is
-      Ada_Switches : = ("-Es");  --  Symbolic traceback
-      for Default_Switches ("Ada") use Ada_Switches;
-   end Binder;
 
    package Install is
       for Artifacts (".") use ("share");

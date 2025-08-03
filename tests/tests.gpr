@@ -31,7 +31,17 @@ project Tests is
    end Compiler;
 
    package Binder is
-      Ada_Switches := Pcap_Ada.Binder.Ada_Switches;
+      Ada_Switches : = ("-Es");  --  enable symbolic tracebacks
+      case Pcap_Ada.Pcap_Ada_Os_Kind is
+         when "linux" =>
+            Ada_Switches := Ada_Switches & ("-shared");  --  link against a shared GNAT run-time when available
+         when "openbsd" =>
+            Ada_Switches := Ada_Switches & ("-static");  --  link against a static GNAT run-time
+         when "windows" =>
+            Ada_Switches := Ada_Switches & ("-static");  --  link against a static GNAT run-time
+         when others =>
+            Ada_Switches := Ada_Switches & ("-static");  --  link against a static GNAT run-time
+      end case;
       for Default_Switches ("Ada") use Ada_Switches;
    end Binder;
 

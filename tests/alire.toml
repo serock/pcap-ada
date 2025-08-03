@@ -6,7 +6,8 @@ authors = ["John Serock"]
 maintainers = ["John Serock <john.serock@gmail.com>"]
 maintainers-logins = ["serock"]
 
-executables = ["main"]
+executables."case(os)".windows = ["harness.exe"]
+executables."case(os)"."..." = ["harness"]
 
 [available."case(os)"]
 "linux" = true
