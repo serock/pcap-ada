@@ -33,11 +33,9 @@ project Tests is
    package Binder is
       Ada_Switches : = ("-Es");  --  enable symbolic tracebacks
       case Pcap_Ada.Pcap_Ada_Os_Kind is
-         when "linux" =>
+         when "linux" | "windows" =>
             Ada_Switches := Ada_Switches & ("-shared");  --  link against a shared GNAT run-time when available
          when "openbsd" =>
-            Ada_Switches := Ada_Switches & ("-static");  --  link against a static GNAT run-time
-         when "windows" =>
             Ada_Switches := Ada_Switches & ("-static");  --  link against a static GNAT run-time
          when others =>
             Ada_Switches := Ada_Switches & ("-static");  --  link against a static GNAT run-time

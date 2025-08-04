@@ -28,15 +28,14 @@ library project Pcap_Ada is
    type Library_Type_Type is ("dynamic", "relocatable", "static", "static-pic");
    Default_Library_Type : Library_Type_Type := "static";
    case Pcap_Ada_Os_Kind is
-      when "linux" =>
+      when "linux" | "windows" =>
          Default_Library_Type := "dynamic";
       when "openbsd" =>
          --  On OpenBSD, exceptions do not propagate across shared libraries,
          --  possibly because there is no libgcc*.so, only libgcc.a.
-         --  For example, attempting to raise Ada.Assertions.Assertion_Error
-         --  when using a shared GNAT library results in a SIGABRT.
-         Default_Library_Type := "static";
-      when "windows" =>
+         --  See description of "-shared-libgcc" in the GCC Manual.
+         --  Attempting to raise Ada.Assertions.Assertion_Error when using a
+         --  shared GNAT library results in a SIGABRT.
          Default_Library_Type := "static";
       when others =>
          Default_Library_Type := "static";
