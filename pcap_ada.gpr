@@ -11,6 +11,8 @@ library project Pcap_Ada is
    for Library_Version use "libpcap-ada.so." & Pcap_Ada_Config.Crate_Version;
 
    case Pcap_Ada_Os_Kind is
+      when "freebsd" =>
+         for Source_Dirs use ("src/", "src/freebsd/", "src/tstamp/");
       when "linux" =>
          for Source_Dirs use ("src/", "src/linux/", "src/tstamp/");
       when "openbsd" =>
@@ -28,7 +30,7 @@ library project Pcap_Ada is
    type Library_Type_Type is ("dynamic", "relocatable", "static", "static-pic");
    Default_Library_Type : Library_Type_Type := "static";
    case Pcap_Ada_Os_Kind is
-      when "linux" | "windows" =>
+      when "freebsd" | "linux" | "windows" =>
          Default_Library_Type := "dynamic";
       when "openbsd" =>
          --  On OpenBSD, exceptions do not propagate across shared libraries,

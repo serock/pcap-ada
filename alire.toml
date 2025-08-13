@@ -9,6 +9,8 @@ licenses = 'BSD-3-Clause'
 website = 'https://github.com/serock/pcap-ada'
 tags = ['pcap', 'binding']
 
+available."case(os)".freebsd."case(word-size)".bits-64 = true
+available."case(os)".freebsd."case(word-size)".bits-32 = false
 available."case(os)".linux."case(word-size)".bits-64 = true
 available."case(os)".linux."case(word-size)".bits-32 = true
 available."case(os)".openbsd."case(word-size)".bits-64 = true
